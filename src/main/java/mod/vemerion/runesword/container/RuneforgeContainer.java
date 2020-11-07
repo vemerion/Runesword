@@ -1,5 +1,8 @@
 package mod.vemerion.runesword.container;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 
 import mod.vemerion.runesword.Main;
@@ -13,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -21,27 +24,29 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class RuneforgeContainer extends Container {
 
-	private BlockPos pos;
+	private IWorldPosCallable pos;
 
 	public static final int[] RUNE_SLOTS_Y = new int[] { 9, 35, 61, 35 };
 	public static final int[] RUNE_SLOTS_X = new int[] { 80, 106, 80, 54 };
 
 	private Slot swordSlot;
+	private List<Slot> runeSlots;
 	private WrapperRuneHandler runeHandler;
 
 	public RuneforgeContainer(int id, PlayerInventory playerInv, PacketBuffer buffer) {
-		this(id, playerInv, new ItemStackHandler(), buffer.readBlockPos());
+		this(id, playerInv, new ItemStackHandler(), IWorldPosCallable.DUMMY);
 	}
 
-	public RuneforgeContainer(int id, PlayerInventory playerInv, ItemStackHandler swordHandler, BlockPos pos) {
+	public RuneforgeContainer(int id, PlayerInventory playerInv, ItemStackHandler swordHandler, IWorldPosCallable pos) {
 		super(Main.RUNEFORGE_CONTAINER, id);
 		this.pos = pos;
 
+		runeSlots = new ArrayList<>();
 		runeHandler = new WrapperRuneHandler();
 		swordSlot = addSlot(new SlotSwordHandler(swordHandler, RuneforgeTileEntity.SWORD_SLOT, 80, 35));
 		updateRuneSlots();
 		for (int i = 0; i < Runes.RUNES_COUNT; i++) {
-			addSlot(new SlotRuneHandler(runeHandler, i, RUNE_SLOTS_X[i], RUNE_SLOTS_Y[i]));
+			runeSlots.add(addSlot(new SlotRuneHandler(runeHandler, i, RUNE_SLOTS_X[i], RUNE_SLOTS_Y[i])));
 		}
 
 		// Player inventory
@@ -58,18 +63,54 @@ public class RuneforgeContainer extends Container {
 
 	}
 
-	// TODO: Implement
 	@Override
 	public boolean canInteractWith(PlayerEntity playerIn) {
-		return true;
+		return isWithinUsableDistance(pos, playerIn, Main.RUNEFORGE_BLOCK);
 	}
 
-	// TODO: Implement
 	@Override
 	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
-		return ItemStack.EMPTY;
+		int runeforgeEnd = 5;
+		int playerInvStart = runeforgeEnd;
+		int playerInvEnd = playerInvStart + 3 * 9;
+		int hotbarStart = playerInvEnd;
+		int hotbarEnd = hotbarStart + 9;
+
+		ItemStack copy = ItemStack.EMPTY;
+		Slot slot = inventorySlots.get(index);
+		if (slot != null && slot.getHasStack()) {
+			ItemStack stack = slot.getStack();
+			copy = stack.copy();
+			if (index < runeforgeEnd) { // Sword slot + rune slots
+				if (!mergeItemStack(stack, 5, 39, false)) {
+					return ItemStack.EMPTY;
+				}
+			} else if (index >= hotbarStart && index < hotbarEnd) { // Hotbar
+				if (!mergeItemStack(stack, 0, runeforgeEnd, false))
+					if (!mergeItemStack(stack, playerInvStart, playerInvEnd, false))
+						return ItemStack.EMPTY;
+			} else if (index >= playerInvStart && index < playerInvEnd) { // Player Inventory
+				if (!mergeItemStack(stack, 0, runeforgeEnd, false))
+					if (!mergeItemStack(stack, hotbarStart, hotbarEnd, false))
+						return ItemStack.EMPTY;
+			}
+
+			if (stack.isEmpty()) {
+				slot.putStack(ItemStack.EMPTY);
+			} else {
+				slot.onSlotChanged();
+			}
+
+			if (stack.getCount() == copy.getCount()) {
+				return ItemStack.EMPTY;
+			}
+
+			slot.onTake(playerIn, stack);
+		}
+
+		return copy;
 	}
-	
+
 	public ItemStack getSword() {
 		return swordSlot.getStack();
 	}
@@ -79,7 +120,7 @@ public class RuneforgeContainer extends Container {
 		maybeRunes.ifPresent(runes -> {
 			runeHandler.enable(runes);
 		});
-		
+
 		if (!maybeRunes.isPresent())
 			runeHandler.disable();
 	}
@@ -94,28 +135,28 @@ public class RuneforgeContainer extends Container {
 		public boolean isItemValid(ItemStack stack) {
 			return super.isItemValid(stack) && stack.getItem() instanceof SwordItem;
 		}
-		
+
 		@Override
 		public void onSlotChanged() {
 			super.onSlotChanged();
 			updateRuneSlots();
 		}
 	}
-	
+
 	private static class SlotRuneHandler extends SlotItemHandler {
-		
+
 		private WrapperRuneHandler itemHandler;
 
 		public SlotRuneHandler(WrapperRuneHandler itemHandler, int index, int xPosition, int yPosition) {
 			super(itemHandler, index, xPosition, yPosition);
 			this.itemHandler = itemHandler;
 		}
-		
+
 		@Override
 		public boolean isEnabled() {
 			return !itemHandler.disabled;
 		}
-		
+
 	}
 
 	private static class WrapperRuneHandler extends ItemStackHandler {
@@ -131,7 +172,7 @@ public class RuneforgeContainer extends Container {
 			this.inner = inner;
 			disabled = false;
 		}
-		
+
 		private void disable() {
 			disabled = true;
 		}

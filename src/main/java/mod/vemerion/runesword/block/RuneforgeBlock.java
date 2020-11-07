@@ -44,7 +44,7 @@ public class RuneforgeBlock extends Block {
 			TileEntity tileentity = worldIn.getTileEntity(pos);
 			if (tileentity != null) {
 				INamedContainerProvider containerProvider = getContainer(state, worldIn, pos);
-				NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider, pos);
+				NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider);
 			}				
 		}
 		return ActionResultType.SUCCESS;

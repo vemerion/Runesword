@@ -12,6 +12,7 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.IWorldPosCallable;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.ItemStackHandler;
@@ -36,7 +37,7 @@ public class RuneforgeTileEntity extends TileEntity implements INamedContainerPr
 
 	@Override
 	public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player) {
-		return new RuneforgeContainer(id, playerInv, runeforge, pos);
+		return new RuneforgeContainer(id, playerInv, runeforge, IWorldPosCallable.of(world, pos));
 	}
 
 	@Override
