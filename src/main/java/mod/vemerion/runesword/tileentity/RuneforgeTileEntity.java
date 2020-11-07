@@ -2,12 +2,14 @@ package mod.vemerion.runesword.tileentity;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.container.RuneforgeContainer;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.text.ITextComponent;
@@ -40,5 +42,17 @@ public class RuneforgeTileEntity extends TileEntity implements INamedContainerPr
 	@Override
 	public ITextComponent getDisplayName() {
 		return new TranslationTextComponent(Main.RUNEFORGE_BLOCK.getTranslationKey());
+	}
+	
+	@Override
+	public CompoundNBT write(CompoundNBT compound) {
+		compound.put("runeforge", runeforge.serializeNBT());
+		return super.write(compound);
+	}
+	
+	@Override
+	public void read(BlockState state, CompoundNBT nbt) {
+		super.read(state, nbt);
+		runeforge.deserializeNBT(nbt.getCompound("runeforge"));
 	}
 }
