@@ -1,6 +1,7 @@
 package mod.vemerion.runesword;
 
 import mod.vemerion.runesword.block.RuneforgeBlock;
+import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
@@ -12,11 +13,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
 @EventBusSubscriber(modid = Main.MODID, bus = Bus.MOD)
@@ -54,6 +57,11 @@ public class ModEventSubscriber {
 	public static void onRegisterContainer(RegistryEvent.Register<ContainerType<?>> event) {
 		event.getRegistry().register(setup(IForgeContainerType.create(RuneforgeContainer::new), "runeforge_container"));
 
+	}
+	
+	@SubscribeEvent
+	public static void setup(FMLCommonSetupEvent event) {
+		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
 	}
 
 	public static <T extends IForgeRegistryEntry<T>> T setup(final T entry, final String name) {

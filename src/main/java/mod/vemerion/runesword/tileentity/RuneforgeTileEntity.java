@@ -6,24 +6,28 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class RuneforgeTileEntity extends TileEntity implements INamedContainerProvider {
-	
+
 	public static final int SWORD_SLOT = 0;
-	public static final int MAJOR_RUNE_SLOT = 1;
-	public static final int[] MINOR_RUNE_SLOTS = new int[] { 2, 3, 4 };
-	public static final int SLOT_COUNT = 5;
-	
-	private ItemStackHandler runeforge = new ItemStackHandler(SLOT_COUNT);
+
+	private ItemStackHandler runeforge = new ItemStackHandler() {
+		public boolean isItemValid(int slot, ItemStack stack) {
+			return stack.getItem() instanceof SwordItem;
+		}
+	};
 
 	public RuneforgeTileEntity(TileEntityType<?> tileEntityTypeIn) {
 		super(tileEntityTypeIn);
 	}
-	
+
 	public RuneforgeTileEntity() {
 		super(Main.RUNEFORGE_TILE_ENTITY);
 	}
@@ -35,6 +39,6 @@ public class RuneforgeTileEntity extends TileEntity implements INamedContainerPr
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return Main.RUNEFORGE_BLOCK.getTranslatedName();
+		return new TranslationTextComponent(Main.RUNEFORGE_BLOCK.getTranslationKey());
 	}
 }
