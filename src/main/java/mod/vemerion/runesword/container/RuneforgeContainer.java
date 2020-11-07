@@ -23,8 +23,8 @@ public class RuneforgeContainer extends Container {
 
 	private BlockPos pos;
 
-	private static final int[] RUNE_SLOTS_Y = new int[] { 9, 35, 61, 35 };
-	private static final int[] RUNE_SLOTS_X = new int[] { 80, 106, 80, 54 };
+	public static final int[] RUNE_SLOTS_Y = new int[] { 9, 35, 61, 35 };
+	public static final int[] RUNE_SLOTS_X = new int[] { 80, 106, 80, 54 };
 
 	private Slot swordSlot;
 	private WrapperRuneHandler runeHandler;
@@ -69,11 +69,15 @@ public class RuneforgeContainer extends Container {
 	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
 		return ItemStack.EMPTY;
 	}
+	
+	public ItemStack getSword() {
+		return swordSlot.getStack();
+	}
 
 	private void updateRuneSlots() {
 		LazyOptional<Runes> maybeRunes = Runes.getRunes(swordSlot.getStack());
 		maybeRunes.ifPresent(runes -> {
-			runeHandler.enable(runes.getRunes());
+			runeHandler.enable(runes);
 		});
 		
 		if (!maybeRunes.isPresent())
@@ -122,7 +126,7 @@ public class RuneforgeContainer extends Container {
 			this.inner = new ItemStackHandler(Runes.RUNES_COUNT);
 			this.disabled = true;
 		}
-		
+
 		private void enable(ItemStackHandler inner) {
 			this.inner = inner;
 			disabled = false;

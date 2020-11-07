@@ -19,56 +19,79 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class Runes {
-	
+public class Runes extends ItemStackHandler {
+
 	@CapabilityInject(Runes.class)
 	public static final Capability<Runes> CAPABILITY = null;
-	
+
 	public static final int RUNES_COUNT = 4;
-	
-	private ItemStackHandler runes;
-	
+	public static final int MAJOR_SLOT = 0;
+	public static final int FIRST_MINOR_SLOT = 1;
+	public static final int SECOND_MINOR_SLOT = 2;
+	public static final int THIRD_MINOR_SLOT = 3;
+
+	private ItemStack owner;
+
 	public Runes() {
-		runes = new RuneHandler();
+		this(ItemStack.EMPTY);
+	}
+
+	public Runes(ItemStack owner) {
+		super(RUNES_COUNT);
+		this.owner = owner;
 	}
 	
-	public ItemStackHandler getRunes() {
-		return runes;
+	public boolean isSlotUnlocked(int slot) {
+		int level = ((SwordItem) owner.getItem()).getTier().getHarvestLevel();
+		
+		switch (slot) {
+		case FIRST_MINOR_SLOT:
+			return level > 0;
+		case SECOND_MINOR_SLOT:
+			return level > 1;
+		case THIRD_MINOR_SLOT:
+			return level > 2;
+		case MAJOR_SLOT:
+			return level > 3;
+		default:
+			break;
+		}
+		return false;
 	}
-	
+
+	@Override
+	public int getSlotLimit(int slot) {
+		return 1;
+	}
+
+	@Override
+	public boolean isItemValid(int slot, ItemStack stack) {
+		if (!(stack.getItem() instanceof RuneItem))
+			return false;
+		
+		return isSlotUnlocked(slot);
+	}
+
 	public static LazyOptional<Runes> getRunes(ItemStack stack) {
 		return stack.getCapability(CAPABILITY);
 	}
-	
-	private static class RuneHandler extends ItemStackHandler {
-		
-		public RuneHandler() {
-			super(RUNES_COUNT);
-		}
-		
-		@Override
-		public int getSlotLimit(int slot) {
-			return 1;
-		}
-		
-		@Override
-		public boolean isItemValid(int slot, ItemStack stack) {
-			return stack.getItem() instanceof RuneItem;
-		}
-		
-	}
-	
+
 	@EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
 	public static class Provider implements ICapabilitySerializable<INBT> {
 		private static final ResourceLocation SAVE_LOCATION = new ResourceLocation(Main.MODID, "runes");
-		
+
 		@SubscribeEvent
 		public static void attachCapability(AttachCapabilitiesEvent<ItemStack> event) {
 			if (event.getObject().getItem() instanceof SwordItem)
-				event.addCapability(SAVE_LOCATION, new Provider());
+				event.addCapability(SAVE_LOCATION, new Provider(event.getObject()));
+		}
+		
+		public Provider(ItemStack owner) {
+			this.owner = owner;
 		}
 
-		private LazyOptional<Runes> instance = LazyOptional.of(CAPABILITY::getDefaultInstance);
+		private ItemStack owner;
+		private LazyOptional<Runes> instance = LazyOptional.of(() -> new Runes(owner));
 
 		@Override
 		public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side) {
@@ -77,27 +100,29 @@ public class Runes {
 
 		@Override
 		public INBT serializeNBT() {
-			return CAPABILITY.getStorage().writeNBT(CAPABILITY, instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null);
+			return CAPABILITY.getStorage().writeNBT(CAPABILITY,
+					instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null);
 		}
 
 		@Override
 		public void deserializeNBT(INBT nbt) {
-			CAPABILITY.getStorage().readNBT(CAPABILITY, instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null, nbt);
+			CAPABILITY.getStorage().readNBT(CAPABILITY,
+					instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null,
+					nbt);
 		}
 	}
-	
+
 	public static class Storage implements IStorage<Runes> {
 
 		@Override
 		public INBT writeNBT(Capability<Runes> capability, Runes instance, Direction side) {
-			return instance.runes.serializeNBT();
+			return instance.serializeNBT();
 
 		}
 
 		@Override
-		public void readNBT(Capability<Runes> capability, Runes instance, Direction side,
-				INBT nbt) {
-			instance.runes.deserializeNBT((CompoundNBT) nbt);
+		public void readNBT(Capability<Runes> capability, Runes instance, Direction side, INBT nbt) {
+			instance.deserializeNBT((CompoundNBT) nbt);
 		}
 	}
 
