@@ -28,7 +28,7 @@ public class RuneforgeBlock extends Block {
 	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
 		return SHAPE;
 	}
-	
+
 	@Override
 	public boolean hasTileEntity(BlockState state) {
 		return true;
