@@ -1,7 +1,5 @@
 package mod.vemerion.runesword.screen;
 
-import java.awt.Color;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mod.vemerion.runesword.Main;

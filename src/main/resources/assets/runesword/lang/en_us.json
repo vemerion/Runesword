@@ -3,5 +3,7 @@
   "gui.runesword.slot_locked": "Slot locked",
   "item.runesword.runeforge_block_item": "Runeforge",
   "block.runesword.runeforge_block": "Runeforge",
-  "item.runesword.fire_rune_item": "Fire Rune"
+  "item.runesword.fire_rune_item": "Fire Rune",
+  "tooltip.runesword.minor": "Minor: ",
+  "tooltip.runesword.major": "Major: "
 }

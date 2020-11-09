@@ -1,5 +1,9 @@
 package mod.vemerion.runesword.capability;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
 import net.minecraft.item.ItemStack;
@@ -8,6 +12,10 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.Color;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -40,10 +48,26 @@ public class Runes extends ItemStackHandler {
 		super(RUNES_COUNT);
 		this.owner = owner;
 	}
-	
+
+	public Collection<? extends ITextComponent> getTooltip() {
+		List<ITextComponent> tooltip = new ArrayList<>();
+		for (int i = 0; i < RUNES_COUNT; i++) {
+			ItemStack rune = getStackInSlot(i);
+			TranslationTextComponent prefix = i == MAJOR_SLOT
+					? new TranslationTextComponent("tooltip." + Main.MODID + ".major")
+					: new TranslationTextComponent("tooltip." + Main.MODID + ".minor");
+			if (!rune.isEmpty()) {
+				ITextComponent text = new TranslationTextComponent(rune.getTranslationKey())
+						.mergeStyle(Style.EMPTY.setColor(Color.fromInt(((RuneItem) rune.getItem()).getColor())));
+				tooltip.add(prefix.append(text));
+			}
+		}
+		return tooltip;
+	}
+
 	public boolean isSlotUnlocked(int slot) {
 		int level = ((SwordItem) owner.getItem()).getTier().getHarvestLevel();
-		
+
 		switch (slot) {
 		case FIRST_MINOR_SLOT:
 			return level > 0;
@@ -68,7 +92,7 @@ public class Runes extends ItemStackHandler {
 	public boolean isItemValid(int slot, ItemStack stack) {
 		if (!(stack.getItem() instanceof RuneItem))
 			return false;
-		
+
 		return isSlotUnlocked(slot);
 	}
 
@@ -85,7 +109,7 @@ public class Runes extends ItemStackHandler {
 			if (event.getObject().getItem() instanceof SwordItem)
 				event.addCapability(SAVE_LOCATION, new Provider(event.getObject()));
 		}
-		
+
 		public Provider(ItemStack owner) {
 			this.owner = owner;
 		}
@@ -125,5 +149,4 @@ public class Runes extends ItemStackHandler {
 			instance.deserializeNBT((CompoundNBT) nbt);
 		}
 	}
-
 }

@@ -1,5 +1,7 @@
 package mod.vemerion.runesword;
 
+import java.awt.Color;
+
 import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
@@ -32,7 +34,7 @@ public class ModEventSubscriber {
 						"runeforge_block_item"));
 
 		event.getRegistry()
-				.register(setup(new RuneItem(new Item.Properties().group(ItemGroup.SEARCH)), "fire_rune_item"));
+				.register(setup(new RuneItem(Color.ORANGE.getRGB(), new Item.Properties().group(ItemGroup.SEARCH)), "fire_rune_item"));
 	}
 
 	@SubscribeEvent
