@@ -34,7 +34,13 @@ public class ModEventSubscriber {
 						"runeforge_block_item"));
 
 		event.getRegistry()
-				.register(setup(new RuneItem(Color.ORANGE.getRGB(), new Item.Properties().group(ItemGroup.SEARCH)), "fire_rune_item"));
+				.register(setup(
+						new RuneItem(new Color(255, 100, 0).getRGB(), new Item.Properties().group(ItemGroup.SEARCH)),
+						"fire_rune_item"));
+		event.getRegistry()
+				.register(setup(
+						new RuneItem(new Color(0, 50, 255).getRGB(), new Item.Properties().group(ItemGroup.SEARCH)),
+						"water_rune_item"));
 	}
 
 	@SubscribeEvent
@@ -60,7 +66,7 @@ public class ModEventSubscriber {
 		event.getRegistry().register(setup(IForgeContainerType.create(RuneforgeContainer::new), "runeforge_container"));
 
 	}
-	
+
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event) {
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
