@@ -39,6 +39,7 @@ public class Runes extends ItemStackHandler {
 	public static final int THIRD_MINOR_SLOT = 3;
 
 	private ItemStack owner;
+	private boolean isDirty = true;
 
 	public Runes() {
 		this(ItemStack.EMPTY);
@@ -47,6 +48,17 @@ public class Runes extends ItemStackHandler {
 	public Runes(ItemStack owner) {
 		super(RUNES_COUNT);
 		this.owner = owner;
+	}
+	
+	public boolean isDirty() {
+		boolean dirty = isDirty;
+		isDirty = false;
+		return dirty;
+	}
+
+	@Override
+	protected void onContentsChanged(int slot) {
+		isDirty = true;
 	}
 
 	public Collection<? extends ITextComponent> getTooltip() {

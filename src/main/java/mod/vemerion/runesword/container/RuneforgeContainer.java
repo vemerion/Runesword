@@ -115,6 +115,19 @@ public class RuneforgeContainer extends Container {
 		return swordSlot.getStack();
 	}
 
+	@Override
+	public void detectAndSendChanges() {
+		ItemStack sword = getSword();
+		sword.getCapability(Runes.CAPABILITY).ifPresent(runes -> {
+			if (runes.isDirty()) {
+				CompoundNBT tag = sword.getOrCreateTag();
+				tag.putBoolean("dirty", !tag.getBoolean("dirty"));
+				sword.setTag(tag);
+			}
+		});
+		super.detectAndSendChanges();
+	}
+
 	private void updateRuneSlots() {
 		LazyOptional<Runes> maybeRunes = Runes.getRunes(swordSlot.getStack());
 		maybeRunes.ifPresent(runes -> {

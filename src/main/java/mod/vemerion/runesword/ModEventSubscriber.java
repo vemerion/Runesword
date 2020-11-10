@@ -6,6 +6,8 @@ import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.network.Network;
+import mod.vemerion.runesword.network.SyncRunesMessage;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -70,6 +72,10 @@ public class ModEventSubscriber {
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event) {
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
+		
+		Network.INSTANCE.registerMessage(0, SyncRunesMessage.class, SyncRunesMessage::encode, SyncRunesMessage::decode,
+				SyncRunesMessage::handle);
+
 	}
 
 	public static <T extends IForgeRegistryEntry<T>> T setup(final T entry, final String name) {
