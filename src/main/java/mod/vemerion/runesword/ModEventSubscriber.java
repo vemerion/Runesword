@@ -6,6 +6,8 @@ import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.lootmodifier.FireRuneLootModifier;
+import mod.vemerion.runesword.lootmodifier.IsEntityType;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncRunesMessage;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
@@ -19,6 +21,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.extensions.IForgeContainerType;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -70,11 +73,20 @@ public class ModEventSubscriber {
 	}
 
 	@SubscribeEvent
+	public static void onRegisterLootModifier(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
+		event.getRegistry().register(setup(new FireRuneLootModifier.Serializer(), "fire_rune_loot_modifier"));
+	}
+
+	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event) {
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
-		
+
 		Network.INSTANCE.registerMessage(0, SyncRunesMessage.class, SyncRunesMessage::encode, SyncRunesMessage::decode,
 				SyncRunesMessage::handle);
+
+		event.enqueueWork(() -> {
+			IsEntityType.register();
+		});
 
 	}
 

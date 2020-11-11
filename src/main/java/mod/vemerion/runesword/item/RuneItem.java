@@ -5,9 +5,14 @@ import java.util.List;
 
 import com.google.common.collect.Iterables;
 
+import mod.vemerion.runesword.Main;
 import net.minecraft.item.Item;
+import net.minecraftforge.registries.ObjectHolder;
 
+@ObjectHolder(Main.MODID)
 public class RuneItem extends Item {
+	
+	public static final Item FIRE_RUNE_ITEM = null;
 	
 	private static final List<RuneItem> RUNES = new ArrayList<>();
 	
