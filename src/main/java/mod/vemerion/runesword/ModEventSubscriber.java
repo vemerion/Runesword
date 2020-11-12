@@ -8,6 +8,7 @@ import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.lootmodifier.FireRuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.IsEntityType;
+import mod.vemerion.runesword.lootmodifier.WaterRuneLootModifier;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncRunesMessage;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
@@ -38,14 +39,15 @@ public class ModEventSubscriber {
 				.register(setup(new BlockItem(Main.RUNEFORGE_BLOCK, new Item.Properties().group(ItemGroup.SEARCH)),
 						"runeforge_block_item"));
 
-		event.getRegistry()
-				.register(setup(
-						new RuneItem(new Color(255, 100, 0).getRGB(), new Item.Properties().group(ItemGroup.SEARCH)),
-						"fire_rune_item"));
-		event.getRegistry()
-				.register(setup(
-						new RuneItem(new Color(0, 50, 255).getRGB(), new Item.Properties().group(ItemGroup.SEARCH)),
-						"water_rune_item"));
+		Item fireRune = new RuneItem(new Color(255, 100, 0).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
+		Item waterRune = new RuneItem(new Color(0, 50, 255).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
+		Item earthRune = new RuneItem(new Color(100, 50, 0).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
+		Item airRune = new RuneItem(new Color(170, 220, 220).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
+		Item bloodRune = new RuneItem(new Color(210, 20, 20).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
+
+		event.getRegistry().registerAll(setup(fireRune, "fire_rune_item"), setup(waterRune, "water_rune_item"),
+				setup(earthRune, "earth_rune_item"), setup(airRune, "air_rune_item"),
+				setup(bloodRune, "blood_rune_item"));
 	}
 
 	@SubscribeEvent
@@ -75,6 +77,7 @@ public class ModEventSubscriber {
 	@SubscribeEvent
 	public static void onRegisterLootModifier(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
 		event.getRegistry().register(setup(new FireRuneLootModifier.Serializer(), "fire_rune_loot_modifier"));
+		event.getRegistry().register(setup(new WaterRuneLootModifier.Serializer(), "water_rune_loot_modifier"));
 	}
 
 	@SubscribeEvent

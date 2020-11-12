@@ -11,13 +11,17 @@ import net.minecraftforge.registries.ObjectHolder;
 
 @ObjectHolder(Main.MODID)
 public class RuneItem extends Item {
-	
+
 	public static final Item FIRE_RUNE_ITEM = null;
-	
+	public static final Item WATER_RUNE_ITEM = null;
+	public static final Item EARTH_RUNE_ITEM = null;
+	public static final Item AIR_RUNE_ITEM = null;
+	public static final Item BLOOD_RUNE_ITEM = null;
+
 	private static final List<RuneItem> RUNES = new ArrayList<>();
-	
+
 	private final int color;
-	
+
 	public RuneItem(int color, Properties properties) {
 		super(properties);
 		this.color = color;

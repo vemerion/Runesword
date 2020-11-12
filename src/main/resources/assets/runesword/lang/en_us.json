@@ -5,6 +5,9 @@
   "block.runesword.runeforge_block": "Runeforge",
   "item.runesword.fire_rune_item": "Fire Rune",
   "item.runesword.water_rune_item": "Water Rune",
+  "item.runesword.earth_rune_item": "Earth Rune",
+  "item.runesword.air_rune_item": "Air Rune",
+  "item.runesword.blood_rune_item": "Blood Rune",
   "tooltip.runesword.minor": "Minor: ",
   "tooltip.runesword.major": "Major: "
 }

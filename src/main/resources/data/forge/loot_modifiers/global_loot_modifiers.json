@@ -1,6 +1,7 @@
 {
   "replace": false,
   "entries": [
-    "runesword:fire_rune_loot_modifier"
+    "runesword:fire_rune_loot_modifier",
+    "runesword:water_rune_loot_modifier"
   ]
 }
