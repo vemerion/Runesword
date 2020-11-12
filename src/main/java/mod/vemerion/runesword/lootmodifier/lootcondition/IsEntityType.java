@@ -1,11 +1,10 @@
-package mod.vemerion.runesword.lootmodifier;
+package mod.vemerion.runesword.lootmodifier.lootcondition;
 
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 
-import mod.vemerion.runesword.Main;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.ILootSerializer;
 import net.minecraft.loot.LootConditionType;
@@ -14,12 +13,9 @@ import net.minecraft.loot.LootParameters;
 import net.minecraft.loot.conditions.ILootCondition;
 import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.registry.Registry;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public class IsEntityType implements ILootCondition {
-
-	private static LootConditionType IS_ENTITY_TYPE;
 
 	private EntityType<?> entityType;
 
@@ -34,13 +30,7 @@ public class IsEntityType implements ILootCondition {
 
 	@Override
 	public LootConditionType func_230419_b_() {
-		return IS_ENTITY_TYPE;
-	}
-
-	public static void register() {
-		IS_ENTITY_TYPE = Registry.register(Registry.LOOT_CONDITION_TYPE,
-				new ResourceLocation(Main.MODID, "is_entity_type"),
-				new LootConditionType(new IsEntityType.Serializer()));
+		return LootConditions.IS_ENTITY_TYPE;
 	}
 
 	public static class Serializer implements ILootSerializer<IsEntityType> {

@@ -7,8 +7,8 @@ import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.lootmodifier.FireRuneLootModifier;
-import mod.vemerion.runesword.lootmodifier.IsEntityType;
 import mod.vemerion.runesword.lootmodifier.WaterRuneLootModifier;
+import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncRunesMessage;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
@@ -88,7 +88,7 @@ public class ModEventSubscriber {
 				SyncRunesMessage::handle);
 
 		event.enqueueWork(() -> {
-			IsEntityType.register();
+			LootConditions.register();
 		});
 
 	}
