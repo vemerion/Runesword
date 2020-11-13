@@ -21,7 +21,6 @@ public class BelowDepth implements ILootCondition {
 
 	@Override
 	public boolean test(LootContext t) {
-		System.out.println("LOOT");
 		if (t.has(LootParameters.field_237457_g_)) {
 			return depth > t.get(LootParameters.field_237457_g_).getY();
 		}
