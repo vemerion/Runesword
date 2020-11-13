@@ -6,9 +6,7 @@ import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.item.RuneItem;
-import mod.vemerion.runesword.lootmodifier.EarthRuneLootModifier;
-import mod.vemerion.runesword.lootmodifier.FireRuneLootModifier;
-import mod.vemerion.runesword.lootmodifier.WaterRuneLootModifier;
+import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncRunesMessage;
@@ -77,9 +75,16 @@ public class ModEventSubscriber {
 
 	@SubscribeEvent
 	public static void onRegisterLootModifier(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
-		event.getRegistry().register(setup(new FireRuneLootModifier.Serializer(), "fire_rune_loot_modifier"));
-		event.getRegistry().register(setup(new WaterRuneLootModifier.Serializer(), "water_rune_loot_modifier"));
-		event.getRegistry().register(setup(new EarthRuneLootModifier.Serializer(), "earth_rune_loot_modifier"));
+		event.getRegistry()
+				.register(setup(new RuneLootModifier.Serializer(RuneItem.FIRE_RUNE_ITEM), "fire_rune_loot_modifier"));
+		event.getRegistry()
+				.register(setup(new RuneLootModifier.Serializer(RuneItem.WATER_RUNE_ITEM), "water_rune_loot_modifier"));
+		event.getRegistry()
+				.register(setup(new RuneLootModifier.Serializer(RuneItem.EARTH_RUNE_ITEM), "earth_rune_loot_modifier"));
+		event.getRegistry()
+				.register(setup(new RuneLootModifier.Serializer(RuneItem.BLOOD_RUNE_ITEM), "blood_rune_loot_modifier"));
+		event.getRegistry()
+				.register(setup(new RuneLootModifier.Serializer(RuneItem.AIR_RUNE_ITEM), "air_rune_loot_modifier"));
 	}
 
 	@SubscribeEvent
