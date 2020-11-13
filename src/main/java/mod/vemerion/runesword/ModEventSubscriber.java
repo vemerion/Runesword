@@ -6,6 +6,7 @@ import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.lootmodifier.EarthRuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.FireRuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.WaterRuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
@@ -78,6 +79,7 @@ public class ModEventSubscriber {
 	public static void onRegisterLootModifier(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
 		event.getRegistry().register(setup(new FireRuneLootModifier.Serializer(), "fire_rune_loot_modifier"));
 		event.getRegistry().register(setup(new WaterRuneLootModifier.Serializer(), "water_rune_loot_modifier"));
+		event.getRegistry().register(setup(new EarthRuneLootModifier.Serializer(), "earth_rune_loot_modifier"));
 	}
 
 	@SubscribeEvent

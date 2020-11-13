@@ -2,6 +2,7 @@
   "replace": false,
   "entries": [
     "runesword:fire_rune_loot_modifier",
-    "runesword:water_rune_loot_modifier"
+    "runesword:water_rune_loot_modifier",
+    "runesword:earth_rune_loot_modifier"
   ]
 }

@@ -10,6 +10,7 @@ public class LootConditions {
 	protected static LootConditionType IN_BIOME;
 	protected static LootConditionType IS_ENTITY_TYPE;
 	protected static LootConditionType FROM_CHEST;
+	protected static LootConditionType BELOW_DEPTH;
 
 
 	public static void register() {
@@ -21,6 +22,9 @@ public class LootConditions {
 		FROM_CHEST = Registry.register(Registry.LOOT_CONDITION_TYPE,
 				new ResourceLocation(Main.MODID, "from_chest"),
 				new LootConditionType(new FromChest.Serializer()));
+		BELOW_DEPTH = Registry.register(Registry.LOOT_CONDITION_TYPE,
+				new ResourceLocation(Main.MODID, "below_depth"),
+				new LootConditionType(new BelowDepth.Serializer()));
 
 	}
 }
