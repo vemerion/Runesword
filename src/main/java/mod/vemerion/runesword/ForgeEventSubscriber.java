@@ -1,7 +1,13 @@
 package mod.vemerion.runesword;
 
+import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.network.RunesContainerListener;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraftforge.event.TickEvent.Phase;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent;
@@ -42,5 +48,27 @@ public class ForgeEventSubscriber {
 	public static void addRunesListener(PlayerContainerEvent.Open event) {
 		if (!event.getPlayer().world.isRemote)
 			event.getContainer().addListener(new RunesContainerListener((ServerPlayerEntity) event.getPlayer()));
+	}
+
+	@SubscribeEvent
+	public static void runeAttack(AttackEntityEvent event) {
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+				.ifPresent(runes -> runes.onAttack(event.getPlayer(), event.getTarget()));
+	}
+
+	@SubscribeEvent
+	public static void runeKill(LivingDeathEvent event) {
+		if (event.getSource().getTrueSource() instanceof PlayerEntity) {
+			PlayerEntity player = (PlayerEntity) event.getSource().getTrueSource();
+			player.getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+					.ifPresent(runes -> runes.onKill(player, event.getEntityLiving(), event.getSource()));
+		}
+	}
+
+	@SubscribeEvent
+	public static void runeTick(PlayerTickEvent event) {
+		if (event.phase == Phase.START)
+			event.player.getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+					.ifPresent(runes -> runes.tick(event.player));
 	}
 }

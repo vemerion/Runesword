@@ -6,12 +6,20 @@ import java.util.List;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -49,7 +57,7 @@ public class Runes extends ItemStackHandler {
 		super(RUNES_COUNT);
 		this.owner = owner;
 	}
-	
+
 	public boolean isDirty() {
 		boolean dirty = isDirty;
 		isDirty = false;
@@ -59,6 +67,41 @@ public class Runes extends ItemStackHandler {
 	@Override
 	protected void onContentsChanged(int slot) {
 		isDirty = true;
+	}
+
+	// On both sides
+	public void onAttack(PlayerEntity player, Entity target) {
+		if (!player.world.isRemote) {
+			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.AIR_RUNE_ITEM) * 0.1) {
+				Vector3d motion = target.getMotion();
+				target.addVelocity(0, 0.8, 0);
+				target.setOnGround(false);
+			}
+		}
+
+	}
+
+	// Logical-Server only
+	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source) {
+		if (!player.world.isRemote) {
+			if (getMajorRune() == RuneItem.AIR_RUNE_ITEM)
+				player.addPotionEffect(new EffectInstance(Effects.SPEED, 20 * 10));
+		}
+	}
+
+	// On both sides
+	public void tick(PlayerEntity player) {
+
+	}
+
+	private Item getMajorRune() {
+		return getStackInSlot(MAJOR_SLOT).getItem();
+	}
+
+	private int minorRuneCount(Item rune) {
+		return (getStackInSlot(FIRST_MINOR_SLOT).getItem() == rune ? 1 : 0)
+				+ (getStackInSlot(SECOND_MINOR_SLOT).getItem() == rune ? 1 : 0)
+				+ (getStackInSlot(THIRD_MINOR_SLOT).getItem() == rune ? 1 : 0);
 	}
 
 	public Collection<? extends ITextComponent> getTooltip() {
