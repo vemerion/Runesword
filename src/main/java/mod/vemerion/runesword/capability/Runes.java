@@ -8,9 +8,11 @@ import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -82,19 +84,29 @@ public class Runes extends ItemStackHandler {
 				target.hurtResistantTime = 0;
 			}
 
+			if (getMajorRune() == RuneItem.EARTH_RUNE_ITEM && player.getPosY() < 30) {
+				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3);
+				target.hurtResistantTime = 0;
+
+			}
+
 		}
 
 	}
 
 	// Logical-Server only
 	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source) {
-		if (!player.world.isRemote) {
-			if (getMajorRune() == RuneItem.AIR_RUNE_ITEM)
-				player.addPotionEffect(new EffectInstance(Effects.SPEED, 20 * 10));
-			
-			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.BLOOD_RUNE_ITEM) * 0.05) {
-				player.heal(2);
-			}
+		if (getMajorRune() == RuneItem.AIR_RUNE_ITEM)
+			player.addPotionEffect(new EffectInstance(Effects.SPEED, 20 * 10));
+
+		if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.BLOOD_RUNE_ITEM) * 0.05) {
+			player.heal(2);
+		}
+
+		if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.EARTH_RUNE_ITEM) * 0.2) {
+			ItemEntity dirt = new ItemEntity(player.world, entityLiving.getPosX(), entityLiving.getPosY(),
+					entityLiving.getPosZ(), new ItemStack(Items.DIRT));
+			player.world.addEntity(dirt);
 		}
 	}
 
