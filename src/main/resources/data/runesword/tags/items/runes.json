@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "runesword:fire_rune_item",
+    "runesword:water_rune_item",
+    "runesword:earth_rune_item",
+    "runesword:air_rune_item",
+    "runesword:blood_rune_item"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "sss",
+    "srs",
+    "sss"
+  ],
+  "key": {
+    "s": {
+      "tag": "minecraft:stone_crafting_materials"
+    },
+    "r": {
+      "tag": "runesword:runes"
+    }
+  },
+  "result": {
+    "item": "runesword:runeforge_block_item"
+  }
+}
