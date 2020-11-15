@@ -19,7 +19,6 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -73,10 +72,16 @@ public class Runes extends ItemStackHandler {
 	public void onAttack(PlayerEntity player, Entity target) {
 		if (!player.world.isRemote) {
 			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.AIR_RUNE_ITEM) * 0.1) {
-				Vector3d motion = target.getMotion();
 				target.addVelocity(0, 0.8, 0);
 				target.setOnGround(false);
 			}
+
+			if (getMajorRune() == RuneItem.BLOOD_RUNE_ITEM) {
+				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
+				player.attackEntityFrom(DamageSource.MAGIC, 2);
+				target.hurtResistantTime = 0;
+			}
+
 		}
 
 	}
@@ -86,6 +91,10 @@ public class Runes extends ItemStackHandler {
 		if (!player.world.isRemote) {
 			if (getMajorRune() == RuneItem.AIR_RUNE_ITEM)
 				player.addPotionEffect(new EffectInstance(Effects.SPEED, 20 * 10));
+			
+			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.BLOOD_RUNE_ITEM) * 0.05) {
+				player.heal(2);
+			}
 		}
 	}
 
