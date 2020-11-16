@@ -6,6 +6,7 @@ import java.util.List;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.item.ItemEntity;
@@ -21,6 +22,7 @@ import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -75,6 +77,10 @@ public class Runes extends ItemStackHandler {
 		Item major = getMajorRune();
 
 		if (!player.world.isRemote) {
+			float attackStrength = player.getCooledAttackStrength(0);
+			if (attackStrength < 0.9)
+				return;
+
 			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.AIR_RUNE_ITEM) * 0.1) {
 				target.addVelocity(0, 0.8, 0);
 				target.setOnGround(false);
@@ -96,6 +102,18 @@ public class Runes extends ItemStackHandler {
 				target.hurtResistantTime = 0;
 			}
 
+			if (major == RuneItem.FIRE_RUNE_ITEM && player.getFireTimer() > 0) {
+				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
+				target.hurtResistantTime = 0;
+			}
+
+			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.FIRE_RUNE_ITEM) * 0.1) {
+				BlockPos targetPos = target.getPosition();
+				if (player.world.isAirBlock(targetPos)) {
+					player.world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
+				}
+			}
+
 		}
 
 	}
@@ -115,7 +133,8 @@ public class Runes extends ItemStackHandler {
 			player.world.addEntity(dirt);
 		}
 
-		player.setAir(player.getAir() + (int) (minorRuneCount(RuneItem.WATER_RUNE_ITEM) * ((float) player.getMaxAir() / 10)));
+		player.setAir(
+				player.getAir() + (int) (minorRuneCount(RuneItem.WATER_RUNE_ITEM) * ((float) player.getMaxAir() / 10)));
 	}
 
 	// On both sides
