@@ -72,22 +72,28 @@ public class Runes extends ItemStackHandler {
 
 	// On both sides
 	public void onAttack(PlayerEntity player, Entity target) {
+		Item major = getMajorRune();
+
 		if (!player.world.isRemote) {
 			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.AIR_RUNE_ITEM) * 0.1) {
 				target.addVelocity(0, 0.8, 0);
 				target.setOnGround(false);
 			}
 
-			if (getMajorRune() == RuneItem.BLOOD_RUNE_ITEM) {
+			if (major == RuneItem.BLOOD_RUNE_ITEM) {
 				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
 				player.attackEntityFrom(DamageSource.MAGIC, 2);
 				target.hurtResistantTime = 0;
 			}
 
-			if (getMajorRune() == RuneItem.EARTH_RUNE_ITEM && player.getPosY() < 30) {
+			if (major == RuneItem.EARTH_RUNE_ITEM && player.getPosY() < 30) {
 				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3);
 				target.hurtResistantTime = 0;
+			}
 
+			if (major == RuneItem.WATER_RUNE_ITEM && player.isInWater()) {
+				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3);
+				target.hurtResistantTime = 0;
 			}
 
 		}
@@ -108,6 +114,8 @@ public class Runes extends ItemStackHandler {
 					entityLiving.getPosZ(), new ItemStack(Items.DIRT));
 			player.world.addEntity(dirt);
 		}
+
+		player.setAir(player.getAir() + (int) (minorRuneCount(RuneItem.WATER_RUNE_ITEM) * ((float) player.getMaxAir() / 10)));
 	}
 
 	// On both sides
