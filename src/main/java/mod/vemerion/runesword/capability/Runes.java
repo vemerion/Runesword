@@ -133,8 +133,8 @@ public class Runes extends ItemStackHandler {
 			player.world.addEntity(dirt);
 		}
 
-		player.setAir(
-				player.getAir() + (int) (minorRuneCount(RuneItem.WATER_RUNE_ITEM) * ((float) player.getMaxAir() / 10)));
+		player.setAir(Math.min(player.getMaxAir(), player.getAir()
+				+ (int) (minorRuneCount(RuneItem.WATER_RUNE_ITEM) * ((float) player.getMaxAir() / 10))));
 	}
 
 	// On both sides
