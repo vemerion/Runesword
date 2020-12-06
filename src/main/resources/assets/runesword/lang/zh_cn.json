@@ -1,0 +1,14 @@
+{
+  "gui.runesword.no_sword": "请将剑插入符文镶嵌台",
+  "gui.runesword.slot_locked": "符文槽已锁定",
+  "item.runesword.runeforge_block_item": "符文镶嵌台",
+  "block.runesword.runeforge_block": "符文镶嵌台",
+  "item.runesword.fire_rune_item": "火之符文",
+  "item.runesword.water_rune_item": "水之符文",
+  "item.runesword.earth_rune_item": "地之符文",
+  "item.runesword.air_rune_item": "风之符文",
+  "item.runesword.blood_rune_item": "血之符文",
+  "tooltip.runesword.minor": "副槽：",
+  "tooltip.runesword.major": "主槽：",
+  "itemGroup.runesword": "符文剑"
+}
