@@ -1,11 +1,14 @@
 package mod.vemerion.runesword;
 
-import java.awt.Color;
-
 import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
+import mod.vemerion.runesword.item.AirRuneItem;
+import mod.vemerion.runesword.item.BloodRuneItem;
+import mod.vemerion.runesword.item.EarthRuneItem;
+import mod.vemerion.runesword.item.FireRuneItem;
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.item.WaterRuneItem;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
 import mod.vemerion.runesword.network.Network;
@@ -38,11 +41,11 @@ public class ModEventSubscriber {
 				.register(setup(new BlockItem(Main.RUNEFORGE_BLOCK, new Item.Properties().group(ItemGroup.SEARCH)),
 						"runeforge_block_item"));
 
-		Item fireRune = new RuneItem(new Color(255, 100, 0).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
-		Item waterRune = new RuneItem(new Color(0, 50, 255).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
-		Item earthRune = new RuneItem(new Color(100, 50, 0).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
-		Item airRune = new RuneItem(new Color(170, 220, 220).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
-		Item bloodRune = new RuneItem(new Color(210, 20, 20).getRGB(), new Item.Properties().group(ItemGroup.SEARCH));
+		Item fireRune = new FireRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
+		Item waterRune = new WaterRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
+		Item earthRune = new EarthRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
+		Item airRune = new AirRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
+		Item bloodRune = new BloodRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
 
 		event.getRegistry().registerAll(setup(fireRune, "fire_rune_item"), setup(waterRune, "water_rune_item"),
 				setup(earthRune, "earth_rune_item"), setup(airRune, "air_rune_item"),

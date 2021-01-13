@@ -2,27 +2,26 @@ package mod.vemerion.runesword.capability;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -72,84 +71,50 @@ public class Runes extends ItemStackHandler {
 		isDirty = true;
 	}
 
+	private Map<RuneItem, Set<ItemStack>> getRunesMap() {
+		Map<RuneItem, Set<ItemStack>> runes = new HashMap<>();
+		for (int i = FIRST_MINOR_SLOT; i < RUNES_COUNT; i++) {
+			ItemStack stack = getStackInSlot(i);
+			if (stack.isEmpty())
+				continue;
+			RuneItem rune = (RuneItem) stack.getItem();
+			if (runes.containsKey(rune)) {
+				runes.get(rune).add(stack);
+			} else {
+				Set<ItemStack> stacks = new HashSet<>();
+				stacks.add(stack);
+				runes.put(rune, stacks);
+			}
+		}
+		return runes;
+	}
+
 	// On both sides
 	public void onAttack(PlayerEntity player, Entity target) {
-		Item major = getMajorRune();
-
-		if (!player.world.isRemote) {
-			float attackStrength = player.getCooledAttackStrength(0);
-			if (attackStrength < 0.9)
-				return;
-
-			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.AIR_RUNE_ITEM) * 0.1) {
-				target.addVelocity(0, 0.8, 0);
-				target.setOnGround(false);
-			}
-
-			if (major == RuneItem.BLOOD_RUNE_ITEM) {
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
-				player.attackEntityFrom(DamageSource.MAGIC, 2);
-				target.hurtResistantTime = 0;
-			}
-
-			if (major == RuneItem.EARTH_RUNE_ITEM && player.getPosY() < 30) {
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3);
-				target.hurtResistantTime = 0;
-			}
-
-			if (major == RuneItem.WATER_RUNE_ITEM && player.isInWater()) {
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3);
-				target.hurtResistantTime = 0;
-			}
-
-			if (major == RuneItem.FIRE_RUNE_ITEM && player.getFireTimer() > 0) {
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
-				target.hurtResistantTime = 0;
-			}
-
-			if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.FIRE_RUNE_ITEM) * 0.1) {
-				BlockPos targetPos = target.getPosition();
-				if (player.world.isAirBlock(targetPos)) {
-					player.world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
-				}
-			}
-
-		}
-
+		if (player.world.isRemote || player.getCooledAttackStrength(0) < 0.9)
+			return;
+		
+		for (Entry<RuneItem, Set<ItemStack>> entry  : getRunesMap().entrySet())
+			entry.getKey().onAttack(player, target, entry.getValue(), false);
+		
+		ItemStack major = getStackInSlot(MAJOR_SLOT);
+		if (!major.isEmpty())
+			((RuneItem) major.getItem()).onAttack(player, target, Collections.singleton(major), true);
 	}
 
 	// Logical-Server only
 	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source) {
-		if (getMajorRune() == RuneItem.AIR_RUNE_ITEM)
-			player.addPotionEffect(new EffectInstance(Effects.SPEED, 20 * 10));
-
-		if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.BLOOD_RUNE_ITEM) * 0.05) {
-			player.heal(2);
-		}
-
-		if (player.getRNG().nextDouble() < minorRuneCount(RuneItem.EARTH_RUNE_ITEM) * 0.2) {
-			ItemEntity dirt = new ItemEntity(player.world, entityLiving.getPosX(), entityLiving.getPosY(),
-					entityLiving.getPosZ(), new ItemStack(Items.DIRT));
-			player.world.addEntity(dirt);
-		}
-
-		player.setAir(Math.min(player.getMaxAir(), player.getAir()
-				+ (int) (minorRuneCount(RuneItem.WATER_RUNE_ITEM) * ((float) player.getMaxAir() / 10))));
+		for (Entry<RuneItem, Set<ItemStack>> entry  : getRunesMap().entrySet())
+			entry.getKey().onKill(player, entityLiving, source, entry.getValue(), false);
+		
+		ItemStack major = getStackInSlot(MAJOR_SLOT);
+		if (!major.isEmpty())
+			((RuneItem) major.getItem()).onKill(player, entityLiving, source, Collections.singleton(major), true);
 	}
 
 	// On both sides
 	public void tick(PlayerEntity player) {
 
-	}
-
-	private Item getMajorRune() {
-		return getStackInSlot(MAJOR_SLOT).getItem();
-	}
-
-	private int minorRuneCount(Item rune) {
-		return (getStackInSlot(FIRST_MINOR_SLOT).getItem() == rune ? 1 : 0)
-				+ (getStackInSlot(SECOND_MINOR_SLOT).getItem() == rune ? 1 : 0)
-				+ (getStackInSlot(THIRD_MINOR_SLOT).getItem() == rune ? 1 : 0);
 	}
 
 	public Collection<? extends ITextComponent> getTooltip() {
