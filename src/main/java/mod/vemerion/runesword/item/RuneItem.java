@@ -7,6 +7,8 @@ import java.util.Set;
 import com.google.common.collect.Iterables;
 
 import mod.vemerion.runesword.Main;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -48,5 +50,22 @@ public class RuneItem extends Item {
 
 	public static Iterable<RuneItem> getRunes() {
 		return Iterables.unmodifiableIterable(RUNES);
+	}
+	
+	@Override
+	public boolean isEnchantable(ItemStack stack) {
+		return true;
+	}
+	
+	@Override
+	public int getItemEnchantability() {
+		return 10;
+	}
+	
+	protected int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
+		int level = 0;
+		for (ItemStack stack : stacks)
+			level += EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
+		return level;
 	}
 }
