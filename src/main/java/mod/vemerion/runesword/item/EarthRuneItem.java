@@ -26,25 +26,31 @@ import net.minecraft.world.World;
 public class EarthRuneItem extends RuneItem {
 
 	private static final List<Item> DROPS = ImmutableList.of(Items.IRON_ORE, Items.COAL_ORE);
-	private static final List<Item> LOOTING_DROPS = ImmutableList.of(Items.DIAMOND_ORE, Items.GOLD_ORE, Items.EMERALD_ORE);
+	private static final List<Item> LOOTING_DROPS = ImmutableList.of(Items.DIAMOND_ORE, Items.GOLD_ORE,
+			Items.EMERALD_ORE);
 
-	private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.FIRE_ASPECT, Enchantments.LOOTING);
+	private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.FIRE_ASPECT,
+			Enchantments.LOOTING, Enchantments.SHARPNESS, Enchantments.PROTECTION);
 
 	public EarthRuneItem(Properties properties) {
 		super(new Color(100, 50, 0).getRGB(), properties);
 	}
-	
+
 	@Override
 	public float onHurt(PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes, boolean major) {
-		System.out.println("HURT");
+		
+		if (major && player.getPosY() < 30 && !source.isUnblockable()) {
+			amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.PROTECTION, runes);
+		}
+
 		return super.onHurt(player, source, amount, runes, major);
 	}
 
 	@Override
 	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes, boolean major) {
-
 		if (major && player.getPosY() < 30) {
-			target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3);
+			float damage = 3 + getEnchantmentLevel(Enchantments.SHARPNESS, runes) * 0.2f;
+			target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
 			target.hurtResistantTime = 0;
 		}
 	}
@@ -63,16 +69,17 @@ public class EarthRuneItem extends RuneItem {
 	private ItemStack getDrop(PlayerEntity player, Set<ItemStack> runes) {
 		World world = player.world;
 		ItemStack drop = new ItemStack(DROPS.get(random.nextInt(DROPS.size())));
-		
+
 		// Rare ores
 		if (random.nextDouble() < getEnchantmentLevel(Enchantments.LOOTING, runes) * 0.01) {
 			drop = new ItemStack(LOOTING_DROPS.get(random.nextInt(LOOTING_DROPS.size())));
 		}
-		
+
 		// Auto-smelt
 		if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.05) {
 			IInventory inv = new Inventory(drop);
-			Optional<ItemStack> smelted = world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, world).map(r -> r.getRecipeOutput());
+			Optional<ItemStack> smelted = world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, world)
+					.map(r -> r.getRecipeOutput());
 			if (smelted.isPresent())
 				drop = smelted.get();
 		}
