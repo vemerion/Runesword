@@ -26,8 +26,9 @@ import net.minecraft.world.World;
 public class EarthRuneItem extends RuneItem {
 
 	private static final List<Item> DROPS = ImmutableList.of(Items.IRON_ORE, Items.COAL_ORE);
+	private static final List<Item> LOOTING_DROPS = ImmutableList.of(Items.DIAMOND_ORE, Items.GOLD_ORE, Items.EMERALD_ORE);
 
-	private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.FIRE_ASPECT);
+	private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.FIRE_ASPECT, Enchantments.LOOTING);
 
 	public EarthRuneItem(Properties properties) {
 		super(new Color(100, 50, 0).getRGB(), properties);
@@ -57,8 +58,13 @@ public class EarthRuneItem extends RuneItem {
 		World world = player.world;
 		ItemStack drop = new ItemStack(DROPS.get(random.nextInt(DROPS.size())));
 		
+		// Rare ores
+		if (random.nextDouble() < getEnchantmentLevel(Enchantments.LOOTING, runes) * 0.01) {
+			drop = new ItemStack(LOOTING_DROPS.get(random.nextInt(LOOTING_DROPS.size())));
+		}
+		
 		// Auto-smelt
-		if (player.getRNG().nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.05) {
+		if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.05) {
 			IInventory inv = new Inventory(drop);
 			Optional<ItemStack> smelted = world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, world).map(r -> r.getRecipeOutput());
 			if (smelted.isPresent())
