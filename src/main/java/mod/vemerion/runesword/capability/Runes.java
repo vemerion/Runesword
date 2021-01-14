@@ -93,10 +93,10 @@ public class Runes extends ItemStackHandler {
 	public void onAttack(PlayerEntity player, Entity target) {
 		if (player.world.isRemote || player.getCooledAttackStrength(0) < 0.9)
 			return;
-		
-		for (Entry<RuneItem, Set<ItemStack>> entry  : getRunesMap().entrySet())
+
+		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			entry.getKey().onAttack(player, target, entry.getValue(), false);
-		
+
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
 			((RuneItem) major.getItem()).onAttack(player, target, Collections.singleton(major), true);
@@ -104,9 +104,9 @@ public class Runes extends ItemStackHandler {
 
 	// Logical-Server only
 	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source) {
-		for (Entry<RuneItem, Set<ItemStack>> entry  : getRunesMap().entrySet())
+		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			entry.getKey().onKill(player, entityLiving, source, entry.getValue(), false);
-		
+
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
 			((RuneItem) major.getItem()).onKill(player, entityLiving, source, Collections.singleton(major), true);
@@ -115,6 +115,21 @@ public class Runes extends ItemStackHandler {
 	// On both sides
 	public void tick(PlayerEntity player) {
 
+	}
+
+	public float onHurt(PlayerEntity player, DamageSource source, float amount) {
+		if (!player.world.isRemote) {
+
+			for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
+				amount = entry.getKey().onHurt(player, source, amount, entry.getValue(), false);
+
+			ItemStack major = getStackInSlot(MAJOR_SLOT);
+			if (!major.isEmpty())
+				amount = ((RuneItem) major.getItem()).onHurt(player, source, amount, Collections.singleton(major),
+						true);
+		}
+		
+		return amount;
 	}
 
 	public Collection<? extends ITextComponent> getTooltip() {

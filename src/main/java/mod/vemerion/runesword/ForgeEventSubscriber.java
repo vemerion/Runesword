@@ -7,6 +7,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -70,5 +71,14 @@ public class ForgeEventSubscriber {
 		if (event.phase == Phase.START)
 			event.player.getHeldItemMainhand().getCapability(Runes.CAPABILITY)
 					.ifPresent(runes -> runes.tick(event.player));
+	}
+
+	@SubscribeEvent
+	public static void runeHurt(LivingHurtEvent event) {
+		if (!(event.getEntityLiving() instanceof PlayerEntity))
+			return;
+		
+		event.getEntityLiving().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+				.ifPresent(runes -> event.setAmount(runes.onHurt((PlayerEntity) event.getEntityLiving(), event.getSource(), event.getAmount())));
 	}
 }

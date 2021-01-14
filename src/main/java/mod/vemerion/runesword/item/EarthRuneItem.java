@@ -33,6 +33,12 @@ public class EarthRuneItem extends RuneItem {
 	public EarthRuneItem(Properties properties) {
 		super(new Color(100, 50, 0).getRGB(), properties);
 	}
+	
+	@Override
+	public float onHurt(PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes, boolean major) {
+		System.out.println("HURT");
+		return super.onHurt(player, source, amount, runes, major);
+	}
 
 	@Override
 	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes, boolean major) {

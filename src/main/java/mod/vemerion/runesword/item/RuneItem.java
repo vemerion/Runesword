@@ -43,6 +43,10 @@ public class RuneItem extends Item {
 	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes, boolean major) {
 		
 	}
+	
+	public float onHurt(PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes, boolean major) {
+		return amount;
+	}
 		
 	public int getColor() {
 		return color;
