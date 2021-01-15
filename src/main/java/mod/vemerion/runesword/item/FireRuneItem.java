@@ -17,18 +17,19 @@ public class FireRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes, boolean major) {
-		if (major) {
-			if (player.getFireTimer() > 0) {
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
-				target.hurtResistantTime = 0;
-			}
-		} else {
-			if (player.getRNG().nextDouble() < runes.size() * 0.1) {
-				BlockPos targetPos = target.getPosition();
-				if (player.world.isAirBlock(targetPos)) {
-					player.world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
-				}
+	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack rune) {
+		if (player.getFireTimer() > 0) {
+			target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
+			target.hurtResistantTime = 0;
+		}
+	}
+
+	@Override
+	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes) {
+		if (player.getRNG().nextDouble() < runes.size() * 0.1) {
+			BlockPos targetPos = target.getPosition();
+			if (player.world.isAirBlock(targetPos)) {
+				player.world.setBlockState(targetPos, Blocks.FIRE.getDefaultState());
 			}
 		}
 	}

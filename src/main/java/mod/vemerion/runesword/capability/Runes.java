@@ -2,7 +2,6 @@ package mod.vemerion.runesword.capability;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -95,21 +94,21 @@ public class Runes extends ItemStackHandler {
 			return;
 
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
-			entry.getKey().onAttack(player, target, entry.getValue(), false);
+			entry.getKey().onAttack(player, target, entry.getValue());
 
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
-			((RuneItem) major.getItem()).onAttack(player, target, Collections.singleton(major), true);
+			((RuneItem) major.getItem()).onAttackMajor(player, target, major);
 	}
 
 	// Logical-Server only
 	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
-			entry.getKey().onKill(player, entityLiving, source, entry.getValue(), false);
+			entry.getKey().onKill(player, entityLiving, source, entry.getValue());
 
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
-			((RuneItem) major.getItem()).onKill(player, entityLiving, source, Collections.singleton(major), true);
+			((RuneItem) major.getItem()).onKillMajor(player, entityLiving, source, major);
 	}
 
 	// On both sides
@@ -121,12 +120,11 @@ public class Runes extends ItemStackHandler {
 		if (!player.world.isRemote) {
 
 			for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
-				amount = entry.getKey().onHurt(player, source, amount, entry.getValue(), false);
+				amount = entry.getKey().onHurt(player, source, amount, entry.getValue());
 
 			ItemStack major = getStackInSlot(MAJOR_SLOT);
 			if (!major.isEmpty())
-				amount = ((RuneItem) major.getItem()).onHurt(player, source, amount, Collections.singleton(major),
-						true);
+				amount = ((RuneItem) major.getItem()).onHurtMajor(player, source, amount, major);
 		}
 		
 		return amount;

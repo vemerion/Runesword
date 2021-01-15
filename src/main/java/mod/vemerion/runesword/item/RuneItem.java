@@ -36,15 +36,27 @@ public class RuneItem extends Item {
 		RUNES.add(this);
 	}
 	
-	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes, boolean major) {
+	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes) {
 		
 	}
 	
-	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes, boolean major) {
+	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack rune) {
 		
 	}
 	
-	public float onHurt(PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes, boolean major) {
+	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
+		
+	}
+	
+	public void onKillMajor(PlayerEntity player, LivingEntity entityLiving, DamageSource source, ItemStack rune) {
+		
+	}
+	
+	public float onHurt(PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes) {
+		return amount;
+	}
+	
+	public float onHurtMajor(PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
 		return amount;
 	}
 		
@@ -71,5 +83,9 @@ public class RuneItem extends Item {
 		for (ItemStack stack : stacks)
 			level += EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
 		return level;
+	}
+	
+	protected int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
+		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
 	}
 }

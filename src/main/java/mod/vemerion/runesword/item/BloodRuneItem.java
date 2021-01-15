@@ -16,19 +16,15 @@ public class BloodRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes, boolean major) {
-
-		if (major) {
-			target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
-			player.attackEntityFrom(DamageSource.MAGIC, 2);
-			target.hurtResistantTime = 0;
-		}
+	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack rune) {
+		target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
+		player.attackEntityFrom(DamageSource.MAGIC, 2);
+		target.hurtResistantTime = 0;
 	}
 
 	@Override
-	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes,
-			boolean major) {
-		if (!major && player.getRNG().nextDouble() < runes.size() * 0.05) {
+	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
+		if (player.getRNG().nextDouble() < runes.size() * 0.05) {
 			player.heal(2);
 		}
 	}

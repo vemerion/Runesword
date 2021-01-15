@@ -37,28 +37,27 @@ public class EarthRuneItem extends RuneItem {
 	}
 
 	@Override
-	public float onHurt(PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes, boolean major) {
+	public float onHurtMajor(PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
 		
-		if (major && player.getPosY() < 30 && !source.isUnblockable()) {
-			amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.PROTECTION, runes);
+		if (player.getPosY() < 30 && !source.isUnblockable()) {
+			amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.PROTECTION, rune);
 		}
 
-		return super.onHurt(player, source, amount, runes, major);
+		return super.onHurtMajor(player, source, amount, rune);
 	}
 
 	@Override
-	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes, boolean major) {
-		if (major && player.getPosY() < 30) {
-			float damage = 3 + getEnchantmentLevel(Enchantments.SHARPNESS, runes) * 0.2f;
+	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack rune) {
+		if (player.getPosY() < 30) {
+			float damage = 3 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.2f;
 			target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
 			target.hurtResistantTime = 0;
 		}
 	}
 
 	@Override
-	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes,
-			boolean major) {
-		if (!major && player.getRNG().nextDouble() < runes.size() * 0.1
+	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
+		if (player.getRNG().nextDouble() < runes.size() * 0.1
 				+ getEnchantmentLevel(Enchantments.FORTUNE, runes) * 0.02) {
 			ItemEntity dirt = new ItemEntity(player.world, entityLiving.getPosX(), entityLiving.getPosY(),
 					entityLiving.getPosZ(), getDrop(player, runes));
