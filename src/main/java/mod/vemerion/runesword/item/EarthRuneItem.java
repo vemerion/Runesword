@@ -37,17 +37,17 @@ public class EarthRuneItem extends RuneItem {
 	}
 
 	@Override
-	public float onHurtMajor(PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
+	public float onHurtMajor(ItemStack sword, PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
 		
 		if (player.getPosY() < 30 && !source.isUnblockable()) {
 			amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.PROTECTION, rune);
 		}
 
-		return super.onHurtMajor(player, source, amount, rune);
+		return amount;
 	}
 
 	@Override
-	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack rune) {
+	public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
 		if (player.getPosY() < 30) {
 			float damage = 3 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.2f;
 			target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
@@ -56,7 +56,7 @@ public class EarthRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
+	public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
 		if (player.getRNG().nextDouble() < runes.size() * 0.1
 				+ getEnchantmentLevel(Enchantments.FORTUNE, runes) * 0.02) {
 			ItemEntity dirt = new ItemEntity(player.world, entityLiving.getPosX(), entityLiving.getPosY(),

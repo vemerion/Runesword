@@ -16,7 +16,7 @@ public class WaterRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack runes) {
+	public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack runes) {
 		if (player.isInWater()) {
 			target.attackEntityFrom(DamageSource.causePlayerDamage(player), 3);
 			target.hurtResistantTime = 0;
@@ -24,7 +24,7 @@ public class WaterRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
+	public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
 		player.setAir(Math.min(player.getMaxAir(),
 				player.getAir() + (int) (runes.size() * ((float) player.getMaxAir() / 10))));
 	}

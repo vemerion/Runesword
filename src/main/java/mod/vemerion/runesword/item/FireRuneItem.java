@@ -17,7 +17,7 @@ public class FireRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack rune) {
+	public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
 		if (player.getFireTimer() > 0) {
 			target.attackEntityFrom(DamageSource.causePlayerDamage(player), 4);
 			target.hurtResistantTime = 0;
@@ -25,7 +25,7 @@ public class FireRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes) {
+	public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
 		if (player.getRNG().nextDouble() < runes.size() * 0.1) {
 			BlockPos targetPos = target.getPosition();
 			if (player.world.isAirBlock(targetPos)) {

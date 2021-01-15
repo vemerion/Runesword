@@ -26,7 +26,7 @@ public class AirRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes) {
+	public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
 
 		if (player.getRNG().nextDouble() < runes.size() * 0.1) {
 			Vector3d direction = Vector3d.fromPitchYaw(player.getPitchYaw())
@@ -37,7 +37,7 @@ public class AirRuneItem extends RuneItem {
 	}
 
 	@Override
-	public void onKillMajor(PlayerEntity player, LivingEntity entityLiving, DamageSource source, ItemStack rune) {
+	public void onKillMajor(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source, ItemStack rune) {
 		int duration = 20 * 10;
 		int level = 0;
 		if (getEnchantmentLevel(Enchantments.INFINITY, rune) > 0)

@@ -36,27 +36,27 @@ public class RuneItem extends Item {
 		RUNES.add(this);
 	}
 	
-	public void onAttack(PlayerEntity player, Entity target, Set<ItemStack> runes) {
+	public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
 		
 	}
 	
-	public void onAttackMajor(PlayerEntity player, Entity target, ItemStack rune) {
+	public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
 		
 	}
 	
-	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
+	public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
 		
 	}
 	
-	public void onKillMajor(PlayerEntity player, LivingEntity entityLiving, DamageSource source, ItemStack rune) {
+	public void onKillMajor(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source, ItemStack rune) {
 		
 	}
 	
-	public float onHurt(PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes) {
+	public float onHurt(ItemStack sword, PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes) {
 		return amount;
 	}
 	
-	public float onHurtMajor(PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
+	public float onHurtMajor(ItemStack sword, PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
 		return amount;
 	}
 		

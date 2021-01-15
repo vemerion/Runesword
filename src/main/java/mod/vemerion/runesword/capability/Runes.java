@@ -94,21 +94,21 @@ public class Runes extends ItemStackHandler {
 			return;
 
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
-			entry.getKey().onAttack(player, target, entry.getValue());
+			entry.getKey().onAttack(owner, player, target, entry.getValue());
 
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
-			((RuneItem) major.getItem()).onAttackMajor(player, target, major);
+			((RuneItem) major.getItem()).onAttackMajor(owner, player, target, major);
 	}
 
 	// Logical-Server only
 	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
-			entry.getKey().onKill(player, entityLiving, source, entry.getValue());
+			entry.getKey().onKill(owner, player, entityLiving, source, entry.getValue());
 
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
-			((RuneItem) major.getItem()).onKillMajor(player, entityLiving, source, major);
+			((RuneItem) major.getItem()).onKillMajor(owner, player, entityLiving, source, major);
 	}
 
 	// On both sides
@@ -120,11 +120,11 @@ public class Runes extends ItemStackHandler {
 		if (!player.world.isRemote) {
 
 			for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
-				amount = entry.getKey().onHurt(player, source, amount, entry.getValue());
+				amount = entry.getKey().onHurt(owner, player, source, amount, entry.getValue());
 
 			ItemStack major = getStackInSlot(MAJOR_SLOT);
 			if (!major.isEmpty())
-				amount = ((RuneItem) major.getItem()).onHurtMajor(player, source, amount, major);
+				amount = ((RuneItem) major.getItem()).onHurtMajor(owner, player, source, amount, major);
 		}
 		
 		return amount;
