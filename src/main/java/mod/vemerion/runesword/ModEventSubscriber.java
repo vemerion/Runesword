@@ -7,6 +7,7 @@ import mod.vemerion.runesword.item.AirRuneItem;
 import mod.vemerion.runesword.item.BloodRuneItem;
 import mod.vemerion.runesword.item.EarthRuneItem;
 import mod.vemerion.runesword.item.FireRuneItem;
+import mod.vemerion.runesword.item.FrostRuneItem;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.item.WaterRuneItem;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
@@ -46,10 +47,11 @@ public class ModEventSubscriber {
 		Item earthRune = new EarthRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
 		Item airRune = new AirRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
 		Item bloodRune = new BloodRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
+		Item frostRune = new FrostRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
 
 		event.getRegistry().registerAll(setup(fireRune, "fire_rune_item"), setup(waterRune, "water_rune_item"),
 				setup(earthRune, "earth_rune_item"), setup(airRune, "air_rune_item"),
-				setup(bloodRune, "blood_rune_item"));
+				setup(bloodRune, "blood_rune_item"), setup(frostRune, "frost_rune_item"));
 	}
 
 	@SubscribeEvent
