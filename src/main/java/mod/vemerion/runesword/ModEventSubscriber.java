@@ -3,6 +3,8 @@ package mod.vemerion.runesword;
 import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
+import mod.vemerion.runesword.entity.FrostGolemEntity;
+import mod.vemerion.runesword.entity.FrostballEntity;
 import mod.vemerion.runesword.item.AirRuneItem;
 import mod.vemerion.runesword.item.BloodRuneItem;
 import mod.vemerion.runesword.item.EarthRuneItem;
@@ -17,6 +19,10 @@ import mod.vemerion.runesword.network.SyncRunesMessage;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityClassification;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
+import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -75,6 +81,20 @@ public class ModEventSubscriber {
 	@SubscribeEvent
 	public static void onRegisterContainer(RegistryEvent.Register<ContainerType<?>> event) {
 		event.getRegistry().register(setup(IForgeContainerType.create(RuneforgeContainer::new), "runeforge_container"));
+	}
+
+	@SubscribeEvent
+	public static void onRegisterEntity(RegistryEvent.Register<EntityType<?>> event) {
+		EntityType<FrostGolemEntity> frostGolemEntityType = EntityType.Builder
+				.<FrostGolemEntity>create(FrostGolemEntity::new, EntityClassification.MISC).size(0.7F, 1.9F)
+				.trackingRange(8).build(new ResourceLocation(Main.MODID, "frost_golem_entity").toString());
+		event.getRegistry().register(setup(frostGolemEntityType, "frost_golem_entity"));
+
+		EntityType<FrostballEntity> frostballEntityType = EntityType.Builder
+				.<FrostballEntity>create(FrostballEntity::new, EntityClassification.MISC).size(0.25F, 0.25F)
+				.trackingRange(4).func_233608_b_(10)
+				.build(new ResourceLocation(Main.MODID, "frostball_entity").toString());
+		event.getRegistry().register(setup(frostballEntityType, "frostball_entity"));
 
 	}
 
@@ -101,8 +121,13 @@ public class ModEventSubscriber {
 
 		event.enqueueWork(() -> {
 			LootConditions.register();
+			registerEntityAttributes();
 		});
 
+	}
+
+	private static void registerEntityAttributes() {
+		GlobalEntityTypeAttributes.put(Main.FROST_GOLEM_ENTITY, SnowGolemEntity.func_234226_m_().create());
 	}
 
 	public static <T extends IForgeRegistryEntry<T>> T setup(final T entry, final String name) {
