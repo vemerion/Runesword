@@ -12,6 +12,7 @@ import mod.vemerion.runesword.item.EarthRuneItem;
 import mod.vemerion.runesword.item.FireRuneItem;
 import mod.vemerion.runesword.item.FrostRuneItem;
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.item.GuideItem;
 import mod.vemerion.runesword.item.WaterRuneItem;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
@@ -52,6 +53,7 @@ public class ModEventSubscriber {
 		event.getRegistry()
 				.register(setup(new BlockItem(Main.RUNEFORGE_BLOCK, new Item.Properties().group(ItemGroup.SEARCH)),
 						"runeforge_block_item"));
+		event.getRegistry().register(setup(new GuideItem(new Item.Properties().group(ItemGroup.SEARCH)), "guide_item"));
 
 		Item fireRune = new FireRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
 		Item waterRune = new WaterRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
