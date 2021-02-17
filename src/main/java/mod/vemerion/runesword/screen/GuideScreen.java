@@ -46,8 +46,12 @@ public class GuideScreen extends Screen {
 		int y = (height - Y_SIZE) / 2;
 		blit(matrixStack, x, y, X_SIZE, Y_SIZE, 0, 0, TEX_SIZE, TEX_SIZE, TEX_SIZE, TEX_SIZE);
 
-		current.renderComponents(matrixStack, minecraft, x + X_OFFSET, y + Y_OFFSET, X_SIZE - X_OFFSET * 2,
-				Y_SIZE - Y_OFFSET * 2, mouseX, mouseY);
+		x = x + X_OFFSET;
+		y = y + Y_OFFSET;
+		int chapterWidth = X_SIZE - X_OFFSET * 2;
+		int chapterHeight = Y_SIZE - Y_OFFSET * 2;
+		current.renderTitle(matrixStack, minecraft, x, y - 25, chapterWidth, chapterHeight);
+		current.renderComponents(matrixStack, minecraft, x, y, chapterWidth, chapterHeight, mouseX, mouseY);
 	}
 
 	private static String transKey(String suffix) {
@@ -63,5 +67,6 @@ public class GuideScreen extends Screen {
 
 	public static final GuideChapter START_CHAPTER = new GuideChapter(() -> Main.GUIDE_ITEM,
 			new TranslationTextComponent(transKey("guide"))).addChild(BLOOD_CHAPTER).addText(transKey("text1"))
-					.addText(transKey("text2"));
+					.addText(transKey("text2")).addHeader(transKey("text1")).addText(transKey("text2"))
+					.addText(transKey("text2")).addHeader(transKey("text2")).addText(transKey("text2"));
 }
