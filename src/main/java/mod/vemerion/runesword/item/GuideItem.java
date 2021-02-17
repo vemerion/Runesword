@@ -7,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
@@ -36,7 +35,7 @@ public class GuideItem extends Item {
 				public void run() {
 					Minecraft mc = Minecraft.getInstance();
 					if (mc != null)
-						Minecraft.getInstance().displayGuiScreen(new GuideScreen(new StringTextComponent("Table")));
+						Minecraft.getInstance().displayGuiScreen(new GuideScreen(GuideScreen.START_CHAPTER));
 				}
 			};
 		}

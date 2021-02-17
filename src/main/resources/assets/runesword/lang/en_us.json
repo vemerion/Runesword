@@ -12,5 +12,8 @@
   "item.runesword.guide_item": "Runesword Guide",
   "tooltip.runesword.minor": "Minor: ",
   "tooltip.runesword.major": "Major: ",
-  "itemGroup.runesword": "Runesword"
+  "itemGroup.runesword": "Runesword",
+  "gui.runesword.guide": "Runesword",
+  "gui.runesword.text1": "This is some text! This is another sentence. More more more. This should be enough.",
+  "gui.runesword.text2": "EVENT MORE TEXT!"
 }

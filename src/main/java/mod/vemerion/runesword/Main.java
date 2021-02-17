@@ -8,6 +8,7 @@ import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.fml.common.Mod;
@@ -31,6 +32,9 @@ public class Main {
 	
 	@ObjectHolder(Main.MODID + ":frostball_entity")
 	public static final EntityType<FrostballEntity> FROSTBALL_ENTITY = null;
+	
+	@ObjectHolder(Main.MODID + ":guide_item")
+	public static final Item GUIDE_ITEM = null;
 
 	
 	public static final ItemGroup RUNES_ITEM_GROUP = new RuneswordItemGroup();
