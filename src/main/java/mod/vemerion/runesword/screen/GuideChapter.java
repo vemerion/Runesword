@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
@@ -44,12 +45,12 @@ public class GuideChapter {
 		components.add(new TextComponent(new TranslationTextComponent(translationKey)));
 		return this;
 	}
-	
+
 	public GuideChapter addHeader(String translationKey) {
 		components.add(new HeaderComponent(new TranslationTextComponent(translationKey)));
 		return this;
 	}
-	
+
 	public GuideChapter addImage(ResourceLocation image, int imgWidth, int imgHeight) {
 		components.add(new ImageComponent(image, imgWidth, imgHeight));
 		return this;
@@ -61,6 +62,23 @@ public class GuideChapter {
 
 	public void renderTitle(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height) {
 		title.render(matrix, mc, x, y, width, height);
+	}
+
+	public boolean mouseClicked(int x, int y, int width, int height, double mouseX, double mouseY, int button,
+			Consumer<GuideChapter> changeChapter) {
+		int left = x;
+		for (int i = 0; i < children.size(); i++) {
+			if (isInside(x, y, ICON_SIZE, mouseX, mouseY) && button == 0) {
+				changeChapter.accept(children.get(i));
+				return true;
+			}
+			x += ICON_SIZE;
+			if (x + ICON_SIZE > left + width && i + 1 != children.size()) {
+				x = left;
+				y += ICON_SIZE;
+			}
+		}
+		return false;
 	}
 
 	public int renderComponents(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height, int mouseX,
@@ -86,12 +104,16 @@ public class GuideChapter {
 
 	private void renderIcon(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height, int mouseX,
 			int mouseY) {
-		if (mouseX > x && mouseX < x + ICON_SIZE && mouseY > y && mouseY < y + ICON_SIZE) {
+		if (isInside(x, y, ICON_SIZE, mouseX, mouseY)) {
 			GuiUtils.drawHoveringText(matrix, Arrays.asList(title.text), mouseX, mouseY, width, height, -1,
 					mc.fontRenderer);
 		}
 
 		mc.getItemRenderer().renderItemAndEffectIntoGUI(new ItemStack(icon), x, y);
+	}
+
+	private boolean isInside(int left, int top, int size, double x, double y) {
+		return x > left && x < left + size && y > top && y < top + size;
 	}
 
 	private static interface ChapterComponent {
@@ -149,9 +171,9 @@ public class GuideChapter {
 		}
 
 	}
-	
+
 	private static class ImageComponent implements ChapterComponent {
-		
+
 		private static final float SCALE = 0.6f;
 
 		private ResourceLocation image;
@@ -170,7 +192,8 @@ public class GuideChapter {
 			float scale = (float) width / imgWidth * SCALE;
 			int drawWidth = (int) (imgWidth * scale);
 			int drawHeight = (int) (imgHeight * scale);
-			AbstractGui.blit(matrix, x + width / 2 - drawWidth / 2, y, drawWidth, drawHeight, 0, 0, imgWidth, imgHeight, imgWidth, imgHeight);
+			AbstractGui.blit(matrix, x + width / 2 - drawWidth / 2, y, drawWidth, drawHeight, 0, 0, imgWidth, imgHeight,
+					imgWidth, imgHeight);
 			return y + drawHeight + 2;
 		}
 
