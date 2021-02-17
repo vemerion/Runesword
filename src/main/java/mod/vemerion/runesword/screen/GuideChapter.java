@@ -8,10 +8,12 @@ import java.util.List;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.IReorderingProcessor;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
@@ -45,6 +47,11 @@ public class GuideChapter {
 	
 	public GuideChapter addHeader(String translationKey) {
 		components.add(new HeaderComponent(new TranslationTextComponent(translationKey)));
+		return this;
+	}
+	
+	public GuideChapter addImage(ResourceLocation image, int imgWidth, int imgHeight) {
+		components.add(new ImageComponent(image, imgWidth, imgHeight));
 		return this;
 	}
 
@@ -138,6 +145,32 @@ public class GuideChapter {
 				matrix.pop();
 			}
 			return y + 2;
+		}
+
+	}
+	
+	private static class ImageComponent implements ChapterComponent {
+		
+		private static final float SCALE = 0.6f;
+
+		private ResourceLocation image;
+		private int imgWidth;
+		private int imgHeight;
+
+		private ImageComponent(ResourceLocation image, int imgWidth, int imgHeight) {
+			this.image = image;
+			this.imgWidth = imgWidth;
+			this.imgHeight = imgHeight;
+		}
+
+		@Override
+		public int render(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height) {
+			mc.getTextureManager().bindTexture(image);
+			float scale = (float) width / imgWidth * SCALE;
+			int drawWidth = (int) (imgWidth * scale);
+			int drawHeight = (int) (imgHeight * scale);
+			AbstractGui.blit(matrix, x + width / 2 - drawWidth / 2, y, drawWidth, drawHeight, 0, 0, imgWidth, imgHeight, imgWidth, imgHeight);
+			return y + drawHeight + 2;
 		}
 
 	}

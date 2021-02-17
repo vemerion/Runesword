@@ -62,11 +62,16 @@ public class GuideScreen extends Screen {
 		return prefix + "." + Main.MODID + "." + suffix;
 	}
 
+	private static ResourceLocation image(String name) {
+		return new ResourceLocation(Main.MODID, "textures/guide/" + name + ".png");
+	}
+
 	public static final GuideChapter BLOOD_CHAPTER = new GuideChapter(() -> RuneItem.BLOOD_RUNE_ITEM,
 			RuneItem.BLOOD_RUNE_ITEM.getName()).addText(transKey("text1"));
 
 	public static final GuideChapter START_CHAPTER = new GuideChapter(() -> Main.GUIDE_ITEM,
 			new TranslationTextComponent(transKey("guide"))).addChild(BLOOD_CHAPTER).addText(transKey("text1"))
 					.addText(transKey("text2")).addHeader(transKey("text1")).addText(transKey("text2"))
-					.addText(transKey("text2")).addHeader(transKey("text2")).addText(transKey("text2"));
+					.addImage(image("runeforge_crafting"), 518, 264).addText(transKey("text2"))
+					.addHeader(transKey("text2")).addText(transKey("text2"));
 }
