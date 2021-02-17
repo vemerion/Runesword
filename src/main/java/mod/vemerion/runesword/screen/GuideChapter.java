@@ -63,7 +63,7 @@ public class GuideChapter {
 		title.render(matrix, mc, x, y, width, height);
 	}
 
-	public void renderComponents(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height, int mouseX,
+	public int renderComponents(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height, int mouseX,
 			int mouseY) {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
@@ -81,6 +81,7 @@ public class GuideChapter {
 		for (ChapterComponent comp : components) {
 			y = comp.render(matrix, mc, x, y, width, height) + COMPONENT_PADDING;
 		}
+		return y;
 	}
 
 	private void renderIcon(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height, int mouseX,

@@ -5,6 +5,8 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.ImageButton;
 import net.minecraft.client.util.InputMappings;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -12,17 +14,34 @@ import net.minecraft.util.text.TranslationTextComponent;
 public class GuideScreen extends Screen {
 
 	private static final ResourceLocation BACKGROUND = new ResourceLocation(Main.MODID, "textures/gui/table.png");
+	private static final ResourceLocation UP_ARROW = new ResourceLocation(Main.MODID, "textures/gui/up_arrow.png");
+	private static final ResourceLocation DOWN_ARROW = new ResourceLocation(Main.MODID, "textures/gui/down_arrow.png");
 	private static final int X_SIZE = 230;
 	private static final int Y_SIZE = 230;
 	private static final int TEX_SIZE = 256;
 	private static final int Y_OFFSET = 30;
 	private static final int X_OFFSET = 10;
+	private static final int BUTTON_SIZE = 32;
 
 	private GuideChapter current;
+	private int page = 0;
+	private boolean canPageDown;
 
 	public GuideScreen(GuideChapter startChapter) {
 		super(startChapter.getTitle());
 		this.current = startChapter;
+	}
+
+	@Override
+	protected void init() {
+		int x = (width - X_SIZE) / 2 + X_SIZE;
+		int y = (height - Y_SIZE) / 2 + Y_SIZE / 2;
+		addButton(new ImageButton(x, y - BUTTON_SIZE - BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, 0, 0, 32, UP_ARROW,
+				b -> page = Math.max(0, page - 1)));
+		addButton(new ImageButton(x, y + BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, 0, 0, 32, DOWN_ARROW, b -> {
+			if (canPageDown)
+				page++;
+		}));
 	}
 
 	@Override
@@ -42,16 +61,21 @@ public class GuideScreen extends Screen {
 		super.render(matrixStack, mouseX, mouseY, partialTicks);
 
 		minecraft.getTextureManager().bindTexture(BACKGROUND);
-		int x = (width - X_SIZE) / 2;
-		int y = (height - Y_SIZE) / 2;
-		blit(matrixStack, x, y, X_SIZE, Y_SIZE, 0, 0, TEX_SIZE, TEX_SIZE, TEX_SIZE, TEX_SIZE);
+		int left = (width - X_SIZE) / 2;
+		int top = (height - Y_SIZE) / 2;
+		blit(matrixStack, left, top, X_SIZE, Y_SIZE, 0, 0, TEX_SIZE, TEX_SIZE, TEX_SIZE, TEX_SIZE);
 
-		x = x + X_OFFSET;
-		y = y + Y_OFFSET;
+		int x = left + X_OFFSET;
+		int y = top + Y_OFFSET;
 		int chapterWidth = X_SIZE - X_OFFSET * 2;
 		int chapterHeight = Y_SIZE - Y_OFFSET * 2;
 		current.renderTitle(matrixStack, minecraft, x, y - 25, chapterWidth, chapterHeight);
-		current.renderComponents(matrixStack, minecraft, x, y, chapterWidth, chapterHeight, mouseX, mouseY);
+		y -= chapterHeight * page;
+		y = current.renderComponents(matrixStack, minecraft, x, y, chapterWidth, chapterHeight, mouseX, mouseY);
+		canPageDown = y > top + chapterHeight;
+
+		for (Widget b : buttons)
+			b.renderButton(matrixStack, mouseX, mouseY, partialTicks);
 	}
 
 	private static String transKey(String suffix) {
