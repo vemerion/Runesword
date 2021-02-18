@@ -25,6 +25,7 @@ public class RuneItem extends Item {
 	public static final Item EARTH_RUNE_ITEM = null;
 	public static final Item AIR_RUNE_ITEM = null;
 	public static final Item BLOOD_RUNE_ITEM = null;
+	public static final Item FROST_RUNE_ITEM = null;
 
 	private static final List<RuneItem> RUNES = new ArrayList<>();
 

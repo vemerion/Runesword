@@ -1,0 +1,43 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "runesword:frost_rune_item"
+    ]
+  },
+  "criteria": {
+    "has_water_rune": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "runesword:water_rune_item"
+          }
+        ]
+      }
+    },
+    "has_air_rune": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "runesword:air_rune_item"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "runesword:frost_rune_item"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_water_rune",
+      "has_air_rune",
+      "has_the_recipe"
+    ]
+  ]
+}

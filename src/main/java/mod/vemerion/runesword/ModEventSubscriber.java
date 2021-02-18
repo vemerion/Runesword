@@ -120,18 +120,6 @@ public class ModEventSubscriber {
 	}
 
 	@SubscribeEvent
-	public static void onGatherData(GatherDataEvent event) {
-		DataGenerator generator = event.getGenerator();
-
-		ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
-
-		if (event.includeServer()) {
-			BlockTagsProvider blockTagsProvider = new BlockTagsProvider(generator, Main.MODID, existingFileHelper);
-			generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider, existingFileHelper));
-		}
-	}
-
-	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event) {
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
 
