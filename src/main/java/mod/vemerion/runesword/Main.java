@@ -4,6 +4,7 @@ import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
 import mod.vemerion.runesword.item.RuneswordItemGroup;
+import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
@@ -11,6 +12,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
 
@@ -35,6 +37,23 @@ public class Main {
 	
 	@ObjectHolder(Main.MODID + ":guide_item")
 	public static final Item GUIDE_ITEM = null;
+	
+	@ObjectHolder(Main.MODID + ":air_rune_loot_modifier")
+	public static final GlobalLootModifierSerializer<RuneLootModifier> AIR_RUNE_LOOT_MODIFIER = null;
+	
+	@ObjectHolder(Main.MODID + ":blood_rune_loot_modifier")
+	public static final GlobalLootModifierSerializer<RuneLootModifier> BLOOD_RUNE_LOOT_MODIFIER = null;
+
+	@ObjectHolder(Main.MODID + ":earth_rune_loot_modifier")
+	public static final GlobalLootModifierSerializer<RuneLootModifier> EARTH_RUNE_LOOT_MODIFIER = null;
+
+	@ObjectHolder(Main.MODID + ":fire_rune_loot_modifier")
+	public static final GlobalLootModifierSerializer<RuneLootModifier> FIRE_RUNE_LOOT_MODIFIER = null;
+
+	@ObjectHolder(Main.MODID + ":water_rune_loot_modifier")
+	public static final GlobalLootModifierSerializer<RuneLootModifier> WATER_RUNE_LOOT_MODIFIER = null;
+
+
 
 	
 	public static final ItemGroup RUNES_ITEM_GROUP = new RuneswordItemGroup();

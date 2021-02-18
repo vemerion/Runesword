@@ -25,10 +25,11 @@ public class RuneLootModifier extends LootModifier {
 
 	private Item rune;
 
-	protected RuneLootModifier(ILootCondition[] conditionsIn, Item rune) {
+	public RuneLootModifier(ILootCondition[] conditionsIn, Item rune) {
 		super(conditionsIn);
 		this.rune = rune;
 	}
+	
 
 	@Override
 	protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
