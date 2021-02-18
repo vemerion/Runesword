@@ -1,7 +1,0 @@
-{
-    "parent": "item/generated",
-    "textures": {
-        "layer0": "runesword:item/rune",
-        "layer1": "runesword:item/rune_overlay"
-    }
-} 

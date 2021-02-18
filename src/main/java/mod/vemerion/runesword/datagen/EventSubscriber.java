@@ -23,7 +23,11 @@ public class EventSubscriber {
 			generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider, existingFileHelper));
 			generator.addProvider(new ModRecipeProvider(generator));
 			generator.addProvider(new ModLootModifierProvider(generator));
+		}
+		if (event.includeClient()) {
 			generator.addProvider(new ModLanguageProvider(generator));
+			generator.addProvider(new ModBlockStateProvider(generator, existingFileHelper));
+			generator.addProvider(new ModItemModelProvider(generator, existingFileHelper));
 		}
 	}
 }
