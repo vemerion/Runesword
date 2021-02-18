@@ -23,6 +23,7 @@ public class EventSubscriber {
 			generator.addProvider(new ModItemTagsProvider(generator, blockTagsProvider, existingFileHelper));
 			generator.addProvider(new ModRecipeProvider(generator));
 			generator.addProvider(new ModLootModifierProvider(generator));
+			generator.addProvider(new ModLanguageProvider(generator));
 		}
 	}
 }

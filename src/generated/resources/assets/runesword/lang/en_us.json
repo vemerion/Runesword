@@ -1,0 +1,19 @@
+{
+  "block.runesword.runeforge_block": "Runeforge",
+  "gui.runesword.guide": "Runesword",
+  "gui.runesword.home": "Home",
+  "gui.runesword.no_sword": "Insert sword into runeforge",
+  "gui.runesword.slot_locked": "Slot locked",
+  "gui.runesword.text1": "This is some text! This is another sentence. More more more. This should be enough.",
+  "gui.runesword.text2": "EVENT MORE TEXT!",
+  "item.runesword.air_rune_item": "Air Rune",
+  "item.runesword.blood_rune_item": "Blood Rune",
+  "item.runesword.earth_rune_item": "Earth Rune",
+  "item.runesword.fire_rune_item": "Fire Rune",
+  "item.runesword.frost_rune_item": "Frost Rune",
+  "item.runesword.guide_item": "Runesword Guide",
+  "item.runesword.water_rune_item": "Water Rune",
+  "itemGroup.runesword": "Runesword",
+  "tooltip.runesword.major": "Major: ",
+  "tooltip.runesword.minor": "Minor: "
+}
