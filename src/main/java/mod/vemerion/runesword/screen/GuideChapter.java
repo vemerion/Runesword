@@ -96,7 +96,7 @@ public class GuideChapter {
 		}
 
 		x = left;
-		y += ICON_SIZE + COMPONENT_PADDING;
+		y += children.isEmpty() ? COMPONENT_PADDING : ICON_SIZE + COMPONENT_PADDING;
 		for (ChapterComponent comp : components) {
 			y = comp.render(matrix, mc, x, y, top, width, height) + COMPONENT_PADDING;
 		}
@@ -208,7 +208,7 @@ public class GuideChapter {
 			int vHeight = imgHeight;
 			int v = 0;
 			int drawY = y;
-			
+
 			// Cut of image top
 			if (y < top && y + drawHeight > top) {
 				float ratio = (y + drawHeight - top) / (float) drawHeight;
