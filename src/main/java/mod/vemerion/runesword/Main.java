@@ -12,6 +12,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
@@ -53,7 +54,8 @@ public class Main {
 	@ObjectHolder(Main.MODID + ":water_rune_loot_modifier")
 	public static final GlobalLootModifierSerializer<RuneLootModifier> WATER_RUNE_LOOT_MODIFIER = null;
 
-
+	@ObjectHolder(Main.MODID + ":guide_click")
+	public static final SoundEvent GUIDE_CLICK = null;
 
 	
 	public static final ItemGroup RUNES_ITEM_GROUP = new RuneswordItemGroup();

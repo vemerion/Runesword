@@ -6,6 +6,9 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.ImageButton;
@@ -55,15 +58,30 @@ public class GuideScreen extends Screen {
 		int x = left + X_SIZE;
 		int y = top + Y_SIZE / 2;
 		addButton(new ImageButton(x, y - BUTTON_SIZE - BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, 0, 0, 32, UP_ARROW,
-				b -> page = Math.max(0, page - 1)));
+				b -> page = Math.max(0, page - 1)) {
+			@Override
+			public void playDownSound(SoundHandler handler) {
+				handler.play(SimpleSound.master(Main.GUIDE_CLICK, 1.0F));
+			}
+		});
 		addButton(new ImageButton(x, y + BUTTON_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, 0, 0, 32, DOWN_ARROW, b -> {
 			if (canPageDown)
 				page++;
-		}));
+		}) {
+			@Override
+			public void playDownSound(SoundHandler handler) {
+				handler.play(SimpleSound.master(Main.GUIDE_CLICK, 1.0F));
+			}
+		});
 		addButton(new ImageButton(x + 2, y - Y_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, 0, 0, 32, HOME_BUTTON, 256, 256,
 				b -> gotoChapter(startChapter), (b, m, mouseX, mouseY) -> GuiUtils.drawHoveringText(m,
 						Arrays.asList(b.getMessage()), mouseX, mouseY, width, height, -1, minecraft.fontRenderer),
-				new TranslationTextComponent(transKey("home"))));
+				new TranslationTextComponent(transKey("home"))) {
+			@Override
+			public void playDownSound(SoundHandler handler) {
+				handler.play(SimpleSound.master(Main.GUIDE_CLICK, 1.0F));
+			}
+		});
 	}
 
 	@Override
@@ -83,7 +101,10 @@ public class GuideScreen extends Screen {
 		if (super.mouseClicked(mouseX, mouseY, button)) {
 			return true;
 		} else if (current.mouseClicked(left + X_OFFSET, top + Y_OFFSET - SCROLL_LENGTH * page, top + Y_OFFSET,
-				CHAPTER_WIDTH, CHAPTER_HEIGHT, mouseX, mouseY, button, chapter -> current = chapter)) {
+				CHAPTER_WIDTH, CHAPTER_HEIGHT, mouseX, mouseY, button, chapter -> {
+					current = chapter;
+					Minecraft.getInstance().getSoundHandler().play(SimpleSound.master(Main.GUIDE_CLICK, 1.0F));
+				})) {
 			return true;
 		}
 		return false;

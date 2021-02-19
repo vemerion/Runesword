@@ -30,6 +30,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
@@ -62,6 +63,13 @@ public class ModEventSubscriber {
 				setup(bloodRune, "blood_rune_item"), setup(frostRune, "frost_rune_item"));
 	}
 
+	@SubscribeEvent
+	public static void onRegisterSound(RegistryEvent.Register<SoundEvent> event) {
+		SoundEvent guide_click = new SoundEvent(new ResourceLocation(Main.MODID, "guide_click"));
+		event.getRegistry().register(setup(guide_click, "guide_click"));
+
+	}     
+	
 	@SubscribeEvent
 	public static void onRegisterBlock(RegistryEvent.Register<Block> event) {
 		event.getRegistry()

@@ -1,0 +1,10 @@
+{
+  "guide_click": {
+    "sounds": [
+      {
+        "name": "runesword:guide_click",
+        "stream": false
+      }
+    ]
+  }
+}
