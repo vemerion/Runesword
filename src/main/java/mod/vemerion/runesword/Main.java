@@ -6,12 +6,14 @@ import mod.vemerion.runesword.entity.FrostballEntity;
 import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.item.RuneswordItemGroup;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
+import mod.vemerion.runesword.particle.MagicBallParticleData;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.particles.ParticleType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
@@ -60,7 +62,10 @@ public class Main {
 
 	@ObjectHolder(Main.MODID + ":guide_click")
 	public static final SoundEvent GUIDE_CLICK = null;
-
+	
+	@ObjectHolder(Main.MODID + ":magic_ball_particle")
+	public static final ParticleType<MagicBallParticleData> MAGIC_BALL_PARTICLE = null;
 	
 	public static final ItemGroup RUNES_ITEM_GROUP = new RuneswordItemGroup();
+
 }

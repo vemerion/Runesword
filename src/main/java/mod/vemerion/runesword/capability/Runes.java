@@ -87,7 +87,7 @@ public class Runes extends ItemStackHandler {
 		}
 		return runes;
 	}
-
+	
 	// On both sides
 	public void onAttack(PlayerEntity player, Entity target) {
 		if (player.world.isRemote || player.getCooledAttackStrength(0) < 0.9)

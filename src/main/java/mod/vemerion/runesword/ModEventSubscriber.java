@@ -1,5 +1,7 @@
 package mod.vemerion.runesword;
 
+import com.mojang.serialization.Codec;
+
 import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
@@ -19,6 +21,7 @@ import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncRunesMessage;
+import mod.vemerion.runesword.particle.MagicBallParticleData;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -30,6 +33,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.particles.ParticleType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -63,7 +67,8 @@ public class ModEventSubscriber {
 
 		event.getRegistry().registerAll(setup(fireRune, "fire_rune_item"), setup(waterRune, "water_rune_item"),
 				setup(earthRune, "earth_rune_item"), setup(airRune, "air_rune_item"),
-				setup(bloodRune, "blood_rune_item"), setup(frostRune, "frost_rune_item"), setup(magicRune, "magic_rune_item"));
+				setup(bloodRune, "blood_rune_item"), setup(frostRune, "frost_rune_item"),
+				setup(magicRune, "magic_rune_item"));
 	}
 
 	@SubscribeEvent
@@ -71,8 +76,8 @@ public class ModEventSubscriber {
 		SoundEvent guide_click = new SoundEvent(new ResourceLocation(Main.MODID, "guide_click"));
 		event.getRegistry().register(setup(guide_click, "guide_click"));
 
-	}     
-	
+	}
+
 	@SubscribeEvent
 	public static void onRegisterBlock(RegistryEvent.Register<Block> event) {
 		event.getRegistry()
@@ -108,13 +113,25 @@ public class ModEventSubscriber {
 				.trackingRange(4).func_233608_b_(10)
 				.build(new ResourceLocation(Main.MODID, "frostball_entity").toString());
 		event.getRegistry().register(setup(frostballEntityType, "frostball_entity"));
-		
+
 		EntityType<MagicBallEntity> magicBallEntityType = EntityType.Builder
 				.<MagicBallEntity>create(MagicBallEntity::new, EntityClassification.MISC).size(0.5f, 0.5f)
 				.trackingRange(4).func_233608_b_(20)
 				.build(new ResourceLocation(Main.MODID, "magic_ball_entity").toString());
 		event.getRegistry().register(setup(magicBallEntityType, "magic_ball_entity"));
 
+	}
+
+	@SubscribeEvent
+	public static void onRegisterParticle(RegistryEvent.Register<ParticleType<?>> event) {
+		event.getRegistry().register(
+				setup(new ParticleType<MagicBallParticleData>(true, new MagicBallParticleData.Deserializer()) {
+
+					@Override
+					public Codec<MagicBallParticleData> func_230522_e_() {
+						return MagicBallParticleData.CODEC;
+					}
+				}, "magic_ball_particle"));
 	}
 
 	@SubscribeEvent

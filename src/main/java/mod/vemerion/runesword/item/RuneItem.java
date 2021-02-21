@@ -1,7 +1,9 @@
 package mod.vemerion.runesword.item;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Iterables;
@@ -97,5 +99,15 @@ public class RuneItem extends Item {
 
 	protected int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
 		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
+	}
+
+	protected Map<Enchantment, Integer> getEnchantments(Set<ItemStack> stacks) {
+		Map<Enchantment, Integer> enchantments = new HashMap<>();
+
+		for (ItemStack stack : stacks) {
+			EnchantmentHelper.getEnchantments(stack)
+					.forEach((ench, level) -> enchantments.merge(ench, level, (l1, l2) -> l1 + l2));
+		}
+		return enchantments;
 	}
 }

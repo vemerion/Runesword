@@ -1,6 +1,7 @@
 package mod.vemerion.runesword;
 
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.particle.MagicBallParticle;
 import mod.vemerion.runesword.renderer.RuneforgeTileEntityRenderer;
 import mod.vemerion.runesword.screen.RuneforgeScreen;
 import net.minecraft.client.Minecraft;
@@ -15,6 +16,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -36,6 +38,12 @@ public class ClientModEventSubscriber {
 		RenderingRegistry.registerEntityRenderingHandler(Main.MAGIC_BALL_ENTITY, NoRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(Main.FROSTBALL_ENTITY,
 				r -> new SpriteRenderer<>(r, Minecraft.getInstance().getItemRenderer()));
+	}
+	
+	@SubscribeEvent
+	public static void onRegisterParticleFactory(ParticleFactoryRegisterEvent event) {
+		Minecraft mc = Minecraft.getInstance();
+		mc.particles.registerFactory(Main.MAGIC_BALL_PARTICLE, (s) -> new MagicBallParticle.Factory(s));
 	}
 
 	@SubscribeEvent
