@@ -1,5 +1,11 @@
 {
   "block.runesword.runeforge_block": "Runeforge",
+  "death.attack.runesword.magic": "%1$s was magicked to death",
+  "death.attack.runesword.magicindirect": "%1$s was magicked to death by %2$s",
+  "death.attack.runesword.magicplayer": "%1$s was magicked to death by %2$s",
+  "entity.runesword.frost_golem_entity": "Frost Golem",
+  "entity.runesword.frostball_entity": "Frostball",
+  "entity.runesword.magic_ball_entity": "Magic Ball",
   "gui.runesword.air.major": "Major: Grants speed boost on kill.",
   "gui.runesword.air.majorenchant1": "Infinity: Double speed duration.",
   "gui.runesword.air.majorenchant2": "Efficiency: Chance to get speed II.",

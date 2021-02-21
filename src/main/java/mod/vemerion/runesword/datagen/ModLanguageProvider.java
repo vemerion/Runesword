@@ -29,7 +29,12 @@ public class ModLanguageProvider extends LanguageProvider {
 		add("itemGroup." + Main.MODID, "Runesword");
 		addGui("guide", "Runesword");
 		addGui("home", "Home");
-
+		addText("death.attack", "magicplayer", "%1$s was magicked to death by %2$s");
+		addText("death.attack", "magicindirect", "%1$s was magicked to death by %2$s");
+		addText("death.attack", "magic", "%1$s was magicked to death");
+		add(Main.FROST_GOLEM_ENTITY, "Frost Golem");
+		add(Main.FROSTBALL_ENTITY, "Frostball");
+		add(Main.MAGIC_BALL_ENTITY, "Magic Ball");
 		guide();
 	}
 

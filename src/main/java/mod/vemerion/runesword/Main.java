@@ -3,6 +3,7 @@ package mod.vemerion.runesword;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
+import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.item.RuneswordItemGroup;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
@@ -35,6 +36,9 @@ public class Main {
 	
 	@ObjectHolder(Main.MODID + ":frostball_entity")
 	public static final EntityType<FrostballEntity> FROSTBALL_ENTITY = null;
+	
+	@ObjectHolder(Main.MODID + ":magic_ball_entity")
+	public static final EntityType<MagicBallEntity> MAGIC_BALL_ENTITY = null;
 	
 	@ObjectHolder(Main.MODID + ":guide_item")
 	public static final Item GUIDE_ITEM = null;

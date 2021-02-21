@@ -7,8 +7,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.client.renderer.entity.SnowManRenderer;
 import net.minecraft.client.renderer.entity.SpriteRenderer;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -29,6 +33,7 @@ public class ClientModEventSubscriber {
 		ScreenManager.registerFactory(Main.RUNEFORGE_CONTAINER, RuneforgeScreen::new);
 
 		RenderingRegistry.registerEntityRenderingHandler(Main.FROST_GOLEM_ENTITY, SnowManRenderer::new);
+		RenderingRegistry.registerEntityRenderingHandler(Main.MAGIC_BALL_ENTITY, NoRenderer::new);
 		RenderingRegistry.registerEntityRenderingHandler(Main.FROSTBALL_ENTITY,
 				r -> new SpriteRenderer<>(r, Minecraft.getInstance().getItemRenderer()));
 	}
@@ -40,5 +45,18 @@ public class ClientModEventSubscriber {
 				return layer == 0 ? -1 : rune.getColor();
 			}, rune);
 		}
+	}
+
+	private static class NoRenderer<T extends Entity> extends EntityRenderer<T> {
+
+		protected NoRenderer(EntityRendererManager renderManager) {
+			super(renderManager);
+		}
+
+		@Override
+		public ResourceLocation getEntityTexture(T entity) {
+			return null;
+		}
+
 	}
 }

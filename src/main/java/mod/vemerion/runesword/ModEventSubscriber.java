@@ -5,6 +5,7 @@ import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
+import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.item.AirRuneItem;
 import mod.vemerion.runesword.item.BloodRuneItem;
 import mod.vemerion.runesword.item.EarthRuneItem;
@@ -107,6 +108,12 @@ public class ModEventSubscriber {
 				.trackingRange(4).func_233608_b_(10)
 				.build(new ResourceLocation(Main.MODID, "frostball_entity").toString());
 		event.getRegistry().register(setup(frostballEntityType, "frostball_entity"));
+		
+		EntityType<MagicBallEntity> magicBallEntityType = EntityType.Builder
+				.<MagicBallEntity>create(MagicBallEntity::new, EntityClassification.MISC).size(0.5f, 0.5f)
+				.trackingRange(4).func_233608_b_(20)
+				.build(new ResourceLocation(Main.MODID, "magic_ball_entity").toString());
+		event.getRegistry().register(setup(magicBallEntityType, "magic_ball_entity"));
 
 	}
 
