@@ -22,6 +22,7 @@ public class ModLanguageProvider extends LanguageProvider {
 		add(RuneItem.EARTH_RUNE_ITEM, "Earth Rune");
 		add(RuneItem.BLOOD_RUNE_ITEM, "Blood Rune");
 		add(RuneItem.FROST_RUNE_ITEM, "Frost Rune");
+		add(RuneItem.MAGIC_RUNE_ITEM, "Magic Rune");
 		addText("tooltip", "minor", "Minor: ");
 		addText("tooltip", "major", "Major: ");
 		add(Main.GUIDE_ITEM, "Runesword Guide");

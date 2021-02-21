@@ -11,6 +11,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerContainerEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent;
@@ -77,8 +78,29 @@ public class ForgeEventSubscriber {
 	public static void runeHurt(LivingHurtEvent event) {
 		if (!(event.getEntityLiving() instanceof PlayerEntity))
 			return;
-		
-		event.getEntityLiving().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
-				.ifPresent(runes -> event.setAmount(runes.onHurt((PlayerEntity) event.getEntityLiving(), event.getSource(), event.getAmount())));
+
+		event.getEntityLiving().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event
+				.setAmount(runes.onHurt((PlayerEntity) event.getEntityLiving(), event.getSource(), event.getAmount())));
+	}
+
+	@SubscribeEvent
+	public static void runeRightClick(PlayerInteractEvent.RightClickItem event) {
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
+
+	}
+
+	@SubscribeEvent
+	public static void runeRightClick(PlayerInteractEvent.RightClickBlock event) {
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
+
+	}
+
+	@SubscribeEvent
+	public static void runeRightClick(PlayerInteractEvent.EntityInteract event) {
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
+
 	}
 }

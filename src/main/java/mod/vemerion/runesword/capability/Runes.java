@@ -129,6 +129,20 @@ public class Runes extends ItemStackHandler {
 		
 		return amount;
 	}
+	
+	// On both sides
+	public void onRightClick(PlayerEntity player) {
+		if (player.world.isRemote)
+			return;
+
+		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
+			entry.getKey().onRightClick(owner, player, entry.getValue());
+
+		ItemStack major = getStackInSlot(MAJOR_SLOT);
+		if (!major.isEmpty())
+			((RuneItem) major.getItem()).onRightClickMajor(owner, player, major);
+
+	}
 
 	public Collection<? extends ITextComponent> getTooltip() {
 		List<ITextComponent> tooltip = new ArrayList<>();

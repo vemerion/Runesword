@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "rewards": {
+    "recipes": [
+      "runesword:magic_rune_item"
+    ]
+  },
+  "criteria": {
+    "has_blood_rune": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "item": "runesword:blood_rune_item"
+          }
+        ]
+      }
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "runesword:magic_rune_item"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_blood_rune",
+      "has_the_recipe"
+    ]
+  ]
+}

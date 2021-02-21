@@ -26,6 +26,7 @@ public class RuneItem extends Item {
 	public static final Item AIR_RUNE_ITEM = null;
 	public static final Item BLOOD_RUNE_ITEM = null;
 	public static final Item FROST_RUNE_ITEM = null;
+	public static final Item MAGIC_RUNE_ITEM = null;
 
 	private static final List<RuneItem> RUNES = new ArrayList<>();
 
@@ -36,31 +37,39 @@ public class RuneItem extends Item {
 		this.color = color;
 		RUNES.add(this);
 	}
-	
+
 	public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
-		
+
 	}
-	
+
 	public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
-		
+
 	}
-	
-	public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source, Set<ItemStack> runes) {
-		
+
+	public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+			Set<ItemStack> runes) {
+
 	}
-	
-	public void onKillMajor(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source, ItemStack rune) {
-		
+
+	public void onKillMajor(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+			ItemStack rune) {
+
 	}
-	
+
 	public float onHurt(ItemStack sword, PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes) {
 		return amount;
 	}
-	
+
 	public float onHurtMajor(ItemStack sword, PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
 		return amount;
 	}
-		
+
+	public void onRightClick(ItemStack sword, PlayerEntity player, Set<ItemStack> runes) {
+	}
+
+	public void onRightClickMajor(ItemStack sword, PlayerEntity player, ItemStack rune) {
+	}
+
 	public int getColor() {
 		return color;
 	}
@@ -68,24 +77,24 @@ public class RuneItem extends Item {
 	public static Iterable<RuneItem> getRunes() {
 		return Iterables.unmodifiableIterable(RUNES);
 	}
-	
+
 	@Override
 	public boolean isEnchantable(ItemStack stack) {
 		return true;
 	}
-	
+
 	@Override
 	public int getItemEnchantability() {
 		return 10;
 	}
-	
+
 	protected int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
 		int level = 0;
 		for (ItemStack stack : stacks)
 			level += EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
 		return level;
 	}
-	
+
 	protected int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
 		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
 	}
