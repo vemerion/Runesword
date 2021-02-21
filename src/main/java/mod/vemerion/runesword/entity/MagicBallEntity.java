@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
@@ -14,6 +15,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 public class MagicBallEntity extends AbstractArrowEntity {
+
+	private static final int MAX_DURATION = 20 * 1;
+
+	private int duration;
 
 	public MagicBallEntity(EntityType<? extends MagicBallEntity> entityTypeIn, World worldIn) {
 		super(entityTypeIn, worldIn);
@@ -25,6 +30,32 @@ public class MagicBallEntity extends AbstractArrowEntity {
 		super(Main.MAGIC_BALL_ENTITY, x, y, z, world);
 		this.setDamage(4);
 		this.setNoGravity(true);
+	}
+
+	@Override
+	public void tick() {
+		super.tick();
+
+		duration++;
+
+		if (!world.isRemote) {
+			if (duration > MAX_DURATION) {
+				remove();
+			}
+		}
+	}
+
+	@Override
+	public void readAdditional(CompoundNBT compound) {
+		super.readAdditional(compound);
+		if (compound.contains("duration"))
+			duration = compound.getInt("duration");
+	}
+
+	@Override
+	public void writeAdditional(CompoundNBT compound) {
+		super.writeAdditional(compound);
+		compound.putInt("duration", duration);
 	}
 
 	@Override
