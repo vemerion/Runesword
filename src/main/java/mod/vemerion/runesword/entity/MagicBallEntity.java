@@ -10,19 +10,26 @@ import mod.vemerion.runesword.helpers.Helper;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.LightningBoltEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Explosion.Mode;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -31,13 +38,13 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public class MagicBallEntity extends AbstractArrowEntity implements IEntityAdditionalSpawnData {
 
-	private static final int MAX_DURATION = 20 * 3;
+	private static final int MAX_DURATION = 20 * 1;
 	public static final Color DEFAULT_COLOR = new Color(100, 0, 100, 255);
 
 	private static final Map<Enchantment, Color> ENCHANTMENT_COLORS = new HashMap<>();
 
 	static {
-		ENCHANTMENT_COLORS.put(Enchantments.AQUA_AFFINITY, new Color(0, 255, 0));
+		ENCHANTMENT_COLORS.put(Enchantments.AQUA_AFFINITY, new Color(0, 0, 200));
 		ENCHANTMENT_COLORS.put(Enchantments.BANE_OF_ARTHROPODS, new Color(0, 0, 0));
 		ENCHANTMENT_COLORS.put(Enchantments.BLAST_PROTECTION, new Color(50, 20, 0));
 		ENCHANTMENT_COLORS.put(Enchantments.CHANNELING, new Color(255, 255, 0));
@@ -78,6 +85,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 	private int duration;
 	private Map<Enchantment, Integer> enchantments;
 	private Enchantment[] enchantmentArr;
+	private boolean boomerang;
 
 	public MagicBallEntity(EntityType<? extends MagicBallEntity> entityTypeIn, World worldIn) {
 		super(entityTypeIn, worldIn);
@@ -93,6 +101,11 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		this.setNoGravity(true);
 		this.enchantments = enchantments;
 		this.enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
+		this.boomerang = rand.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY) * 0.1;
+	}
+
+	private int getEnchantmentLevel(Enchantment enchantment) {
+		return enchantments.getOrDefault(enchantment, 0);
 	}
 
 	@Override
@@ -102,12 +115,24 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		duration++;
 
 		if (!world.isRemote) {
-			if (duration > MAX_DURATION) {
+			if (duration > getDuration()) {
 				remove();
 			}
 		} else {
 			createParticles();
 		}
+
+		if (duration == getDuration() / 2 && boomerang)
+			setMotion(getMotion().scale(-1));
+	}
+
+	private int getDuration() {
+		return MAX_DURATION * (getEnchantmentLevel(Enchantments.INFINITY) + 1);
+	}
+
+	@Override
+	protected float getWaterDrag() {
+		return 0.95f + getEnchantmentLevel(Enchantments.DEPTH_STRIDER) * 0.008f;
 	}
 
 	private void createParticles() {
@@ -116,7 +141,8 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			if (!enchantments.isEmpty())
 				color = ENCHANTMENT_COLORS.getOrDefault(enchantmentArr[rand.nextInt(enchantmentArr.length)],
 						DEFAULT_COLOR);
-			Vector3d pos = new Vector3d(getPosX() + randCoord(), getPosY() + getHeight() / 2 + randCoord(), getPosZ() + randCoord());
+			Vector3d pos = new Vector3d(getPosX() + randCoord(), getPosY() + getHeight() / 2 + randCoord(),
+					getPosZ() + randCoord());
 			world.addParticle(
 					new MagicBallParticleData(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f),
 					pos.x, pos.y, pos.z, 0, 0, 0);
@@ -134,6 +160,8 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			duration = compound.getInt("duration");
 		if (compound.contains("enchantments"))
 			initEnchantments(compound.getList("enchantments", Constants.NBT.TAG_COMPOUND));
+		if (compound.contains("boomerang"))
+			boomerang = compound.getBoolean("boomerang");
 	}
 
 	@Override
@@ -141,6 +169,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		super.writeAdditional(compound);
 		compound.putInt("duration", duration);
 		compound.put("enchantments", serializeEnchantments(enchantments));
+		compound.putBoolean("boomerang", boomerang);
 	}
 
 	private void initEnchantments(ListNBT list) {
@@ -151,21 +180,106 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 	@Override
 	protected void onImpact(RayTraceResult result) {
 		super.onImpact(result);
+
+		Vector3d pos = result.getHitVec();
 		if (!world.isRemote) {
-			remove();
+			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.04)
+				world.createExplosion(null, pos.x, pos.y, pos.z, 2, Mode.BREAK);
+		}
+
+		int lure = getEnchantmentLevel(Enchantments.LURE);
+		if (lure > 0) {
+			Entity shooter = func_234616_v_();
+			for (LivingEntity e : world.getEntitiesWithinAABB(LivingEntity.class, getBoundingBox().grow(lure * 0.2),
+					e -> e != shooter)) {
+				Vector3d direction = pos.subtract(e.getPositionVec()).normalize();
+				e.addVelocity(direction.x, direction.y, direction.z);
+			}
 		}
 	}
 
 	@Override
+	protected void func_230299_a_(BlockRayTraceResult result) { // onHitBlock
+		super.func_230299_a_(result);
+		remove();
+	}
+
+	// Reminder for self: 1 damage = half heart
+	@Override
 	protected void onEntityHit(EntityRayTraceResult result) {
 		if (!world.isRemote) {
 			Entity target = result.getEntity();
+			DamageSource source = Helper.magicDamage();
+
 			if (func_234616_v_() != null && func_234616_v_() instanceof PlayerEntity) { // getShooter()
-				target.attackEntityFrom(Helper.magicDamage(this, (PlayerEntity) func_234616_v_()), (float) getDamage());
-			} else {
-				target.attackEntityFrom(Helper.magicDamage(), (float) getDamage());
+				PlayerEntity player = (PlayerEntity) func_234616_v_();
+				source = Helper.magicDamage(this, player);
+
+				// Restore air
+				int respiration = getEnchantmentLevel(Enchantments.RESPIRATION);
+				int air = player.getAir() + (int) ((respiration * 0.34) * ((float) player.getMaxAir() / 10));
+				player.setAir(Math.min(player.getMaxAir(), air));
+
+				// Lightning
+				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.CHANNELING) * 0.1) {
+					LightningBoltEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
+					lightning.moveForced(Vector3d.copyCenteredHorizontally(target.getPosition()));
+					lightning.setCaster((ServerPlayerEntity) player);
+					world.addEntity(lightning);
+				}
+
+				// Heal
+				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.MENDING) * 0.33) {
+					player.heal(1);
+				}
 			}
+
+			// Bypass armor
+			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.UNBREAKING) * 0.1) {
+				source.setDamageBypassesArmor();
+			}
+
+			applyDamage(target, source);
+
+			// Fire
+			if (rand.nextDouble() < fireChance()) {
+				target.setFire(3);
+			}
+
+			// Knockback
+			Vector3d direction = getMotion().scale(getEnchantmentLevel(Enchantments.KNOCKBACK) * 0.15);
+			target.addVelocity(direction.x, getEnchantmentLevel(Enchantments.PUNCH) * 0.05, direction.z);
+			target.setOnGround(false);
+
+			// Piercing
+			if (rand.nextDouble() >= getEnchantmentLevel(Enchantments.PIERCING) * 0.04)
+				remove();
 		}
+	}
+
+	private double fireChance() {
+		return getEnchantmentLevel(Enchantments.FIRE_ASPECT) * 0.08 + getEnchantmentLevel(Enchantments.FLAME) * 0.16;
+	}
+
+	private void applyDamage(Entity target, DamageSource source) {
+		float damage = (float) getDamage();
+		if (target instanceof LivingEntity) {
+			LivingEntity living = (LivingEntity) target;
+			if (living.getCreatureAttribute() == CreatureAttribute.ARTHROPOD)
+				damage += getEnchantmentLevel(Enchantments.BANE_OF_ARTHROPODS) * 0.4;
+			else if (living.getCreatureAttribute() == CreatureAttribute.ARTHROPOD)
+				damage += getEnchantmentLevel(Enchantments.SMITE) * 0.4;
+			else if (living.getCreatureAttribute() == CreatureAttribute.WATER)
+				damage += getEnchantmentLevel(Enchantments.IMPALING) * 0.4;
+		}
+		damage += getEnchantmentLevel(Enchantments.SHARPNESS) * 0.3;
+		if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE) * 0.045)
+			damage *= 2;
+
+		if (target.isInWater())
+			damage += getEnchantmentLevel(Enchantments.AQUA_AFFINITY) * 2;
+
+		target.attackEntityFrom(source, damage);
 	}
 
 	@Override
@@ -183,6 +297,15 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		CompoundNBT compound = new CompoundNBT();
 		compound.put("enchantments", serializeEnchantments(enchantments));
 		buffer.writeCompoundTag(compound);
+		buffer.writeBoolean(boomerang);
+
+		// Shooter
+		CompoundNBT shooterNBT = new CompoundNBT();
+		Entity shooter = func_234616_v_();
+		shooterNBT.putBoolean("exists", shooter != null && shooter instanceof PlayerEntity);
+		if (shooter != null)
+			shooterNBT.putUniqueId("uuid", shooter.getUniqueID());
+		buffer.writeCompoundTag(shooterNBT);
 	}
 
 	@Override
@@ -190,6 +313,13 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		CompoundNBT compound = buffer.readCompoundTag();
 		ListNBT list = compound.getList("enchantments", Constants.NBT.TAG_COMPOUND);
 		initEnchantments(list);
+		boomerang = buffer.readBoolean();
+
+		// Shooter
+		CompoundNBT shooterNBT = buffer.readCompoundTag();
+		if (shooterNBT.getBoolean("exists")) {
+			setShooter(world.getPlayerByUuid(shooterNBT.getUniqueId("uuid")));
+		}
 	}
 
 	private static ListNBT serializeEnchantments(Map<Enchantment, Integer> enchantments) {

@@ -18,10 +18,8 @@ public class Helper {
 		return a | r | g | b;
 	}
 	
-	private static final DamageSource MAGIC = (new DamageSource(Main.MODID + ".magic")).setMagicDamage();
-
 	public static DamageSource magicDamage() {
-		return MAGIC;
+		return (new DamageSource(Main.MODID + ".magic")).setMagicDamage();
 	}
 
 	public static DamageSource magicDamage(PlayerEntity player) {
