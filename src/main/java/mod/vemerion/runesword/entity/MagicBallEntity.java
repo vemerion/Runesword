@@ -116,12 +116,15 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			if (!enchantments.isEmpty())
 				color = ENCHANTMENT_COLORS.getOrDefault(enchantmentArr[rand.nextInt(enchantmentArr.length)],
 						DEFAULT_COLOR);
-			Vector3d pos = new Vector3d(getPosX() + rand.nextDouble() - 0.5, getPosY() + rand.nextDouble() - 0.5,
-					getPosZ() + rand.nextDouble() - 0.5);
+			Vector3d pos = new Vector3d(getPosX() + randCoord(), getPosY() + getHeight() / 2 + randCoord(), getPosZ() + randCoord());
 			world.addParticle(
 					new MagicBallParticleData(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f),
 					pos.x, pos.y, pos.z, 0, 0, 0);
 		}
+	}
+
+	private double randCoord() {
+		return (rand.nextDouble() - 0.5) * 0.5;
 	}
 
 	@Override
@@ -139,7 +142,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		compound.putInt("duration", duration);
 		compound.put("enchantments", serializeEnchantments(enchantments));
 	}
-	
+
 	private void initEnchantments(ListNBT list) {
 		enchantments = deserializeEnchantments(list);
 		enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);

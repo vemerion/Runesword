@@ -26,7 +26,7 @@ public class MagicRuneItem extends RuneItem {
 			MagicBallEntity ball = new MagicBallEntity(position.getX(), position.getY(), position.getZ(), world,
 					getEnchantments(minorRunes(runes)));
 			ball.setShooter(player);
-			ball.func_234612_a_(player, player.rotationPitch, player.rotationYaw, 0, 1f, 0); // shoot()
+			ball.func_234612_a_(player, player.rotationPitch, player.rotationYaw, 0, 0.5f, 0); // shoot()
 			world.addEntity(ball);
 		});
 	}
