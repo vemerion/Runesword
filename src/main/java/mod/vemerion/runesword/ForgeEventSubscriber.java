@@ -87,20 +87,5 @@ public class ForgeEventSubscriber {
 	public static void runeRightClick(PlayerInteractEvent.RightClickItem event) {
 		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
 				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
-
-	}
-
-	@SubscribeEvent
-	public static void runeRightClick(PlayerInteractEvent.RightClickBlock event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
-				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
-
-	}
-
-	@SubscribeEvent
-	public static void runeRightClick(PlayerInteractEvent.EntityInteract event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
-				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
-
 	}
 }
