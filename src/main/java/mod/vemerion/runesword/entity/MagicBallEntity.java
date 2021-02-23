@@ -2,6 +2,7 @@ package mod.vemerion.runesword.entity;
 
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -22,6 +23,7 @@ import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
@@ -136,12 +138,34 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 				leaveTrail(Blocks.FIRE.getDefaultState());
 			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER) * 0.03)
 				leaveTrail(Blocks.SNOW.getDefaultState());
+
+			deflectProjectiles();
 		} else {
 			createParticles();
 		}
 
 		if (duration == getDuration() / 2 && boomerang)
 			setMotion(getMotion().scale(-1));
+	}
+
+	private void deflectProjectiles() {
+		int projectileProt = getEnchantmentLevel(Enchantments.PROJECTILE_PROTECTION);
+		if (projectileProt <= 0)
+			return;
+
+		List<ProjectileEntity> projectiles = world.getEntitiesWithinAABB(ProjectileEntity.class,
+				getBoundingBox().grow(1), e -> {
+					if (e == this)
+						return false;
+
+					Entity shooter = func_234616_v_();
+					Entity otherShooter = e.func_234616_v_();
+					return shooter == null || otherShooter == null || shooter != otherShooter;
+				});
+		for (ProjectileEntity projectile : projectiles) {
+			if (rand.nextDouble() < projectileProt * 0.01)
+				projectile.remove();
+		}
 	}
 
 	private void leaveTrail(BlockState trail) {
@@ -218,6 +242,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		super.onImpact(result);
 
 		Vector3d pos = result.getHitVec();
+		Entity shooter = func_234616_v_();
 		if (!world.isRemote) {
 			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.04)
 				world.createExplosion(null, pos.x, pos.y, pos.z, 2, Mode.BREAK);
@@ -227,7 +252,6 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			Entity target = result.getType() == RayTraceResult.Type.ENTITY ? ((EntityRayTraceResult) result).getEntity()
 					: null;
 			if (sweeping > 0) {
-				Entity shooter = func_234616_v_();
 				DamageSource source = shooter == null ? Helper.magicDamage() : Helper.magicDamage(this, shooter);
 				for (LivingEntity e : world.getEntitiesWithinAABB(LivingEntity.class,
 						getBoundingBox().grow(sweeping * 0.2), e -> e != shooter && e != target)) {
@@ -239,13 +263,19 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		// Pull
 		int lure = getEnchantmentLevel(Enchantments.LURE);
 		if (lure > 0) {
-			Entity shooter = func_234616_v_();
 			for (LivingEntity e : world.getEntitiesWithinAABB(LivingEntity.class, getBoundingBox().grow(lure * 0.2),
 					e -> e != shooter)) {
 				Vector3d direction = pos.subtract(e.getPositionVec()).normalize();
 				e.addVelocity(direction.x, direction.y, direction.z);
 			}
 		}
+
+		// Riptide
+		if (shooter != null && rand.nextDouble() < getEnchantmentLevel(Enchantments.RIPTIDE)) {
+			Vector3d direction = pos.subtract(shooter.getPositionVec()).normalize();
+			shooter.addVelocity(direction.x, direction.y, direction.z);
+		}
+
 	}
 
 	@Override
