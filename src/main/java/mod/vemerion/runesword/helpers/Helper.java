@@ -26,7 +26,7 @@ public class Helper {
 		return new EntityDamageSource(Main.MODID + ".magicplayer", player).setMagicDamage();
 	}
 
-	public static DamageSource magicDamage(Entity source, PlayerEntity player) {
-		return new IndirectEntityDamageSource(Main.MODID + ".magicindirect", source, player).setMagicDamage();
+	public static DamageSource magicDamage(Entity source, Entity shooter) {
+		return new IndirectEntityDamageSource(Main.MODID + ".magicindirect", source, shooter).setMagicDamage();
 	}
 }

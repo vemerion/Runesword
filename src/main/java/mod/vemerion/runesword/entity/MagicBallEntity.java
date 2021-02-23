@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.helpers.Helper;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureAttribute;
@@ -15,21 +17,29 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.LightningBoltEntity;
+import net.minecraft.entity.item.ExperienceOrbEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.AbstractArrowEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SpawnEggItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.NBTUtil;
 import net.minecraft.network.IPacket;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion.Mode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
@@ -86,6 +96,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 	private Map<Enchantment, Integer> enchantments;
 	private Enchantment[] enchantmentArr;
 	private boolean boomerang;
+	private BlockPos startPos;
 
 	public MagicBallEntity(EntityType<? extends MagicBallEntity> entityTypeIn, World worldIn) {
 		super(entityTypeIn, worldIn);
@@ -93,6 +104,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		this.setNoGravity(true);
 		this.enchantments = new HashMap<>();
 		this.enchantmentArr = new Enchantment[0];
+		this.startPos = new BlockPos(getPosX(), getPosY(), getPosZ());
 	}
 
 	public MagicBallEntity(double x, double y, double z, World world, Map<Enchantment, Integer> enchantments) {
@@ -102,6 +114,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		this.enchantments = enchantments;
 		this.enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
 		this.boomerang = rand.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY) * 0.1;
+		this.startPos = new BlockPos(getPosX(), getPosY(), getPosZ());
 	}
 
 	private int getEnchantmentLevel(Enchantment enchantment) {
@@ -118,12 +131,32 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			if (duration > getDuration()) {
 				remove();
 			}
+
+			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION) * 0.01)
+				leaveTrail(Blocks.FIRE.getDefaultState());
+			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER) * 0.03)
+				leaveTrail(Blocks.SNOW.getDefaultState());
 		} else {
 			createParticles();
 		}
 
 		if (duration == getDuration() / 2 && boomerang)
 			setMotion(getMotion().scale(-1));
+	}
+
+	private void leaveTrail(BlockState trail) {
+		BlockPos pos = getPosition();
+		for (int i = 0; i < 5; i++) {
+			if (!world.isAirBlock(pos))
+				return;
+
+			BlockState state = world.getBlockState(pos.down());
+			if (state.isSolid() && state.isNormalCube(world, pos)) {
+				world.setBlockState(pos, trail);
+				return;
+			}
+			pos = pos.down();
+		}
 	}
 
 	private int getDuration() {
@@ -162,6 +195,8 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			initEnchantments(compound.getList("enchantments", Constants.NBT.TAG_COMPOUND));
 		if (compound.contains("boomerang"))
 			boomerang = compound.getBoolean("boomerang");
+		if (compound.contains("startPos"))
+			startPos = NBTUtil.readBlockPos(compound.getCompound("startPos"));
 	}
 
 	@Override
@@ -170,6 +205,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		compound.putInt("duration", duration);
 		compound.put("enchantments", serializeEnchantments(enchantments));
 		compound.putBoolean("boomerang", boomerang);
+		compound.put("startPos", NBTUtil.writeBlockPos(startPos));
 	}
 
 	private void initEnchantments(ListNBT list) {
@@ -185,8 +221,22 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		if (!world.isRemote) {
 			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.04)
 				world.createExplosion(null, pos.x, pos.y, pos.z, 2, Mode.BREAK);
+
+			// AoE
+			int sweeping = getEnchantmentLevel(Enchantments.SWEEPING);
+			Entity target = result.getType() == RayTraceResult.Type.ENTITY ? ((EntityRayTraceResult) result).getEntity()
+					: null;
+			if (sweeping > 0) {
+				Entity shooter = func_234616_v_();
+				DamageSource source = shooter == null ? Helper.magicDamage() : Helper.magicDamage(this, shooter);
+				for (LivingEntity e : world.getEntitiesWithinAABB(LivingEntity.class,
+						getBoundingBox().grow(sweeping * 0.2), e -> e != shooter && e != target)) {
+					e.attackEntityFrom(source, 2);
+				}
+			}
 		}
 
+		// Pull
 		int lure = getEnchantmentLevel(Enchantments.LURE);
 		if (lure > 0) {
 			Entity shooter = func_234616_v_();
@@ -232,6 +282,10 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.MENDING) * 0.33) {
 					player.heal(1);
 				}
+
+				// Protection buff
+				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.PROTECTION) * 0.015)
+					player.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 20 * 10));
 			}
 
 			// Bypass armor
@@ -239,7 +293,22 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 				source.setDamageBypassesArmor();
 			}
 
+			// Potion effects
+			if (target instanceof LivingEntity) {
+				LivingEntity living = (LivingEntity) target;
+				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FEATHER_FALLING) * 0.015)
+					living.addPotionEffect(new EffectInstance(Effects.LEVITATION, 20 * 3));
+				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.THORNS) * 0.03)
+					living.addPotionEffect(new EffectInstance(Effects.POISON, 20 * 7));
+			}
+
 			applyDamage(target, source);
+
+			// Drops
+			if (!target.isAlive() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+				spawnEgg(target);
+				spawnExp();
+			}
 
 			// Fire
 			if (rand.nextDouble() < fireChance()) {
@@ -254,6 +323,38 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			// Piercing
 			if (rand.nextDouble() >= getEnchantmentLevel(Enchantments.PIERCING) * 0.04)
 				remove();
+		}
+	}
+
+	private void spawnEgg(Entity target) {
+		if (!target.isNonBoss() || rand.nextDouble() >= getEnchantmentLevel(Enchantments.SILK_TOUCH) * 0.01)
+			return;
+
+		SpawnEggItem egg = null;
+		for (SpawnEggItem e : SpawnEggItem.getEggs()) {
+			if (e.getType(null) == target.getType()) {
+				egg = e;
+				break;
+			}
+		}
+		if (egg != null) {
+			ItemEntity eggEntity = new ItemEntity(world, target.getPosX(), target.getPosY(), target.getPosZ(),
+					new ItemStack(egg));
+			world.addEntity(eggEntity);
+		}
+	}
+
+	private void spawnExp() {
+		int looting = getEnchantmentLevel(Enchantments.LOOTING);
+		if (looting <= 0)
+			return;
+
+		int exp = rand.nextInt(looting + 1);
+
+		while (exp > 0) {
+			int fragment = ExperienceOrbEntity.getXPSplit(exp);
+			exp -= fragment;
+			world.addEntity(new ExperienceOrbEntity(world, getPosX(), getPosY(), getPosZ(), fragment));
 		}
 	}
 
@@ -273,13 +374,22 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 				damage += getEnchantmentLevel(Enchantments.IMPALING) * 0.4;
 		}
 		damage += getEnchantmentLevel(Enchantments.SHARPNESS) * 0.3;
-		if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE) * 0.045)
-			damage *= 2;
 
 		if (target.isInWater())
 			damage += getEnchantmentLevel(Enchantments.AQUA_AFFINITY) * 2;
 
+		damage += distanceDamage();
+
+		// Crit
+		if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE) * 0.045)
+			damage *= 2;
+
 		target.attackEntityFrom(source, damage);
+	}
+
+	private float distanceDamage() {
+		int efficiency = getEnchantmentLevel(Enchantments.EFFICIENCY);
+		return efficiency / 15f * (float) getPositionVec().distanceTo(Vector3d.copyCentered(startPos)) * 0.3f;
 	}
 
 	@Override
