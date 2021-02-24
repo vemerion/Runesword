@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
@@ -26,7 +27,7 @@ public class GuideChapter {
 
 	private IItemProvider icon;
 	private HeaderComponent title;
-	private List<GuideChapter> children;
+	private List<Supplier<GuideChapter>> children;
 	private List<ChapterComponent> components;
 
 	public GuideChapter(IItemProvider icon, ITextComponent title) {
@@ -36,7 +37,7 @@ public class GuideChapter {
 		this.components = new ArrayList<>();
 	}
 
-	public GuideChapter addChild(GuideChapter child) {
+	public GuideChapter addChild(Supplier<GuideChapter> child) {
 		children.add(child);
 		return this;
 	}
@@ -69,7 +70,7 @@ public class GuideChapter {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
 			if (isInside(x, y, ICON_SIZE, mouseX, mouseY) && button == 0 && isInsideScreen(y, ICON_SIZE, top, height)) {
-				changeChapter.accept(children.get(i));
+				changeChapter.accept(children.get(i).get());
 				return true;
 			}
 			x += ICON_SIZE;
@@ -85,7 +86,7 @@ public class GuideChapter {
 			int mouseX, int mouseY) {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
-			GuideChapter c = children.get(i);
+			GuideChapter c = children.get(i).get();
 			if (isInsideScreen(y, ICON_SIZE, top, height))
 				c.renderIcon(matrix, mc, x, y, width, height, mouseX, mouseY);
 			x += ICON_SIZE;
