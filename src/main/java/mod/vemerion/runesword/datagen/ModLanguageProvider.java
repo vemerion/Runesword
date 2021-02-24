@@ -107,6 +107,49 @@ public class ModLanguageProvider extends LanguageProvider {
 		addGui("frost.majorenchant1", "Fortune: Increase Frost Golem spawn chance.");
 		addGui("frost.majorenchant2", "Infinity: Double Frost Golem duration.");
 		addGui("frost.majorenchant3", "Efficiency: Frost Golem can shoot Frostballs.");
+
+		addGui("magic.obtain",
+				"Obtain: Created by crafting all elemental runes (water, fire, air and earth) together with a blood rune.");
+		addGui("magic.minor", "Minor: Boosts the major effect depending on enchantments.");
+		addGui("magic.major", "Major: Activate to fire a magic projectile.");
+		addGui("magic.text",
+				"The magic rune is a special rune, that has an active effect instead of a passive effect. Right-clicking a sword with a magic rune equipped in the major slot will create a magic projectile that deals damage when it hits an entity. The effect of the projectile can be boosted by equipping the sword with minor magic runes.");
+		addGui("magic.minorenchant1", "Aqua Affinity: Increase projectile damage underwater.");
+		addGui("magic.minorenchant2", "Bane of Arthropods: Increase projectile damage against arthropod mobs.");
+		addGui("magic.minorenchant3", "Blast Protection: Chance to explode upon projectile contact.");
+		addGui("magic.minorenchant4", "Channeling: Chance to create lightning upon projectile contact.");
+		addGui("magic.minorenchant5", "Depth Strider: Increase underwater projectile speed.");
+		addGui("magic.minorenchant6", "Efficiency: Increase damage based on distance travelled.");
+		addGui("magic.minorenchant7", "Feather Falling: Chance to apply levitation on projectile hit.");
+		addGui("magic.minorenchant8", "Fire Aspect: Chance to apply fire on projectile hit.");
+		addGui("magic.minorenchant9", "Fire Protection: Projectile leaves trail of fire.");
+		addGui("magic.minorenchant10", "Flame: Chance to apply fire on projectile hit.");
+		addGui("magic.minorenchant11", "Fortune: Chance to deal double damage.");
+		addGui("magic.minorenchant12", "Frost Walker: Projectile leaves trail of snow.");
+		addGui("magic.minorenchant13", "Impaling: Increase projectile damage against underwater mobs.");
+		addGui("magic.minorenchant14", "Infinity: Increase projectile range.");
+		addGui("magic.minorenchant15", "Knockback: Add knockback to projectile.");
+		addGui("magic.minorenchant16", "Looting: More experience dropped when killing mobs.");
+		addGui("magic.minorenchant17", "Loyalty: Chance for projectile to boomerang back.");
+		addGui("magic.minorenchant18", "Luck of the Sea: Temporary underwater breathing when launching projectile.");
+		addGui("magic.minorenchant19", "Lure: Pull in nearby enemies at projectile impact.");
+		addGui("magic.minorenchant20", "Mending: Chance to heal when projectile hits mob.");
+		addGui("magic.minorenchant21", "Multishot: Chance to shoot several projectiles.");
+		addGui("magic.minorenchant22", "Piercing: Chance to pass through entities.");
+		addGui("magic.minorenchant23", "Power: Increase projectile accuracy.");
+		addGui("magic.minorenchant24", "Projectile Protection: Chance to destroy nearby projectiles.");
+		addGui("magic.minorenchant25", "Protection: Chance to gain protection effect when projectile hits mob.");
+		addGui("magic.minorenchant26", "Punch: Add knock-up to projectile.");
+		addGui("magic.minorenchant27", "Quick Charge: Reduce projectile cooldown.");
+		addGui("magic.minorenchant28", "Respiration: Restore air when projectile hits mob.");
+		addGui("magic.minorenchant29", "Riptide: Launch player towards projectile impact.");
+		addGui("magic.minorenchant30", "Sharpness: Increase projectile damage.");
+		addGui("magic.minorenchant31", "Silk Touch: Small chance to drop spawn egg when projectile kills mob.");
+		addGui("magic.minorenchant32", "Smite: Increase damage against undead mobs.");
+		addGui("magic.minorenchant33", "Soul Speed: Increase projectile speed.");
+		addGui("magic.minorenchant34", "Sweeping Edge: AoE damage at projectile impact.");
+		addGui("magic.minorenchant35", "Thorns: Chance to apply poison when projectile hits mob.");
+		addGui("magic.minorenchant36", "Unbreaking: Chance to ignore armor when projectile hits mob.");
 	}
 
 	private void addGui(String suffix, String text) {

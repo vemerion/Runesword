@@ -16,6 +16,7 @@ public class GuideChapters {
 	private static GuideChapter water;
 	private static GuideChapter fire;
 	private static GuideChapter frost;
+	private static GuideChapter magic;
 	private static GuideChapter start;
 
 	public static GuideChapter getStartChapter() {
@@ -62,10 +63,31 @@ public class GuideChapters {
 					.addText(transKey("frost.minorenchant2")).addText(transKey("frost.minorenchant3"))
 					.addHeader(transKey("majorenchants")).addText(transKey("frost.majorenchant1"))
 					.addText(transKey("frost.majorenchant2")).addText(transKey("frost.majorenchant3"));
+			magic = new GuideChapter(RuneItem.MAGIC_RUNE_ITEM, RuneItem.MAGIC_RUNE_ITEM.getName())
+					.addText(transKey("magic.obtain")).addText(transKey("magic.minor")).addText(transKey("magic.major"))
+					.addText(transKey("magic.text")).addHeader(transKey("minorenchants"))
+					.addText(transKey("magic.minorenchant1")).addText(transKey("magic.minorenchant2"))
+					.addText(transKey("magic.minorenchant3")).addText(transKey("magic.minorenchant4"))
+					.addText(transKey("magic.minorenchant5")).addText(transKey("magic.minorenchant6"))
+					.addText(transKey("magic.minorenchant7")).addText(transKey("magic.minorenchant8"))
+					.addText(transKey("magic.minorenchant9")).addText(transKey("magic.minorenchant10"))
+					.addText(transKey("magic.minorenchant1")).addText(transKey("magic.minorenchant12"))
+					.addText(transKey("magic.minorenchant13")).addText(transKey("magic.minorenchant14"))
+					.addText(transKey("magic.minorenchant15")).addText(transKey("magic.minorenchant16"))
+					.addText(transKey("magic.minorenchant17")).addText(transKey("magic.minorenchant18"))
+					.addText(transKey("magic.minorenchant19")).addText(transKey("magic.minorenchant20"))
+					.addText(transKey("magic.minorenchant21")).addText(transKey("magic.minorenchant22"))
+					.addText(transKey("magic.minorenchant23")).addText(transKey("magic.minorenchant24"))
+					.addText(transKey("magic.minorenchant25")).addText(transKey("magic.minorenchant26"))
+					.addText(transKey("magic.minorenchant27")).addText(transKey("magic.minorenchant28"))
+					.addText(transKey("magic.minorenchant29")).addText(transKey("magic.minorenchant30"))
+					.addText(transKey("magic.minorenchant31")).addText(transKey("magic.minorenchant32"))
+					.addText(transKey("magic.minorenchant33")).addText(transKey("magic.minorenchant34"))
+					.addText(transKey("magic.minorenchant35")).addText(transKey("magic.minorenchant36"));
 			start = new GuideChapter(() -> Main.GUIDE_ITEM, new TranslationTextComponent(transKey("guide")))
 					.addChild(() -> runeforge).addChild(() -> enchant).addChild(() -> blood).addChild(() -> air)
 					.addChild(() -> earth).addChild(() -> water).addChild(() -> fire).addChild(() -> frost)
-					.addText(transKey("intro"));
+					.addChild(() -> magic).addText(transKey("intro"));
 		}
 		return start;
 	}
