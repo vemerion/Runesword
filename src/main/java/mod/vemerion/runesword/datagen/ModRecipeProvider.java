@@ -13,6 +13,7 @@ import net.minecraft.item.Item;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.Tags;
 
 public class ModRecipeProvider extends RecipeProvider {
 
@@ -35,6 +36,9 @@ public class ModRecipeProvider extends RecipeProvider {
 		ShapedRecipeBuilder.shapedRecipe(Main.RUNEFORGE_BLOCK).patternLine("sss").patternLine("srs").patternLine("sss")
 				.key('s', ItemTags.STONE_CRAFTING_MATERIALS).key('r', runes).addCriterion("has_rune", hasItem(runes))
 				.build(consumer);
+
+		ShapelessRecipeBuilder.shapelessRecipe(Main.GUIDE_ITEM).addIngredient(runes)
+				.addIngredient(Tags.Items.COBBLESTONE).addCriterion("has_rune", hasItem(runes)).build(consumer);
 	}
 
 }
