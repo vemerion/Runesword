@@ -6,5 +6,21 @@
         "stream": false
       }
     ]
+  },
+  "projectile_impact_sound": {
+    "sounds": [
+      {
+        "name": "runesword:projectile_impact_sound",
+        "stream": false
+      }
+    ]
+  },
+  "projectile_launch_sound": {
+    "sounds": [
+      {
+        "name": "runesword:projectile_launch_sound",
+        "stream": false
+      }
+    ]
   }
 }

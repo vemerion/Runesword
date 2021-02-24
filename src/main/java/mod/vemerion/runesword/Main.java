@@ -63,6 +63,12 @@ public class Main {
 	@ObjectHolder(Main.MODID + ":guide_click")
 	public static final SoundEvent GUIDE_CLICK = null;
 	
+	@ObjectHolder(Main.MODID + ":projectile_impact_sound")
+	public static final SoundEvent PROJECTILE_IMPACT_SOUND = null;
+
+	@ObjectHolder(Main.MODID + ":projectile_launch_sound")
+	public static final SoundEvent PROJECTILE_LAUNCH_SOUND = null;
+	
 	@ObjectHolder(Main.MODID + ":magic_ball_particle")
 	public static final ParticleType<MagicBallParticleData> MAGIC_BALL_PARTICLE = null;
 	

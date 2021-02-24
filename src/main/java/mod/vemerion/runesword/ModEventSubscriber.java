@@ -75,7 +75,12 @@ public class ModEventSubscriber {
 	public static void onRegisterSound(RegistryEvent.Register<SoundEvent> event) {
 		SoundEvent guide_click = new SoundEvent(new ResourceLocation(Main.MODID, "guide_click"));
 		event.getRegistry().register(setup(guide_click, "guide_click"));
-
+		SoundEvent projectile_impact_sound = new SoundEvent(
+				new ResourceLocation(Main.MODID, "projectile_impact_sound"));
+		event.getRegistry().register(setup(projectile_impact_sound, "projectile_impact_sound"));
+		SoundEvent projectile_launch_sound = new SoundEvent(
+				new ResourceLocation(Main.MODID, "projectile_launch_sound"));
+		event.getRegistry().register(setup(projectile_launch_sound, "projectile_launch_sound"));
 	}
 
 	@SubscribeEvent

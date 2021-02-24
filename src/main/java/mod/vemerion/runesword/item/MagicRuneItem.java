@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.helpers.Helper;
@@ -14,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.CooldownTracker;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 
@@ -40,6 +42,9 @@ public class MagicRuneItem extends RuneItem {
 
 			int quickCharge = enchantments.getOrDefault(Enchantments.QUICK_CHARGE, 0);
 			cdTracker.setCooldown(rune.getItem(), (int) (COOLDOWN * (1 - quickCharge * 0.05)));
+
+			world.playSound(null, player.getPosition(), Main.PROJECTILE_LAUNCH_SOUND, SoundCategory.PLAYERS, 1,
+					Helper.soundPitch(random));
 
 			if (multishot <= 0) {
 				Vector3d direction = Vector3d.fromPitchYaw(player.getPitchYaw());

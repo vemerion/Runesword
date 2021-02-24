@@ -35,6 +35,7 @@ import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.EntityRayTraceResult;
@@ -107,6 +108,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		this.enchantments = new HashMap<>();
 		this.enchantmentArr = new Enchantment[0];
 		this.startPos = new BlockPos(getPosX(), getPosY(), getPosZ());
+		this.setHitSound(Main.PROJECTILE_IMPACT_SOUND);
 	}
 
 	public MagicBallEntity(double x, double y, double z, World world, Map<Enchantment, Integer> enchantments) {
@@ -117,6 +119,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		this.enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
 		this.boomerang = rand.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY) * 0.1;
 		this.startPos = new BlockPos(getPosX(), getPosY(), getPosZ());
+		this.setHitSound(Main.PROJECTILE_IMPACT_SOUND);
 	}
 
 	private int getEnchantmentLevel(Enchantment enchantment) {
@@ -238,6 +241,11 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 	}
 
 	@Override
+	protected SoundEvent getHitEntitySound() {
+		return Main.PROJECTILE_IMPACT_SOUND;
+	}
+
+	@Override
 	protected void onImpact(RayTraceResult result) {
 		super.onImpact(result);
 
@@ -287,6 +295,8 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 	// Reminder for self: 1 damage = half heart
 	@Override
 	protected void onEntityHit(EntityRayTraceResult result) {
+		playSound(getHitEntitySound(), 1, Helper.soundPitch(rand));
+		
 		if (!world.isRemote) {
 			Entity target = result.getEntity();
 			DamageSource source = Helper.magicDamage();

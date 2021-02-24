@@ -1,5 +1,7 @@
 package mod.vemerion.runesword.helpers;
 
+import java.util.Random;
+
 import mod.vemerion.runesword.Main;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -28,5 +30,9 @@ public class Helper {
 
 	public static DamageSource magicDamage(Entity source, Entity shooter) {
 		return new IndirectEntityDamageSource(Main.MODID + ".magicindirect", source, shooter).setMagicDamage();
+	}
+	
+	public static float soundPitch(Random rand) {
+		return 0.8f + rand.nextFloat() * 0.4f;
 	}
 }
