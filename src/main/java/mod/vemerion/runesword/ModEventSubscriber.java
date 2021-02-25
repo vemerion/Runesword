@@ -2,12 +2,14 @@ package mod.vemerion.runesword;
 
 import com.mojang.serialization.Codec;
 
+import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
 import mod.vemerion.runesword.entity.MagicBallEntity;
+import mod.vemerion.runesword.guide.Guide;
 import mod.vemerion.runesword.item.AirRuneItem;
 import mod.vemerion.runesword.item.BloodRuneItem;
 import mod.vemerion.runesword.item.EarthRuneItem;
@@ -22,7 +24,6 @@ import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncRunesMessage;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
-import mod.vemerion.runesword.screen.GuideChapters;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -56,7 +57,7 @@ public class ModEventSubscriber {
 		event.getRegistry()
 				.register(setup(new BlockItem(Main.RUNEFORGE_BLOCK, new Item.Properties().group(ItemGroup.SEARCH)),
 						"runeforge_block_item"));
-		event.getRegistry().register(setup(new GuideItem(GuideChapters::getStartChapter, new Item.Properties().group(ItemGroup.SEARCH)), "guide_item"));
+		event.getRegistry().register(setup(new GuideItem(new Item.Properties().group(ItemGroup.SEARCH)), "guide_item"));
 
 		Item fireRune = new FireRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
 		Item waterRune = new WaterRuneItem(new Item.Properties().group(ItemGroup.SEARCH));
@@ -157,6 +158,8 @@ public class ModEventSubscriber {
 
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event) {
+		RuneswordAPI.guide = new Guide();
+
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
 
 		Network.INSTANCE.registerMessage(0, SyncRunesMessage.class, SyncRunesMessage::encode, SyncRunesMessage::decode,

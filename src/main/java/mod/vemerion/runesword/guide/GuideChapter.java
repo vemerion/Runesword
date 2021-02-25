@@ -1,14 +1,14 @@
-package mod.vemerion.runesword.screen;
+package mod.vemerion.runesword.guide;
 
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import mod.vemerion.runesword.api.IGuideChapter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -20,38 +20,53 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.client.gui.GuiUtils;
 
-public class GuideChapter {
+public class GuideChapter implements IGuideChapter {
 
 	private static final int ICON_SIZE = 16;
 	private static final int COMPONENT_PADDING = 6;
 
-	private IItemProvider icon;
+	private IItemProvider itemIcon;
+	private ResourceLocation rlIcon;
 	private HeaderComponent title;
-	private List<Supplier<GuideChapter>> children;
-	private List<ChapterComponent> components;
+	private List<GuideChapter> children = new ArrayList<>();
+	private List<ChapterComponent> components = new ArrayList<>();
 
 	public GuideChapter(IItemProvider icon, ITextComponent title) {
-		this.icon = icon;
+		this.itemIcon = icon;
 		this.title = new HeaderComponent(title);
-		this.children = new ArrayList<>();
-		this.components = new ArrayList<>();
 	}
 
-	public GuideChapter addChild(Supplier<GuideChapter> child) {
-		children.add(child);
+	public GuideChapter(ResourceLocation icon, ITextComponent title) {
+		this.rlIcon = icon;
+		this.title = new HeaderComponent(title);
+	}
+
+	public static void throwIfInvalidChapter(IGuideChapter chapter) {
+		if (!(chapter instanceof GuideChapter))
+			throw new IllegalArgumentException("openGuide() parameter is not of type GuideChapter");
+
+	}
+
+	@Override
+	public GuideChapter addChild(IGuideChapter child) {
+		throwIfInvalidChapter(child);
+		children.add((GuideChapter) child);
 		return this;
 	}
 
+	@Override
 	public GuideChapter addText(String translationKey) {
 		components.add(new TextComponent(new TranslationTextComponent(translationKey)));
 		return this;
 	}
 
+	@Override
 	public GuideChapter addHeader(String translationKey) {
 		components.add(new HeaderComponent(new TranslationTextComponent(translationKey)));
 		return this;
 	}
 
+	@Override
 	public GuideChapter addImage(ResourceLocation image, int imgWidth, int imgHeight) {
 		components.add(new ImageComponent(image, imgWidth, imgHeight));
 		return this;
@@ -70,7 +85,7 @@ public class GuideChapter {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
 			if (isInside(x, y, ICON_SIZE, mouseX, mouseY) && button == 0 && isInsideScreen(y, ICON_SIZE, top, height)) {
-				changeChapter.accept(children.get(i).get());
+				changeChapter.accept(children.get(i));
 				return true;
 			}
 			x += ICON_SIZE;
@@ -86,7 +101,7 @@ public class GuideChapter {
 			int mouseX, int mouseY) {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
-			GuideChapter c = children.get(i).get();
+			GuideChapter c = children.get(i);
 			if (isInsideScreen(y, ICON_SIZE, top, height))
 				c.renderIcon(matrix, mc, x, y, width, height, mouseX, mouseY);
 			x += ICON_SIZE;
@@ -111,7 +126,12 @@ public class GuideChapter {
 					mc.fontRenderer);
 		}
 
-		mc.getItemRenderer().renderItemAndEffectIntoGUI(new ItemStack(icon), x, y);
+		if (itemIcon != null) {
+			mc.getItemRenderer().renderItemAndEffectIntoGUI(new ItemStack(itemIcon), x, y);
+		} else {
+			mc.getTextureManager().bindTexture(rlIcon);
+			AbstractGui.blit(matrix, x, y, 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+		}
 	}
 
 	private boolean isInside(int left, int top, int size, double x, double y) {

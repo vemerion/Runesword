@@ -5,6 +5,7 @@ import java.util.Arrays;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.guide.GuideChapter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SimpleSound;
 import net.minecraft.client.audio.SoundHandler;
