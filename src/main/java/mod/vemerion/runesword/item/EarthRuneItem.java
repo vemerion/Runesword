@@ -78,7 +78,7 @@ public class EarthRuneItem extends RuneItem {
 		if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.05) {
 			IInventory inv = new Inventory(drop);
 			Optional<ItemStack> smelted = world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, world)
-					.map(r -> r.getRecipeOutput());
+					.map(r -> r.getCraftingResult(inv));
 			if (smelted.isPresent())
 				drop = smelted.get();
 		}
