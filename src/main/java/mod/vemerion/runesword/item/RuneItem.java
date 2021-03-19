@@ -1,16 +1,13 @@
 package mod.vemerion.runesword.item;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.Iterables;
 
 import mod.vemerion.runesword.Main;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,7 +17,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraftforge.registries.ObjectHolder;
 
 @ObjectHolder(Main.MODID)
-public class RuneItem extends Item {
+public abstract class RuneItem extends Item implements IRunePowers {
 
 	public static final Item FIRE_RUNE_ITEM = null;
 	public static final Item WATER_RUNE_ITEM = null;
@@ -33,43 +30,75 @@ public class RuneItem extends Item {
 	private static final List<RuneItem> RUNES = new ArrayList<>();
 
 	private final int color;
+	private final List<RunePowers> powers;
 
-	public RuneItem(int color, Properties properties) {
+	public RuneItem(int color, List<RunePowers> powers, Properties properties) {
 		super(properties);
 		this.color = color;
+		this.powers = powers;
 		RUNES.add(this);
 	}
 
-	public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
-
+	@Override
+	public void onAttack(ItemStack runeable, PlayerEntity player, Entity target, Set<ItemStack> runes) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onAttack(runeable, player, target, runes);
 	}
 
-	public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
-
+	@Override
+	public void onAttackMajor(ItemStack runeable, PlayerEntity player, Entity target, ItemStack rune) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onAttackMajor(runeable, player, target, rune);
 	}
 
-	public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+	@Override
+	public void onKill(ItemStack runeable, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
 			Set<ItemStack> runes) {
-
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onKill(runeable, player, entityLiving, source, runes);
 	}
 
-	public void onKillMajor(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+	@Override
+	public void onKillMajor(ItemStack runeable, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
 			ItemStack rune) {
-
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onKillMajor(runeable, player, entityLiving, source, rune);
 	}
 
-	public float onHurt(ItemStack sword, PlayerEntity player, DamageSource source, float amount, Set<ItemStack> runes) {
+	@Override
+	public float onHurt(ItemStack runeable, PlayerEntity player, DamageSource source, float amount,
+			Set<ItemStack> runes) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				amount = p.onHurt(runeable, player, source, amount, runes);
 		return amount;
 	}
 
-	public float onHurtMajor(ItemStack sword, PlayerEntity player, DamageSource source, float amount, ItemStack rune) {
+	@Override
+	public float onHurtMajor(ItemStack runeable, PlayerEntity player, DamageSource source, float amount,
+			ItemStack rune) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				amount = p.onHurtMajor(runeable, player, source, amount, rune);
 		return amount;
 	}
 
-	public void onRightClick(ItemStack sword, PlayerEntity player, Set<ItemStack> runes) {
+	@Override
+	public void onRightClick(ItemStack runeable, PlayerEntity player, Set<ItemStack> runes) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onRightClick(runeable, player, runes);
 	}
 
-	public void onRightClickMajor(ItemStack sword, PlayerEntity player, ItemStack rune) {
+	@Override
+	public void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onRightClickMajor(runeable, player, rune);
 	}
 
 	public int getColor() {
@@ -89,25 +118,13 @@ public class RuneItem extends Item {
 	public int getItemEnchantability() {
 		return 10;
 	}
-
-	protected int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
-		int level = 0;
-		for (ItemStack stack : stacks)
-			level += EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
-		return level;
+	
+	@Override
+	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
+		for (RunePowers p : powers)
+			if (p.isBeneficialEnchantment(enchantment))
+				return true;
+		return false;
 	}
 
-	protected int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
-		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
-	}
-
-	protected Map<Enchantment, Integer> getEnchantments(Set<ItemStack> stacks) {
-		Map<Enchantment, Integer> enchantments = new HashMap<>();
-
-		for (ItemStack stack : stacks) {
-			EnchantmentHelper.getEnchantments(stack)
-					.forEach((ench, level) -> enchantments.merge(ench, level, (l1, l2) -> l1 + l2));
-		}
-		return enchantments;
-	}
 }

@@ -11,13 +11,11 @@ import java.util.Set;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.item.RunePowers;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
 import net.minecraft.item.TieredItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
@@ -28,7 +26,6 @@ import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -198,8 +195,7 @@ public class Runes extends ItemStackHandler {
 	}
 
 	public static boolean isRuneable(ItemStack stack) {
-		Item item = stack.getItem();
-		return item instanceof SwordItem || item instanceof AxeItem || stack.getToolTypes().contains(ToolType.AXE);
+		return RunePowers.isAxe(stack) || RunePowers.isSword(stack);
 	}
 
 	public static LazyOptional<Runes> getRunes(ItemStack stack) {
