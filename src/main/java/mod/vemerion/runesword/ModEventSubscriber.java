@@ -29,7 +29,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.attributes.GlobalEntityTypeAttributes;
 import net.minecraft.entity.passive.SnowGolemEntity;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
@@ -43,6 +42,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -164,15 +164,11 @@ public class ModEventSubscriber {
 
 		Network.INSTANCE.registerMessage(0, SyncRunesMessage.class, SyncRunesMessage::encode, SyncRunesMessage::decode,
 				SyncRunesMessage::handle);
-
-		event.enqueueWork(() -> {
-			registerEntityAttributes();
-		});
-
 	}
-
-	private static void registerEntityAttributes() {
-		GlobalEntityTypeAttributes.put(Main.FROST_GOLEM_ENTITY, SnowGolemEntity.func_234226_m_().create());
+	
+	@SubscribeEvent
+	public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
+		event.put(Main.FROST_GOLEM_ENTITY, SnowGolemEntity.func_234226_m_().create());
 	}
 
 	public static <T extends IForgeRegistryEntry<T>> T setup(final T entry, final String name) {
