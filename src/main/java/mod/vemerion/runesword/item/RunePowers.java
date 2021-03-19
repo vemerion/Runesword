@@ -1,8 +1,11 @@
 package mod.vemerion.runesword.item;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -63,5 +66,26 @@ public abstract class RunePowers implements IRunePowers {
 	public abstract boolean canActivatePowers(ItemStack stack);
 
 	public abstract boolean isBeneficialEnchantment(Enchantment enchantment);
+
+	protected final int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
+		int level = 0;
+		for (ItemStack stack : stacks)
+			level += EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
+		return level;
+	}
+
+	protected final int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
+		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
+	}
+
+	protected final Map<Enchantment, Integer> getEnchantments(Set<ItemStack> stacks) {
+		Map<Enchantment, Integer> enchantments = new HashMap<>();
+
+		for (ItemStack stack : stacks) {
+			EnchantmentHelper.getEnchantments(stack)
+					.forEach((ench, level) -> enchantments.merge(ench, level, (l1, l2) -> l1 + l2));
+		}
+		return enchantments;
+	}
 
 }

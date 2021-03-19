@@ -1,11 +1,7 @@
 package mod.vemerion.runesword.item;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -31,25 +27,4 @@ public interface IRunePowers {
 	void onRightClick(ItemStack runeable, PlayerEntity player, Set<ItemStack> runes);
 
 	void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune);
-
-	default int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
-		int level = 0;
-		for (ItemStack stack : stacks)
-			level += EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
-		return level;
-	}
-
-	default int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
-		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
-	}
-
-	default Map<Enchantment, Integer> getEnchantments(Set<ItemStack> stacks) {
-		Map<Enchantment, Integer> enchantments = new HashMap<>();
-
-		for (ItemStack stack : stacks) {
-			EnchantmentHelper.getEnchantments(stack)
-					.forEach((ench, level) -> enchantments.merge(ench, level, (l1, l2) -> l1 + l2));
-		}
-		return enchantments;
-	}
 }
