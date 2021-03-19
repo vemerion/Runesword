@@ -13,7 +13,7 @@ public class ModLanguageProvider extends LanguageProvider {
 
 	@Override
 	protected void addTranslations() {
-		addGui("no_sword", "Insert sword into runeforge");
+		addGui("no_sword", "Insert valid item into runeforge");
 		addGui("slot_locked", "Slot locked");
 		add(Main.RUNEFORGE_BLOCK, "Runeforge");
 		add(RuneItem.AIR_RUNE_ITEM, "Air Rune");

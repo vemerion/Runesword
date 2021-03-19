@@ -69,7 +69,7 @@ public class RuneforgeBlock extends Block {
 				tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
 					if (handler.getSlots() > 0) {
 						ItemEntity item = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-								handler.extractItem(RuneforgeTileEntity.SWORD_SLOT, 1, false));
+								handler.extractItem(RuneforgeTileEntity.RUNEABLE_SLOT, 1, false));
 						worldIn.addEntity(item);
 					}
 				});

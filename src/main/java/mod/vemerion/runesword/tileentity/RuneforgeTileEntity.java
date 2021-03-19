@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.tileentity;
 
 import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,7 +9,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -26,12 +26,12 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class RuneforgeTileEntity extends TileEntity implements INamedContainerProvider, ITickableTileEntity {
 
-	public static final int SWORD_SLOT = 0;
+	public static final int RUNEABLE_SLOT = 0;
 
 	private ItemStack prevItem = ItemStack.EMPTY;
 	private ItemStackHandler runeforge = new ItemStackHandler() {
 		public boolean isItemValid(int slot, ItemStack stack) {
-			return stack.getItem() instanceof SwordItem;
+			return Runes.isRuneable(stack);
 		}
 	};
 
@@ -43,14 +43,14 @@ public class RuneforgeTileEntity extends TileEntity implements INamedContainerPr
 		super(Main.RUNEFORGE_TILE_ENTITY);
 	}
 
-	public ItemStack getSword() {
-		return runeforge.getStackInSlot(SWORD_SLOT);
+	public ItemStack getRuneable() {
+		return runeforge.getStackInSlot(RUNEABLE_SLOT);
 	}
 
 	@Override
 	public void tick() {
 		if (!world.isRemote) {
-			ItemStack input = getSword();
+			ItemStack input = getRuneable();
 			if (!ItemStack.areItemStacksEqual(input, prevItem)) {
 				world.notifyBlockUpdate(getPos(), getBlockState(), getBlockState(), 2);
 			}

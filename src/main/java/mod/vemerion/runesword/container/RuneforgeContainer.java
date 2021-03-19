@@ -13,7 +13,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.IWorldPosCallable;
@@ -29,7 +28,7 @@ public class RuneforgeContainer extends Container {
 	public static final int[] RUNE_SLOTS_Y = new int[] { 9, 35, 61, 35 };
 	public static final int[] RUNE_SLOTS_X = new int[] { 80, 106, 80, 54 };
 
-	private Slot swordSlot;
+	private Slot runeableSlot;
 	private List<Slot> runeSlots;
 	private WrapperRuneHandler runeHandler;
 
@@ -37,13 +36,13 @@ public class RuneforgeContainer extends Container {
 		this(id, playerInv, new ItemStackHandler(), IWorldPosCallable.DUMMY);
 	}
 
-	public RuneforgeContainer(int id, PlayerInventory playerInv, ItemStackHandler swordHandler, IWorldPosCallable pos) {
+	public RuneforgeContainer(int id, PlayerInventory playerInv, ItemStackHandler runeableHandler, IWorldPosCallable pos) {
 		super(Main.RUNEFORGE_CONTAINER, id);
 		this.pos = pos;
 
 		runeSlots = new ArrayList<>();
 		runeHandler = new WrapperRuneHandler();
-		swordSlot = addSlot(new SlotSwordHandler(swordHandler, RuneforgeTileEntity.SWORD_SLOT, 80, 35));
+		runeableSlot = addSlot(new SlotRuneableHandler(runeableHandler, RuneforgeTileEntity.RUNEABLE_SLOT, 80, 35));
 		updateRuneSlots();
 		for (int i = 0; i < Runes.RUNES_COUNT; i++) {
 			runeSlots.add(addSlot(new SlotRuneHandler(runeHandler, i, RUNE_SLOTS_X[i], RUNE_SLOTS_Y[i])));
@@ -81,7 +80,7 @@ public class RuneforgeContainer extends Container {
 		if (slot != null && slot.getHasStack()) {
 			ItemStack stack = slot.getStack();
 			copy = stack.copy();
-			if (index < runeforgeEnd) { // Sword slot + rune slots
+			if (index < runeforgeEnd) { // Runeable slot + rune slots
 				if (!mergeItemStack(stack, 5, 39, false)) {
 					return ItemStack.EMPTY;
 				}
@@ -111,25 +110,25 @@ public class RuneforgeContainer extends Container {
 		return copy;
 	}
 
-	public ItemStack getSword() {
-		return swordSlot.getStack();
+	public ItemStack getRuneable() {
+		return runeableSlot.getStack();
 	}
 
 	@Override
 	public void detectAndSendChanges() {
-		ItemStack sword = getSword();
-		sword.getCapability(Runes.CAPABILITY).ifPresent(runes -> {
+		ItemStack runeable = getRuneable();
+		runeable.getCapability(Runes.CAPABILITY).ifPresent(runes -> {
 			if (runes.isDirty()) {
-				CompoundNBT tag = sword.getOrCreateTag();
+				CompoundNBT tag = runeable.getOrCreateTag();
 				tag.putBoolean("dirty", !tag.getBoolean("dirty"));
-				sword.setTag(tag);
+				runeable.setTag(tag);
 			}
 		});
 		super.detectAndSendChanges();
 	}
 
 	private void updateRuneSlots() {
-		LazyOptional<Runes> maybeRunes = Runes.getRunes(swordSlot.getStack());
+		LazyOptional<Runes> maybeRunes = Runes.getRunes(runeableSlot.getStack());
 		maybeRunes.ifPresent(runes -> {
 			runeHandler.enable(runes);
 		});
@@ -138,15 +137,15 @@ public class RuneforgeContainer extends Container {
 			runeHandler.disable();
 	}
 
-	private class SlotSwordHandler extends SlotItemHandler {
+	private class SlotRuneableHandler extends SlotItemHandler {
 
-		public SlotSwordHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
+		public SlotRuneableHandler(IItemHandler itemHandler, int index, int xPosition, int yPosition) {
 			super(itemHandler, index, xPosition, yPosition);
 		}
 
 		@Override
 		public boolean isItemValid(ItemStack stack) {
-			return super.isItemValid(stack) && stack.getItem() instanceof SwordItem;
+			return super.isItemValid(stack) && Runes.isRuneable(stack);
 		}
 
 		@Override

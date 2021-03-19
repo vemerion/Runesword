@@ -94,7 +94,7 @@
   "gui.runesword.magic.text": "The magic rune is a special rune, that has an active effect instead of a passive effect. Right-clicking a sword with a magic rune equipped in the major slot will create a magic projectile that deals damage when it hits an entity. The effect of the projectile can be boosted by equipping the sword with minor magic runes.",
   "gui.runesword.majorenchants": "Major Enchantments",
   "gui.runesword.minorenchants": "Minor Enchantments",
-  "gui.runesword.no_sword": "Insert sword into runeforge",
+  "gui.runesword.no_sword": "Insert valid item into runeforge",
   "gui.runesword.runeforge1": "The runeforge is the block used to insert runes into swords. Here is how you craft it:",
   "gui.runesword.runeforge2": "And here is the runeforge GUI:",
   "gui.runesword.runeforge3": "You start by inserting a sword into the middle slot (1). You can then insert runes into the sword by placing them in slot 2-5. The higher the quality of the sword, the more runes can be inserted. For example, a stone sword only has the first rune slot unlocked (2), while a netherite sword has all four rune slots unlocked.",

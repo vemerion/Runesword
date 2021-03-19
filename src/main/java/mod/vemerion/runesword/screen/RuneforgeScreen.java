@@ -48,7 +48,7 @@ public class RuneforgeScreen extends ContainerScreen<RuneforgeContainer> {
 			if (containsMouse(RuneforgeContainer.RUNE_SLOTS_X[i], RuneforgeContainer.RUNE_SLOTS_Y[i], 18, mouseX,
 					mouseY)) {
 
-				LazyOptional<Runes> maybeRunes = Runes.getRunes(container.getSword());
+				LazyOptional<Runes> maybeRunes = Runes.getRunes(container.getRuneable());
 				if (!maybeRunes.isPresent()) {
 					renderTooltip(matrix, new TranslationTextComponent("gui.runesword.no_sword"), mouseX, mouseY);
 				} else {

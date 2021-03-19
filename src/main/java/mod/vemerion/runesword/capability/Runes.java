@@ -14,8 +14,11 @@ import mod.vemerion.runesword.item.RuneItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.AxeItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
+import net.minecraft.item.TieredItem;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.DamageSource;
@@ -25,6 +28,7 @@ import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -87,7 +91,7 @@ public class Runes extends ItemStackHandler {
 		}
 		return runes;
 	}
-	
+
 	// On both sides
 	public void onAttack(PlayerEntity player, Entity target) {
 		if (player.world.isRemote || player.getCooledAttackStrength(0) < 0.9)
@@ -126,10 +130,10 @@ public class Runes extends ItemStackHandler {
 			if (!major.isEmpty())
 				amount = ((RuneItem) major.getItem()).onHurtMajor(owner, player, source, amount, major);
 		}
-		
+
 		return amount;
 	}
-	
+
 	// On both sides
 	public void onRightClick(PlayerEntity player) {
 		if (player.world.isRemote)
@@ -161,7 +165,9 @@ public class Runes extends ItemStackHandler {
 	}
 
 	public boolean isSlotUnlocked(int slot) {
-		int level = ((SwordItem) owner.getItem()).getTier().getHarvestLevel();
+		int level = 4;
+		if (owner.getItem() instanceof TieredItem)
+			level = ((TieredItem) owner.getItem()).getTier().getHarvestLevel();
 
 		switch (slot) {
 		case FIRST_MINOR_SLOT:
@@ -191,6 +197,11 @@ public class Runes extends ItemStackHandler {
 		return isSlotUnlocked(slot);
 	}
 
+	public static boolean isRuneable(ItemStack stack) {
+		Item item = stack.getItem();
+		return item instanceof SwordItem || item instanceof AxeItem || stack.getToolTypes().contains(ToolType.AXE);
+	}
+
 	public static LazyOptional<Runes> getRunes(ItemStack stack) {
 		return stack.getCapability(CAPABILITY);
 	}
@@ -201,7 +212,7 @@ public class Runes extends ItemStackHandler {
 
 		@SubscribeEvent
 		public static void attachCapability(AttachCapabilitiesEvent<ItemStack> event) {
-			if (event.getObject().getItem() instanceof SwordItem)
+			if (isRuneable(event.getObject()))
 				event.addCapability(SAVE_LOCATION, new Provider(event.getObject()));
 		}
 
