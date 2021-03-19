@@ -12,6 +12,7 @@ import java.util.Set;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.item.RunePowers;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -22,6 +23,7 @@ import net.minecraft.nbt.INBT;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.Color;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.Style;
@@ -143,6 +145,17 @@ public class Runes extends ItemStackHandler {
 		if (!major.isEmpty())
 			((RuneItem) major.getItem()).onRightClickMajor(owner, player, major);
 
+	}
+	
+	public float onBreakSpeed(PlayerEntity player, BlockState state, BlockPos pos, float speed) {
+		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
+			speed = entry.getKey().onBreakSpeed(owner, player, state, pos, speed, entry.getValue());
+
+		ItemStack major = getStackInSlot(MAJOR_SLOT);
+		if (!major.isEmpty())
+			speed = ((RuneItem) major.getItem()).onBreakSpeedMajor(owner, player, state, pos, speed, major);
+		
+		return speed;
 	}
 
 	public Collection<? extends ITextComponent> getTooltip() {

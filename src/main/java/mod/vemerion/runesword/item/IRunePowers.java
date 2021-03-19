@@ -2,11 +2,13 @@ package mod.vemerion.runesword.item;
 
 import java.util.Set;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 
 public interface IRunePowers {
 
@@ -27,4 +29,10 @@ public interface IRunePowers {
 	void onRightClick(ItemStack runeable, PlayerEntity player, Set<ItemStack> runes);
 
 	void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune);
+
+	float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+			Set<ItemStack> runes);
+
+	float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+			ItemStack rune);
 }

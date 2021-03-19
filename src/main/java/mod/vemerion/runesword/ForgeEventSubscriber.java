@@ -88,4 +88,10 @@ public class ForgeEventSubscriber {
 		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
 				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
 	}
+
+	@SubscribeEvent
+	public static void runeBreakSpeed(PlayerEvent.BreakSpeed event) {
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event.setNewSpeed(
+				runes.onBreakSpeed(event.getPlayer(), event.getState(), event.getPos(), event.getOriginalSpeed())));
+	}
 }

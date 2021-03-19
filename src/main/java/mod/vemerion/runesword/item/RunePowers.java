@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -13,6 +14,7 @@ import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.ToolType;
 
 public abstract class RunePowers implements IRunePowers {
@@ -55,6 +57,18 @@ public abstract class RunePowers implements IRunePowers {
 	public void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune) {
 	}
 
+	@Override
+	public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+			Set<ItemStack> runes) {
+		return speed;
+	}
+
+	@Override
+	public float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+			ItemStack rune) {
+		return speed;
+	}
+
 	public static boolean isSword(ItemStack stack) {
 		return stack.getItem() instanceof SwordItem;
 	}
@@ -87,5 +101,4 @@ public abstract class RunePowers implements IRunePowers {
 		}
 		return enchantments;
 	}
-
 }

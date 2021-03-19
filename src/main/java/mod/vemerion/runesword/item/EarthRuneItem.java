@@ -8,6 +8,8 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -21,12 +23,36 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class EarthRuneItem extends RuneItem {
 
 	public EarthRuneItem(Properties properties) {
-		super(new Color(100, 50, 0).getRGB(), ImmutableList.of(new SwordPowers()), properties);
+		super(new Color(100, 50, 0).getRGB(), ImmutableList.of(new SwordPowers(), new AxePowers()), properties);
+	}
+	
+	private static class AxePowers extends RunePowers {
+
+		@Override
+		public boolean canActivatePowers(ItemStack stack) {
+			return isAxe(stack);
+		}
+
+		@Override
+		public boolean isBeneficialEnchantment(Enchantment enchantment) {
+			return false;
+		}
+		
+		@Override
+		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+				Set<ItemStack> runes) {
+			if (state.getBlock() == Blocks.STONE)
+				return speed * 40;
+			
+			return super.onBreakSpeed(runeable, player, state, pos, speed, runes);
+		}
+		
 	}
 
 	private static class SwordPowers extends RunePowers {

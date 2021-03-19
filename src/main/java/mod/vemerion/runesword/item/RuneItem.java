@@ -7,6 +7,7 @@ import java.util.Set;
 import com.google.common.collect.Iterables;
 
 import mod.vemerion.runesword.Main;
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -14,6 +15,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.registries.ObjectHolder;
 
 @ObjectHolder(Main.MODID)
@@ -100,6 +102,22 @@ public abstract class RuneItem extends Item implements IRunePowers {
 			if (p.canActivatePowers(runeable))
 				p.onRightClickMajor(runeable, player, rune);
 	}
+	
+	public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+			Set<ItemStack> runes) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				speed = p.onBreakSpeed(runeable, player, state, pos, speed, runes);
+		return speed;
+	}
+
+	public float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+			ItemStack rune) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				speed = p.onBreakSpeedMajor(runeable, player, state, pos, speed, rune);
+		return speed;
+	}
 
 	public int getColor() {
 		return color;
@@ -126,5 +144,4 @@ public abstract class RuneItem extends Item implements IRunePowers {
 				return true;
 		return false;
 	}
-
 }
