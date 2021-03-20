@@ -114,19 +114,6 @@ public class RuneforgeContainer extends Container {
 		return runeableSlot.getStack();
 	}
 
-	@Override
-	public void detectAndSendChanges() {
-		ItemStack runeable = getRuneable();
-		runeable.getCapability(Runes.CAPABILITY).ifPresent(runes -> {
-			if (runes.isDirty()) {
-				CompoundNBT tag = runeable.getOrCreateTag();
-				tag.putBoolean("dirty", !tag.getBoolean("dirty"));
-				runeable.setTag(tag);
-			}
-		});
-		super.detectAndSendChanges();
-	}
-
 	private void updateRuneSlots() {
 		LazyOptional<Runes> maybeRunes = Runes.getRunes(runeableSlot.getStack());
 		maybeRunes.ifPresent(runes -> {

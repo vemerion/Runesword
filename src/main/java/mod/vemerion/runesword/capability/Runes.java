@@ -51,7 +51,6 @@ public class Runes extends ItemStackHandler {
 	public static final int THIRD_MINOR_SLOT = 3;
 
 	private ItemStack owner;
-	private boolean isDirty = true;
 
 	public Runes() {
 		this(ItemStack.EMPTY);
@@ -60,17 +59,22 @@ public class Runes extends ItemStackHandler {
 	public Runes(ItemStack owner) {
 		super(RUNES_COUNT);
 		this.owner = owner;
+
+		loadRunes();
 	}
 
-	public boolean isDirty() {
-		boolean dirty = isDirty;
-		isDirty = false;
-		return dirty;
-	}
+	private void loadRunes() {
+		if (owner.isEmpty())
+			return;
 
+		CompoundNBT nbt = owner.getOrCreateTag();
+		if (nbt.contains(Main.MODID))
+			deserializeNBT(nbt.getCompound(Main.MODID));
+	}
+	
 	@Override
 	protected void onContentsChanged(int slot) {
-		isDirty = true;
+		owner.getOrCreateTag().put(Main.MODID, serializeNBT());
 	}
 
 	private Map<RuneItem, Set<ItemStack>> getRunesMap() {
@@ -146,7 +150,7 @@ public class Runes extends ItemStackHandler {
 			((RuneItem) major.getItem()).onRightClickMajor(owner, player, major);
 
 	}
-	
+
 	public float onBreakSpeed(PlayerEntity player, BlockState state, BlockPos pos, float speed) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			speed = entry.getKey().onBreakSpeed(owner, player, state, pos, speed, entry.getValue());
@@ -154,7 +158,7 @@ public class Runes extends ItemStackHandler {
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
 			speed = ((RuneItem) major.getItem()).onBreakSpeedMajor(owner, player, state, pos, speed, major);
-		
+
 		return speed;
 	}
 

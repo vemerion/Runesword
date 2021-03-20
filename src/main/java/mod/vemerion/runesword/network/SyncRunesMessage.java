@@ -13,6 +13,7 @@ import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.DistExecutor.SafeRunnable;
 import net.minecraftforge.fml.network.NetworkEvent;
 
+@Deprecated
 public class SyncRunesMessage {
 
 	private CompoundNBT compound;

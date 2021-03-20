@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+@Deprecated
 public class RunesContainerListener implements IContainerListener {
 
 	private ServerPlayerEntity player;
