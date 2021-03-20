@@ -9,7 +9,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -25,13 +24,14 @@ import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ToolType;
 
 public class EarthRuneItem extends RuneItem {
 
 	public EarthRuneItem(Properties properties) {
 		super(new Color(100, 50, 0).getRGB(), ImmutableList.of(new SwordPowers(), new AxePowers()), properties);
 	}
-	
+
 	private static class AxePowers extends RunePowers {
 
 		@Override
@@ -43,16 +43,22 @@ public class EarthRuneItem extends RuneItem {
 		public boolean isBeneficialEnchantment(Enchantment enchantment) {
 			return false;
 		}
-		
+
 		@Override
 		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
 				Set<ItemStack> runes) {
-			if (state.getBlock() == Blocks.STONE)
-				return speed * 40;
-			
+			if (state.getHarvestTool() == ToolType.PICKAXE)
+				return speed * runes.size();
+
 			return super.onBreakSpeed(runeable, player, state, pos, speed, runes);
 		}
-		
+
+		@Override
+		public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state,
+				boolean canHarvest, ItemStack rune) {
+			return canHarvest || state.getHarvestTool() == ToolType.PICKAXE;
+		}
+
 	}
 
 	private static class SwordPowers extends RunePowers {

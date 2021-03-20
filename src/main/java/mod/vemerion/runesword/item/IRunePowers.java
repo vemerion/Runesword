@@ -35,4 +35,10 @@ public interface IRunePowers {
 
 	float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
 			ItemStack rune);
+
+	boolean onHarvestCheck(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+			Set<ItemStack> runes);
+
+	boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+			ItemStack rune);
 }

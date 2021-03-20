@@ -58,4 +58,10 @@ public class ForgeEventSubscriber {
 		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event.setNewSpeed(
 				runes.onBreakSpeed(event.getPlayer(), event.getState(), event.getPos(), event.getOriginalSpeed())));
 	}
+	
+	@SubscribeEvent
+	public static void runeHarvestCheck(PlayerEvent.HarvestCheck event) {
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event.setCanHarvest(
+				runes.onHarvestCheck(event.getPlayer(), event.getTargetBlock(), event.canHarvest())));
+	}
 }

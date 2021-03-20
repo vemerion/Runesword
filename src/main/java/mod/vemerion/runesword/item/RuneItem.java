@@ -102,7 +102,8 @@ public abstract class RuneItem extends Item implements IRunePowers {
 			if (p.canActivatePowers(runeable))
 				p.onRightClickMajor(runeable, player, rune);
 	}
-	
+
+	@Override
 	public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
 			Set<ItemStack> runes) {
 		for (RunePowers p : powers)
@@ -111,12 +112,30 @@ public abstract class RuneItem extends Item implements IRunePowers {
 		return speed;
 	}
 
+	@Override
 	public float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
 			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
 				speed = p.onBreakSpeedMajor(runeable, player, state, pos, speed, rune);
 		return speed;
+	}
+
+	@Override
+	public boolean onHarvestCheck(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest, Set<ItemStack> runes) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				canHarvest = p.onHarvestCheck(runeable, player, state, canHarvest, runes);
+		return canHarvest;
+	}
+
+	@Override
+	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state,
+			boolean canHarvest, ItemStack rune) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				canHarvest = p.onHarvestCheckMajor(runeable, player, state, canHarvest, rune);
+		return canHarvest;
 	}
 
 	public int getColor() {
@@ -136,7 +155,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	public int getItemEnchantability() {
 		return 10;
 	}
-	
+
 	@Override
 	public boolean canApplyAtEnchantingTable(ItemStack stack, Enchantment enchantment) {
 		for (RunePowers p : powers)

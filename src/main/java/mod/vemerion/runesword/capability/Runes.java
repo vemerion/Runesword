@@ -161,6 +161,17 @@ public class Runes extends ItemStackHandler {
 
 		return speed;
 	}
+	
+	public boolean onHarvestCheck(PlayerEntity player, BlockState state, boolean canHarvest) {
+		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
+			canHarvest = entry.getKey().onHarvestCheck(owner, player, state, canHarvest, entry.getValue());
+
+		ItemStack major = getStackInSlot(MAJOR_SLOT);
+		if (!major.isEmpty())
+			canHarvest = ((RuneItem) major.getItem()).onHarvestCheckMajor(owner, player, state, canHarvest, major);
+
+		return canHarvest;
+	}
 
 	public Collection<? extends ITextComponent> getTooltip() {
 		List<ITextComponent> tooltip = new ArrayList<>();

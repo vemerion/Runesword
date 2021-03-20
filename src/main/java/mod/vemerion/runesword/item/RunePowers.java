@@ -69,6 +69,18 @@ public abstract class RunePowers implements IRunePowers {
 		return speed;
 	}
 
+	@Override
+	public boolean onHarvestCheck(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+			Set<ItemStack> runes) {
+		return canHarvest;
+	}
+
+	@Override
+	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+			ItemStack rune) {
+		return canHarvest;
+	}
+
 	public static boolean isSword(ItemStack stack) {
 		return stack.getItem() instanceof SwordItem;
 	}
