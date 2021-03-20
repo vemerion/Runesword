@@ -172,6 +172,15 @@ public class Runes extends ItemStackHandler {
 
 		return canHarvest;
 	}
+	
+	public void onBlockBreak(PlayerEntity player, BlockState state, BlockPos pos) {
+		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
+			entry.getKey().onBlockBreak(owner, player, state, pos, entry.getValue());
+
+		ItemStack major = getStackInSlot(MAJOR_SLOT);
+		if (!major.isEmpty())
+			((RuneItem) major.getItem()).onBlockBreakMajor(owner, player, state, pos, major);
+	}
 
 	public Collection<? extends ITextComponent> getTooltip() {
 		List<ITextComponent> tooltip = new ArrayList<>();

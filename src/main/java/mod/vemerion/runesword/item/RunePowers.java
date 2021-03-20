@@ -80,6 +80,16 @@ public abstract class RunePowers implements IRunePowers {
 			ItemStack rune) {
 		return canHarvest;
 	}
+	
+	@Override
+	public void onBlockBreak(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+			Set<ItemStack> runes) {
+	}
+	
+	@Override
+	public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+			ItemStack rune) {
+	}
 
 	public static boolean isSword(ItemStack stack) {
 		return stack.getItem() instanceof SwordItem;
@@ -112,5 +122,9 @@ public abstract class RunePowers implements IRunePowers {
 					.forEach((ench, level) -> enchantments.merge(ench, level, (l1, l2) -> l1 + l2));
 		}
 		return enchantments;
+	}
+	
+	protected final void mendItem(ItemStack item, int amount) {
+		item.setDamage(item.getDamage() - amount);
 	}
 }

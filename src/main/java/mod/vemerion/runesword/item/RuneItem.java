@@ -122,7 +122,8 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public boolean onHarvestCheck(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest, Set<ItemStack> runes) {
+	public boolean onHarvestCheck(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+			Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
 				canHarvest = p.onHarvestCheck(runeable, player, state, canHarvest, runes);
@@ -130,12 +131,28 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state,
-			boolean canHarvest, ItemStack rune) {
+	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
 				canHarvest = p.onHarvestCheckMajor(runeable, player, state, canHarvest, rune);
 		return canHarvest;
+	}
+
+	@Override
+	public void onBlockBreak(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+			Set<ItemStack> runes) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onBlockBreak(runeable, player, state, pos, runes);
+	}
+
+	@Override
+	public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+			ItemStack rune) {
+		for (RunePowers p : powers)
+			if (p.canActivatePowers(runeable))
+				p.onBlockBreakMajor(runeable, player, state, pos, rune);
 	}
 
 	public int getColor() {

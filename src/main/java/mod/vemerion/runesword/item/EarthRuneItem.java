@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -23,6 +24,7 @@ import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
@@ -34,6 +36,8 @@ public class EarthRuneItem extends RuneItem {
 
 	private static class AxePowers extends RunePowers {
 
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.MENDING);
+
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
 			return isAxe(stack);
@@ -41,7 +45,7 @@ public class EarthRuneItem extends RuneItem {
 
 		@Override
 		public boolean isBeneficialEnchantment(Enchantment enchantment) {
-			return false;
+			return ENCHANTS.contains(enchantment);
 		}
 
 		@Override
@@ -56,7 +60,22 @@ public class EarthRuneItem extends RuneItem {
 		@Override
 		public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state,
 				boolean canHarvest, ItemStack rune) {
-			return canHarvest || state.getHarvestTool() == ToolType.PICKAXE;
+			return state.getHarvestTool() == ToolType.PICKAXE;
+		}
+
+		@Override
+		public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+				ItemStack rune) {
+			if (getEnchantmentLevel(Enchantments.MENDING, rune) > 0 && random.nextDouble() < 0.3)
+				mendItem(runeable, 2);
+
+			if (state.getBlock() == Blocks.STONE && !player.isCreative()
+					&& random.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.2) {
+				Vector3d position = Vector3d.copyCentered(pos);
+				ItemEntity cobblestone = new ItemEntity(player.world, position.getX(), position.getY(), position.getZ(),
+						Blocks.COBBLESTONE.asItem().getDefaultInstance());
+				player.world.addEntity(cobblestone);
+			}
 		}
 
 	}

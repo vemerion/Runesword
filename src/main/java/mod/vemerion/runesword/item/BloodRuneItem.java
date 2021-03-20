@@ -54,7 +54,7 @@ public class BloodRuneItem extends RuneItem {
 				if (player.isInWater())
 					heal += getEnchantmentLevel(Enchantments.AQUA_AFFINITY, runes);
 				player.heal(heal);
-				sword.setDamage(sword.getDamage() - getEnchantmentLevel(Enchantments.MENDING, runes));
+				mendItem(sword, getEnchantmentLevel(Enchantments.MENDING, runes));
 			}
 		}
 	}

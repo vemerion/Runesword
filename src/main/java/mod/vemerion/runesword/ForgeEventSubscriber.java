@@ -9,6 +9,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -58,10 +59,16 @@ public class ForgeEventSubscriber {
 		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event.setNewSpeed(
 				runes.onBreakSpeed(event.getPlayer(), event.getState(), event.getPos(), event.getOriginalSpeed())));
 	}
-	
+
 	@SubscribeEvent
 	public static void runeHarvestCheck(PlayerEvent.HarvestCheck event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event.setCanHarvest(
-				runes.onHarvestCheck(event.getPlayer(), event.getTargetBlock(), event.canHarvest())));
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event
+				.setCanHarvest(runes.onHarvestCheck(event.getPlayer(), event.getTargetBlock(), event.canHarvest())));
+	}
+
+	@SubscribeEvent
+	public static void runeBlockBreak(BlockEvent.BreakEvent event) {
+		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+				.ifPresent(runes -> runes.onBlockBreak(event.getPlayer(), event.getState(), event.getPos()));
 	}
 }

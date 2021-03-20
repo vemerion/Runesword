@@ -41,4 +41,8 @@ public interface IRunePowers {
 
 	boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
 			ItemStack rune);
+
+	void onBlockBreak(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, Set<ItemStack> runes);
+
+	void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, ItemStack rune);
 }
