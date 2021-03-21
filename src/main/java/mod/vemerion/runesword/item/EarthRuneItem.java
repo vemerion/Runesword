@@ -36,7 +36,8 @@ public class EarthRuneItem extends RuneItem {
 
 	private static class AxePowers extends RunePowers {
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.MENDING);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.MENDING,
+				Enchantments.EFFICIENCY, Enchantments.FLAME, Enchantments.FIRE_ASPECT);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -51,10 +52,19 @@ public class EarthRuneItem extends RuneItem {
 		@Override
 		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
 				Set<ItemStack> runes) {
-			if (state.getHarvestTool() == ToolType.PICKAXE)
-				return speed * runes.size();
+			if (state.getHarvestTool() == ToolType.PICKAXE) {
+				speed += runes.size();
 
-			return super.onBreakSpeed(runeable, player, state, pos, speed, runes);
+				speed += getEnchantmentLevel(Enchantments.EFFICIENCY, runes);
+
+				if (player.world.getDimensionKey() == World.THE_NETHER)
+					speed += getEnchantmentLevel(Enchantments.FLAME, runes) * 3;
+
+				if (player.getFireTimer() > 0)
+					speed += getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 2;
+			}
+
+			return speed;
 		}
 
 		@Override
