@@ -6,6 +6,7 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -14,13 +15,61 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
 public class AirRuneItem extends RuneItem {
 
 	public AirRuneItem(Properties properties) {
-		super(new Color(170, 220, 220).getRGB(), ImmutableList.of(new SwordPowers()), properties);
+		super(new Color(170, 220, 220).getRGB(), ImmutableList.of(new SwordPowers(), new AxePowers()), properties);
+	}
+
+	public static class AxePowers extends RunePowers {
+		
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.SILK_TOUCH,
+				Enchantments.EFFICIENCY, Enchantments.FEATHER_FALLING, Enchantments.FORTUNE, Enchantments.INFINITY);
+
+		@Override
+		public boolean canActivatePowers(ItemStack stack) {
+			return isAxe(stack);
+		}
+
+		@Override
+		public boolean isBeneficialEnchantment(Enchantment enchantment) {
+			return ENCHANTS.contains(enchantment);
+		}
+
+		@Override
+		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+				Set<ItemStack> runes) {
+			boolean isLeave = state.isIn(BlockTags.LEAVES);
+			boolean hasSilkTouch = getEnchantmentLevel(Enchantments.SILK_TOUCH, runes) > 0;
+			if (runeable.getToolTypes().contains(state.getHarvestTool()) || (isLeave && hasSilkTouch)) {
+				if (!player.isOnGround())
+					speed += 7 + getEnchantmentLevel(Enchantments.EFFICIENCY, runes);
+
+				if (player.isPotionActive(Effects.LEVITATION))
+					speed += getEnchantmentLevel(Enchantments.FEATHER_FALLING, runes);
+			}
+
+			return speed;
+		}
+
+		@Override
+		public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+				ItemStack rune) {
+			if (runeable.getToolTypes().contains(state.getHarvestTool())) {
+				if (random.nextDouble() < 0.2 + getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.1) {
+					int duration = 20 * 10;
+					if (getEnchantmentLevel(Enchantments.INFINITY, rune) > 0)
+						duration *= 2;
+					player.addPotionEffect(new EffectInstance(Effects.LEVITATION, duration, 0));
+				}
+			}
+		}
+
 	}
 
 	private static class SwordPowers extends RunePowers {
