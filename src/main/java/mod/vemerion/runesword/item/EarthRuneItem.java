@@ -70,7 +70,7 @@ public class EarthRuneItem extends RuneItem {
 		@Override
 		public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state,
 				boolean canHarvest, ItemStack rune) {
-			return state.getHarvestTool() == ToolType.PICKAXE;
+			return canHarvest || state.getHarvestTool() == ToolType.PICKAXE;
 		}
 
 		@Override
