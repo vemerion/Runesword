@@ -121,4 +121,13 @@ public abstract class RunePowers implements IRunePowers {
 	protected final void mendItem(ItemStack item, int amount) {
 		item.setDamage(item.getDamage() - amount);
 	}
+	
+	protected final void attack(PlayerEntity player, Entity target, float damage) {
+		target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
+		target.hurtResistantTime = 0;
+	}
+	
+	protected final boolean isCorrectTool(ItemStack stack, BlockState state) {
+		return stack.getToolTypes().contains(state.getHarvestTool());
+	}
 }

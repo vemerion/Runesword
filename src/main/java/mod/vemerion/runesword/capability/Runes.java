@@ -151,6 +151,7 @@ public class Runes extends ItemStackHandler {
 
 	}
 
+	// On both sides
 	public float onBreakSpeed(PlayerEntity player, BlockState state, BlockPos pos, float speed) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			speed = entry.getKey().onBreakSpeed(owner, player, state, pos, speed, entry.getValue());
@@ -162,6 +163,7 @@ public class Runes extends ItemStackHandler {
 		return speed;
 	}
 
+	// Server only
 	public boolean onHarvestCheck(PlayerEntity player, BlockState state, boolean canHarvest) {
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
@@ -170,6 +172,7 @@ public class Runes extends ItemStackHandler {
 		return canHarvest;
 	}
 
+	// Server only
 	public void onBlockBreak(PlayerEntity player, BlockState state, BlockPos pos) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			entry.getKey().onBlockBreak(owner, player, state, pos, entry.getValue());
