@@ -122,15 +122,6 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public boolean onHarvestCheck(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
-			Set<ItemStack> runes) {
-		for (RunePowers p : powers)
-			if (p.canActivatePowers(runeable))
-				canHarvest = p.onHarvestCheck(runeable, player, state, canHarvest, runes);
-		return canHarvest;
-	}
-
-	@Override
 	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
 			ItemStack rune) {
 		for (RunePowers p : powers)

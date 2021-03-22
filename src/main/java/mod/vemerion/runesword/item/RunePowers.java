@@ -70,12 +70,6 @@ public abstract class RunePowers implements IRunePowers {
 	}
 
 	@Override
-	public boolean onHarvestCheck(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
-			Set<ItemStack> runes) {
-		return canHarvest;
-	}
-
-	@Override
 	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
 			ItemStack rune) {
 		return canHarvest;

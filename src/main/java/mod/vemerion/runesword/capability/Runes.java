@@ -71,7 +71,7 @@ public class Runes extends ItemStackHandler {
 		if (nbt.contains(Main.MODID))
 			deserializeNBT(nbt.getCompound(Main.MODID));
 	}
-	
+
 	@Override
 	protected void onContentsChanged(int slot) {
 		owner.getOrCreateTag().put(Main.MODID, serializeNBT());
@@ -161,18 +161,15 @@ public class Runes extends ItemStackHandler {
 
 		return speed;
 	}
-	
-	public boolean onHarvestCheck(PlayerEntity player, BlockState state, boolean canHarvest) {
-		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
-			canHarvest = entry.getKey().onHarvestCheck(owner, player, state, canHarvest, entry.getValue());
 
+	public boolean onHarvestCheck(PlayerEntity player, BlockState state, boolean canHarvest) {
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
 			canHarvest = ((RuneItem) major.getItem()).onHarvestCheckMajor(owner, player, state, canHarvest, major);
 
 		return canHarvest;
 	}
-	
+
 	public void onBlockBreak(PlayerEntity player, BlockState state, BlockPos pos) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			entry.getKey().onBlockBreak(owner, player, state, pos, entry.getValue());
