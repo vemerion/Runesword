@@ -6,6 +6,7 @@ import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.block.RuneforgeBlock;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
+import mod.vemerion.runesword.effect.BleedEffect;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
 import mod.vemerion.runesword.entity.MagicBallEntity;
@@ -33,6 +34,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.particles.ParticleType;
+import net.minecraft.potion.Effect;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
@@ -152,6 +154,11 @@ public class ModEventSubscriber {
 				.register(setup(new RuneLootModifier.Serializer(RuneItem.BLOOD_RUNE_ITEM), "blood_rune_loot_modifier"));
 		event.getRegistry()
 				.register(setup(new RuneLootModifier.Serializer(RuneItem.AIR_RUNE_ITEM), "air_rune_loot_modifier"));
+	}
+	
+	@SubscribeEvent
+	public static void onRegisterEffect(RegistryEvent.Register<Effect> event) {
+		event.getRegistry().register(setup(new BleedEffect(), "bleed_effect"));
 	}
 
 	@SubscribeEvent

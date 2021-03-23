@@ -1,8 +1,10 @@
 {
   "block.runesword.runeforge_block": "Runeforge",
+  "death.attack.runesword.bleed": "%1$s bled to death",
   "death.attack.runesword.magic": "%1$s was magicked to death",
   "death.attack.runesword.magicindirect": "%1$s was magicked to death by %2$s",
   "death.attack.runesword.magicplayer": "%1$s was magicked to death by %2$s",
+  "effect.runesword.bleed_effect": "Bleed",
   "entity.runesword.frost_golem_entity": "Frost Golem",
   "entity.runesword.frostball_entity": "Frostball",
   "entity.runesword.magic_ball_entity": "Magic Ball",

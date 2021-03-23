@@ -27,11 +27,13 @@ public class ModLanguageProvider extends LanguageProvider {
 		addText("tooltip", "major", "Major: ");
 		add(Main.GUIDE_ITEM, "Runesword Guide");
 		add("itemGroup." + Main.MODID, "Runesword");
+		add(Main.BLEED_EFFECT, "Bleed");
 		addGui("guide", "Runesword");
 		addGui("home", "Home");
 		addText("death.attack", "magicplayer", "%1$s was magicked to death by %2$s");
 		addText("death.attack", "magicindirect", "%1$s was magicked to death by %2$s");
 		addText("death.attack", "magic", "%1$s was magicked to death");
+		addText("death.attack", "bleed", "%1$s bled to death");
 		add(Main.FROST_GOLEM_ENTITY, "Frost Golem");
 		add(Main.FROSTBALL_ENTITY, "Frostball");
 		add(Main.MAGIC_BALL_ENTITY, "Magic Ball");

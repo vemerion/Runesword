@@ -1,6 +1,7 @@
 package mod.vemerion.runesword;
 
 import mod.vemerion.runesword.container.RuneforgeContainer;
+import mod.vemerion.runesword.effect.BleedEffect;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
 import mod.vemerion.runesword.entity.MagicBallEntity;
@@ -71,6 +72,9 @@ public class Main {
 	
 	@ObjectHolder(Main.MODID + ":magic_ball_particle")
 	public static final ParticleType<MagicBallParticleData> MAGIC_BALL_PARTICLE = null;
+	
+	@ObjectHolder(Main.MODID + ":bleed_effect")
+	public static final BleedEffect BLEED_EFFECT = null;
 	
 	public static final ItemGroup RUNES_ITEM_GROUP = new RuneswordItemGroup();
 
