@@ -14,6 +14,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundEvent;
@@ -72,6 +73,9 @@ public class Main {
 	
 	@ObjectHolder(Main.MODID + ":magic_ball_particle")
 	public static final ParticleType<MagicBallParticleData> MAGIC_BALL_PARTICLE = null;
+	
+	@ObjectHolder(Main.MODID + ":bleed_particle")
+	public static final BasicParticleType BLEED_PARTICLE = null;
 	
 	@ObjectHolder(Main.MODID + ":bleed_effect")
 	public static final BleedEffect BLEED_EFFECT = null;

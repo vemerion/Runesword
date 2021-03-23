@@ -1,6 +1,7 @@
 package mod.vemerion.runesword;
 
 import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.particle.BleedParticle;
 import mod.vemerion.runesword.particle.MagicBallParticle;
 import mod.vemerion.runesword.renderer.RuneforgeTileEntityRenderer;
 import mod.vemerion.runesword.screen.RuneforgeScreen;
@@ -44,6 +45,7 @@ public class ClientModEventSubscriber {
 	public static void onRegisterParticleFactory(ParticleFactoryRegisterEvent event) {
 		Minecraft mc = Minecraft.getInstance();
 		mc.particles.registerFactory(Main.MAGIC_BALL_PARTICLE, (s) -> new MagicBallParticle.Factory(s));
+		mc.particles.registerFactory(Main.BLEED_PARTICLE, (s) -> new BleedParticle.Factory(s));
 	}
 
 	@SubscribeEvent

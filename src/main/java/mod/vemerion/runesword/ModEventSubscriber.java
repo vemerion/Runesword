@@ -33,6 +33,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.particles.BasicParticleType;
 import net.minecraft.particles.ParticleType;
 import net.minecraft.potion.Effect;
 import net.minecraft.tileentity.TileEntityType;
@@ -139,6 +140,8 @@ public class ModEventSubscriber {
 						return MagicBallParticleData.CODEC;
 					}
 				}, "magic_ball_particle"));
+
+		event.getRegistry().register(setup(new BasicParticleType(true), "bleed_particle"));
 	}
 
 	@SubscribeEvent
@@ -155,7 +158,7 @@ public class ModEventSubscriber {
 		event.getRegistry()
 				.register(setup(new RuneLootModifier.Serializer(RuneItem.AIR_RUNE_ITEM), "air_rune_loot_modifier"));
 	}
-	
+
 	@SubscribeEvent
 	public static void onRegisterEffect(RegistryEvent.Register<Effect> event) {
 		event.getRegistry().register(setup(new BleedEffect(), "bleed_effect"));
@@ -167,7 +170,7 @@ public class ModEventSubscriber {
 
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
 	}
-	
+
 	@SubscribeEvent
 	public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
 		event.put(Main.FROST_GOLEM_ENTITY, SnowGolemEntity.func_234226_m_().create());
