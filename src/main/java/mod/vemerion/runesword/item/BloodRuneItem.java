@@ -6,18 +6,62 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import mod.vemerion.runesword.Main;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.potion.EffectInstance;
 import net.minecraft.util.DamageSource;
 
 public class BloodRuneItem extends RuneItem {
 
 	public BloodRuneItem(Properties properties) {
-		super(new Color(210, 20, 20).getRGB(), ImmutableList.of(new SwordPowers()), properties);
+		super(new Color(210, 20, 20).getRGB(), ImmutableList.of(new SwordPowers(), new AxePowers()), properties);
+	}
+
+	public static class AxePowers extends RunePowers {
+
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.INFINITY,
+				Enchantments.POWER, Enchantments.SHARPNESS, Enchantments.LOYALTY);
+
+		private static final int BASE_DURATION = 20 * 6;
+		private static final int INF_DURATION = 20 * 2;
+
+		@Override
+		public boolean canActivatePowers(ItemStack stack) {
+			return isAxe(stack);
+		}
+
+		@Override
+		public boolean isBeneficialEnchantment(Enchantment enchantment) {
+			return ENCHANTS.contains(enchantment);
+		}
+
+		@Override
+		public void onAttack(ItemStack runeable, PlayerEntity player, Entity target, Set<ItemStack> runes) {
+			int fortune = getEnchantmentLevel(Enchantments.FORTUNE, runes);
+			if (target instanceof LivingEntity && random.nextDouble() < runes.size() * 0.1 + fortune * 0.03) {
+				int duration = BASE_DURATION + getEnchantmentLevel(Enchantments.INFINITY, runes) * INF_DURATION;
+				int level = random.nextDouble() < getEnchantmentLevel(Enchantments.POWER, runes) * 0.01 ? 1 : 0;
+				((LivingEntity) target)
+						.addPotionEffect(new EffectInstance(Main.BLEED_EFFECT, duration, level, false, false, true));
+			}
+		}
+
+		@Override
+		public void onAttackMajor(ItemStack runeable, PlayerEntity player, Entity target, ItemStack rune) {
+			if (target instanceof LivingEntity && ((LivingEntity) target).isPotionActive(Main.BLEED_EFFECT)) {
+				float damage = 4 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.5f;
+				attack(player, target, damage);
+
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY, rune) * 0.1)
+					player.heal(0.5f);
+			}
+		}
+
 	}
 
 	private static class SwordPowers extends RunePowers {
