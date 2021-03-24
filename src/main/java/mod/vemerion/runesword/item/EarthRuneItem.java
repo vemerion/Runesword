@@ -24,7 +24,6 @@ import net.minecraft.item.Items;
 import net.minecraft.item.crafting.IRecipeType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
@@ -80,12 +79,8 @@ public class EarthRuneItem extends RuneItem {
 				mendItem(runeable, 2);
 
 			if (state.getBlock() == Blocks.STONE && !player.isCreative()
-					&& random.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.2) {
-				Vector3d position = Vector3d.copyCentered(pos);
-				ItemEntity cobblestone = new ItemEntity(player.world, position.getX(), position.getY(), position.getZ(),
-						Blocks.COBBLESTONE.asItem().getDefaultInstance());
-				player.world.addEntity(cobblestone);
-			}
+					&& random.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.2)
+				spawnItem(player.world, pos, Blocks.COBBLESTONE.asItem().getDefaultInstance());
 		}
 
 	}

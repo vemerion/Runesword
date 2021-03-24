@@ -9,12 +9,15 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 
 public abstract class RunePowers implements IRunePowers {
@@ -74,12 +77,12 @@ public abstract class RunePowers implements IRunePowers {
 			ItemStack rune) {
 		return canHarvest;
 	}
-	
+
 	@Override
 	public void onBlockBreak(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
 			Set<ItemStack> runes) {
 	}
-	
+
 	@Override
 	public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
 			ItemStack rune) {
@@ -97,6 +100,7 @@ public abstract class RunePowers implements IRunePowers {
 
 	public abstract boolean isBeneficialEnchantment(Enchantment enchantment);
 
+	// Helper methods
 	protected final int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
 		int level = 0;
 		for (ItemStack stack : stacks)
@@ -117,17 +121,24 @@ public abstract class RunePowers implements IRunePowers {
 		}
 		return enchantments;
 	}
-	
+
 	protected final void mendItem(ItemStack item, int amount) {
 		item.setDamage(item.getDamage() - amount);
 	}
-	
+
 	protected final void attack(PlayerEntity player, Entity target, float damage) {
 		target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
 		target.hurtResistantTime = 0;
 	}
-	
+
 	protected final boolean isCorrectTool(ItemStack stack, BlockState state) {
 		return stack.getToolTypes().contains(state.getHarvestTool());
+	}
+
+	protected final void spawnItem(World world, BlockPos pos, ItemStack stack) {
+		Vector3d position = Vector3d.copyCentered(pos);
+		ItemEntity entity = new ItemEntity(world, position.getX(), position.getY(), position.getZ(), stack);
+		world.addEntity(entity);
+
 	}
 }
