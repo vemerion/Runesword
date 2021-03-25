@@ -18,16 +18,23 @@ import mod.vemerion.runesword.network.AxeMagicPowersMessage;
 import mod.vemerion.runesword.network.Network;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.CreatureAttribute;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.CooldownTracker;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Explosion.Mode;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -39,6 +46,9 @@ public class MagicRuneItem extends RuneItem {
 	}
 
 	private static class AxePowers extends RunePowers {
+
+		private static final double START_RADIUS = 2;
+		private static final float START_DAMAGE = 3;
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -53,10 +63,32 @@ public class MagicRuneItem extends RuneItem {
 		@Override
 		public void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune) {
 			Runes.getRunes(runeable).ifPresent(runes -> {
-				Map<Enchantment, Integer> enchantments = getEnchantments(minorMagicRunes(runes));
+				World world = player.world;
+				Map<Enchantment, Integer> enchants = getEnchantments(minorMagicRunes(runes));
+				double radius = START_RADIUS;
+				DamageSource source = Helper.magicDamage(player);
 
+				// More radius in water with depth strider
+				if (player.isInWater())
+					radius += getEnchantmentLevel(Enchantments.DEPTH_STRIDER, enchants) / 9d;
+
+				AxisAlignedBB box = new AxisAlignedBB(player.getPositionVec(), player.getPositionVec())
+						.grow(radius, 0, radius).expand(0, 2, 0);
+				for (Entity e : world.getEntitiesWithinAABBExcludingEntity(player, box)) {
+					applyMagicDamage(e, source, START_DAMAGE, enchants, random, 0.7f);
+
+					if (e instanceof ProjectileEntity && random
+							.nextDouble() < getEnchantmentLevel(Enchantments.PROJECTILE_PROTECTION, enchants) * 0.05)
+						e.remove();
+				}
+
+				// Explosion
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION, enchants) * 0.025)
+					world.createExplosion(player, player.getPosX(), player.getPosY(), player.getPosZ(), 2, Mode.BREAK);
+
+				// Send particle message
 				Network.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
-						new AxeMagicPowersMessage(enchantments, player.getPositionVec(), 3));
+						new AxeMagicPowersMessage(enchants, player.getPositionVec(), radius));
 			});
 		}
 
@@ -139,6 +171,29 @@ public class MagicRuneItem extends RuneItem {
 				minorRunes.add(rune);
 		}
 		return minorRunes;
+	}
+
+	public static void applyMagicDamage(Entity target, DamageSource source, float damage,
+			Map<Enchantment, Integer> enchants, Random rand, float multiplier) {
+		if (target instanceof LivingEntity) {
+			LivingEntity living = (LivingEntity) target;
+			if (living.getCreatureAttribute() == CreatureAttribute.ARTHROPOD)
+				damage += enchants.getOrDefault(Enchantments.BANE_OF_ARTHROPODS, 0) * 0.4 * multiplier;
+			else if (living.getCreatureAttribute() == CreatureAttribute.UNDEAD)
+				damage += enchants.getOrDefault(Enchantments.SMITE, 0) * 0.4 * multiplier;
+			else if (living.getCreatureAttribute() == CreatureAttribute.WATER)
+				damage += enchants.getOrDefault(Enchantments.IMPALING, 0) * 0.4 * multiplier;
+		}
+		damage += enchants.getOrDefault(Enchantments.SHARPNESS, 0) * 0.3 * multiplier;
+
+		if (target.isInWater())
+			damage += enchants.getOrDefault(Enchantments.AQUA_AFFINITY, 0) * 2 * multiplier;
+
+		// Crit
+		if (rand.nextDouble() < enchants.getOrDefault(Enchantments.FORTUNE, 0) * 0.045)
+			damage *= 2;
+
+		target.attackEntityFrom(source, damage);
 	}
 
 	public static ListNBT serializeEnchantments(Map<Enchantment, Integer> enchantments) {

@@ -111,6 +111,10 @@ public abstract class RunePowers implements IRunePowers {
 	protected final int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
 		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
 	}
+	
+	protected final int getEnchantmentLevel(Enchantment enchantment, Map<Enchantment, Integer> enchants) {
+		return enchants.getOrDefault(enchantment, 0);
+	}
 
 	protected final Map<Enchantment, Integer> getEnchantments(Set<ItemStack> stacks) {
 		Map<Enchantment, Integer> enchantments = new HashMap<>();

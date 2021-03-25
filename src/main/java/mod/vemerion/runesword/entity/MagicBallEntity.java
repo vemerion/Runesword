@@ -13,7 +13,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -295,7 +294,8 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 					living.addPotionEffect(new EffectInstance(Effects.POISON, 20 * 7));
 			}
 
-			applyDamage(target, source);
+			MagicRuneItem.applyMagicDamage(target, source, (float) getDamage() + distanceDamage(), enchantments, rand,
+					1);
 
 			// Drops
 			if (!target.isAlive() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
@@ -353,31 +353,6 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 
 	private double fireChance() {
 		return getEnchantmentLevel(Enchantments.FIRE_ASPECT) * 0.08 + getEnchantmentLevel(Enchantments.FLAME) * 0.16;
-	}
-
-	private void applyDamage(Entity target, DamageSource source) {
-		float damage = (float) getDamage();
-		if (target instanceof LivingEntity) {
-			LivingEntity living = (LivingEntity) target;
-			if (living.getCreatureAttribute() == CreatureAttribute.ARTHROPOD)
-				damage += getEnchantmentLevel(Enchantments.BANE_OF_ARTHROPODS) * 0.4;
-			else if (living.getCreatureAttribute() == CreatureAttribute.ARTHROPOD)
-				damage += getEnchantmentLevel(Enchantments.SMITE) * 0.4;
-			else if (living.getCreatureAttribute() == CreatureAttribute.WATER)
-				damage += getEnchantmentLevel(Enchantments.IMPALING) * 0.4;
-		}
-		damage += getEnchantmentLevel(Enchantments.SHARPNESS) * 0.3;
-
-		if (target.isInWater())
-			damage += getEnchantmentLevel(Enchantments.AQUA_AFFINITY) * 2;
-
-		damage += distanceDamage();
-
-		// Crit
-		if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE) * 0.045)
-			damage *= 2;
-
-		target.attackEntityFrom(source, damage);
 	}
 
 	private float distanceDamage() {

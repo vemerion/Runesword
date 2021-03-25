@@ -64,17 +64,21 @@ public class AxeMagicPowersMessage {
 				@Override
 				public void run() {
 					World world = Minecraft.getInstance().world;
-					Random rand = world.rand;
-					Enchantment[] enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
+					if (world != null) {
+						Random rand = world.rand;
+						Enchantment[] enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
 
-					for (int i = 0; i < 200; i++) {
-						Color color = MagicRuneItem.getRandEnchColor(rand, enchantmentArr);
-						double direction = Math.toRadians(rand.nextDouble() * 360);
-						double distance = rand.nextDouble() * radius;
-						Vector3d particlePos = pos.add(Math.cos(direction) * distance, rand.nextDouble() * 2,
-								Math.sin(direction) * distance);
-						world.addParticle(new MagicBallParticleData(color.getRed() / 255f, color.getGreen() / 255f,
-								color.getBlue() / 255f), particlePos.x, particlePos.y, particlePos.z, 0, 0, 0);
+						for (int i = 0; i < 200; i++) {
+							Color color = MagicRuneItem.getRandEnchColor(rand, enchantmentArr);
+							double direction = Math.toRadians(rand.nextDouble() * 360);
+							double distance = rand.nextDouble() * radius;
+							Vector3d particlePos = pos.add(Math.cos(direction) * distance, rand.nextDouble() * 2,
+									Math.sin(direction) * distance);
+							world.addParticle(
+									new MagicBallParticleData(color.getRed() / 255f, color.getGreen() / 255f,
+											color.getBlue() / 255f),
+									particlePos.x, particlePos.y, particlePos.z, 0, 0, 0);
+						}
 					}
 				}
 			};
