@@ -22,6 +22,8 @@ import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.item.WaterRuneItem;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
+import mod.vemerion.runesword.network.AxeMagicPowersMessage;
+import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
@@ -169,6 +171,9 @@ public class ModEventSubscriber {
 		RuneswordAPI.guide = new Guide();
 
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
+
+		Network.INSTANCE.registerMessage(0, AxeMagicPowersMessage.class, AxeMagicPowersMessage::encode,
+				AxeMagicPowersMessage::decode, AxeMagicPowersMessage::handle);
 	}
 
 	@SubscribeEvent

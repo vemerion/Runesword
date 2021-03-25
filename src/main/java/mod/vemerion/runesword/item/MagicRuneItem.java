@@ -1,7 +1,11 @@
 package mod.vemerion.runesword.item;
 
+import java.awt.Color;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
@@ -10,27 +14,58 @@ import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.helpers.Helper;
+import mod.vemerion.runesword.network.AxeMagicPowersMessage;
+import mod.vemerion.runesword.network.Network;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.CooldownTracker;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class MagicRuneItem extends RuneItem {
 
 	public MagicRuneItem(Properties properties) {
-		super(Helper.color(100, 0, 100, 255), ImmutableList.of(new SwordPowers()), properties);
+		super(Helper.color(100, 0, 100, 255), ImmutableList.of(new SwordPowers(), new AxePowers()), properties);
 	}
-	
+
+	private static class AxePowers extends RunePowers {
+
+		@Override
+		public boolean canActivatePowers(ItemStack stack) {
+			return isAxe(stack);
+		}
+
+		@Override
+		public boolean isBeneficialEnchantment(Enchantment enchantment) {
+			return false;
+		}
+
+		@Override
+		public void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune) {
+			Runes.getRunes(runeable).ifPresent(runes -> {
+				Map<Enchantment, Integer> enchantments = getEnchantments(minorMagicRunes(runes));
+
+				Network.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
+						new AxeMagicPowersMessage(enchantments, player.getPositionVec(), 3));
+			});
+		}
+
+	}
+
 	private static class SwordPowers extends RunePowers {
-		
+
 		private static final int COOLDOWN = 20 * 10;
-		
+
 		@Override
 		public void onRightClickMajor(ItemStack sword, PlayerEntity player, ItemStack rune) {
 			CooldownTracker cdTracker = player.getCooldownTracker();
@@ -84,16 +119,6 @@ public class MagicRuneItem extends RuneItem {
 			world.addEntity(ball);
 		}
 
-		private Set<ItemStack> minorMagicRunes(Runes runes) {
-			Set<ItemStack> minorRunes = new HashSet<>();
-			for (int i = Runes.FIRST_MINOR_SLOT; i < Runes.RUNES_COUNT; i++) {
-				ItemStack rune = runes.getStackInSlot(i);
-				if (rune.getItem() instanceof MagicRuneItem)
-					minorRunes.add(rune);
-			}
-			return minorRunes;
-		}
-
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
 			return isSword(stack);
@@ -104,5 +129,92 @@ public class MagicRuneItem extends RuneItem {
 			return enchantment.getRegistryName().getNamespace().equals("minecraft");
 		}
 
+	}
+
+	private static Set<ItemStack> minorMagicRunes(Runes runes) {
+		Set<ItemStack> minorRunes = new HashSet<>();
+		for (int i = Runes.FIRST_MINOR_SLOT; i < Runes.RUNES_COUNT; i++) {
+			ItemStack rune = runes.getStackInSlot(i);
+			if (rune.getItem() instanceof MagicRuneItem)
+				minorRunes.add(rune);
+		}
+		return minorRunes;
+	}
+
+	public static ListNBT serializeEnchantments(Map<Enchantment, Integer> enchantments) {
+		ListNBT list = new ListNBT();
+		for (Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
+			CompoundNBT compound = new CompoundNBT();
+			compound.putString("ench", entry.getKey().getRegistryName().toString());
+			compound.putInt("level", entry.getValue());
+			list.add(compound);
+		}
+		return list;
+	}
+
+	public static Map<Enchantment, Integer> deserializeEnchantments(ListNBT list) {
+		Map<Enchantment, Integer> enchantments = new HashMap<>();
+		for (int i = 0; i < list.size(); i++) {
+			CompoundNBT compound = list.getCompound(i);
+			if (!compound.contains("ench") || !compound.contains("level"))
+				continue;
+			ResourceLocation ench = new ResourceLocation(compound.getString("ench"));
+			if (!ForgeRegistries.ENCHANTMENTS.containsKey(ench))
+				continue;
+			Enchantment enchantment = ForgeRegistries.ENCHANTMENTS.getValue(ench);
+			int level = compound.getInt("level");
+			enchantments.put(enchantment, level);
+		}
+		return enchantments;
+	}
+
+	public static Color getRandEnchColor(Random rand, Enchantment[] enchantments) {
+		Color color = DEFAULT_COLOR;
+		if (enchantments.length > 0)
+			color = MagicRuneItem.ENCHANTMENT_COLORS.getOrDefault(enchantments[rand.nextInt(enchantments.length)],
+					MagicRuneItem.DEFAULT_COLOR);
+		return color;
+	}
+
+	private static final Map<Enchantment, Color> ENCHANTMENT_COLORS = new HashMap<>();
+	private static final Color DEFAULT_COLOR = new Color(100, 0, 100, 255);
+
+	static {
+		ENCHANTMENT_COLORS.put(Enchantments.AQUA_AFFINITY, new Color(0, 0, 200));
+		ENCHANTMENT_COLORS.put(Enchantments.BANE_OF_ARTHROPODS, new Color(0, 0, 0));
+		ENCHANTMENT_COLORS.put(Enchantments.BLAST_PROTECTION, new Color(50, 20, 0));
+		ENCHANTMENT_COLORS.put(Enchantments.CHANNELING, new Color(255, 255, 0));
+		ENCHANTMENT_COLORS.put(Enchantments.DEPTH_STRIDER, new Color(10, 10, 130));
+		ENCHANTMENT_COLORS.put(Enchantments.EFFICIENCY, new Color(180, 180, 180));
+		ENCHANTMENT_COLORS.put(Enchantments.FEATHER_FALLING, new Color(150, 220, 220));
+		ENCHANTMENT_COLORS.put(Enchantments.FIRE_ASPECT, new Color(255, 130, 0));
+		ENCHANTMENT_COLORS.put(Enchantments.FIRE_PROTECTION, new Color(200, 130, 70));
+		ENCHANTMENT_COLORS.put(Enchantments.FLAME, new Color(255, 130, 0));
+		ENCHANTMENT_COLORS.put(Enchantments.FORTUNE, new Color(220, 220, 20));
+		ENCHANTMENT_COLORS.put(Enchantments.FROST_WALKER, new Color(23, 220, 200));
+		ENCHANTMENT_COLORS.put(Enchantments.IMPALING, new Color(30, 30, 30));
+		ENCHANTMENT_COLORS.put(Enchantments.INFINITY, new Color(255, 255, 255));
+		ENCHANTMENT_COLORS.put(Enchantments.KNOCKBACK, new Color(100, 100, 100));
+		ENCHANTMENT_COLORS.put(Enchantments.LOOTING, new Color(190, 180, 40));
+		ENCHANTMENT_COLORS.put(Enchantments.LOYALTY, new Color(140, 80, 80));
+		ENCHANTMENT_COLORS.put(Enchantments.LUCK_OF_THE_SEA, new Color(30, 90, 150));
+		ENCHANTMENT_COLORS.put(Enchantments.LURE, new Color(40, 70, 150));
+		ENCHANTMENT_COLORS.put(Enchantments.MENDING, new Color(40, 130, 50));
+		ENCHANTMENT_COLORS.put(Enchantments.MULTISHOT, new Color(170, 190, 180));
+		ENCHANTMENT_COLORS.put(Enchantments.PIERCING, new Color(200, 200, 200));
+		ENCHANTMENT_COLORS.put(Enchantments.POWER, new Color(255, 20, 20));
+		ENCHANTMENT_COLORS.put(Enchantments.PROJECTILE_PROTECTION, new Color(200, 200, 200));
+		ENCHANTMENT_COLORS.put(Enchantments.PROTECTION, new Color(200, 200, 200));
+		ENCHANTMENT_COLORS.put(Enchantments.PUNCH, new Color(100, 100, 100));
+		ENCHANTMENT_COLORS.put(Enchantments.QUICK_CHARGE, new Color(240, 70, 0));
+		ENCHANTMENT_COLORS.put(Enchantments.RESPIRATION, new Color(190, 255, 240));
+		ENCHANTMENT_COLORS.put(Enchantments.RIPTIDE, new Color(60, 100, 190));
+		ENCHANTMENT_COLORS.put(Enchantments.SHARPNESS, new Color(230, 230, 230));
+		ENCHANTMENT_COLORS.put(Enchantments.SILK_TOUCH, new Color(245, 245, 245));
+		ENCHANTMENT_COLORS.put(Enchantments.SMITE, new Color(255, 230, 40));
+		ENCHANTMENT_COLORS.put(Enchantments.SOUL_SPEED, new Color(50, 50, 40));
+		ENCHANTMENT_COLORS.put(Enchantments.SWEEPING, new Color(200, 200, 200));
+		ENCHANTMENT_COLORS.put(Enchantments.THORNS, new Color(0, 100, 20));
+		ENCHANTMENT_COLORS.put(Enchantments.UNBREAKING, new Color(200, 200, 200));
 	}
 }
