@@ -16,6 +16,8 @@ import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.helpers.Helper;
 import mod.vemerion.runesword.network.AxeMagicPowersMessage;
 import mod.vemerion.runesword.network.Network;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureAttribute;
@@ -33,6 +35,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion.Mode;
 import net.minecraft.world.World;
@@ -66,17 +69,41 @@ public class MagicRuneItem extends RuneItem {
 				World world = player.world;
 				Map<Enchantment, Integer> enchants = getEnchantments(minorMagicRunes(runes));
 				double radius = START_RADIUS;
+				float damage = START_DAMAGE;
 				DamageSource source = Helper.magicDamage(player);
 
 				// More radius in water with depth strider
 				if (player.isInWater())
 					radius += getEnchantmentLevel(Enchantments.DEPTH_STRIDER, enchants) / 9d;
 
+				// More radius with sweeping
+				radius += getEnchantmentLevel(Enchantments.SWEEPING, enchants) / 9d;
+
 				AxisAlignedBB box = new AxisAlignedBB(player.getPositionVec(), player.getPositionVec())
 						.grow(radius, 0, radius).expand(0, 2, 0);
+				int channeling = getEnchantmentLevel(Enchantments.CHANNELING, enchants);
+				int lure = getEnchantmentLevel(Enchantments.LURE, enchants);
 				for (Entity e : world.getEntitiesWithinAABBExcludingEntity(player, box)) {
-					applyMagicDamage(e, source, START_DAMAGE, enchants, random, 0.7f);
+					// More damage further away with channeling
+					damage += channeling * player.getDistance(e) * 0.3f;
+					
+					// More damage in nether with flame
+					if (world.getDimensionKey() == World.THE_NETHER)
+						damage += getEnchantmentLevel(Enchantments.FLAME, enchants);
 
+					System.out.println(damage);
+					applyMagicDamage(e, source, damage, enchants, random, 0.7f);
+
+					// Pull
+					Vector3d direction = player.getPositionVec().subtract(e.getPositionVec()).normalize()
+							.scale(lure / 9d);
+					e.addVelocity(direction.x, direction.y, direction.z);
+					
+					// Fire
+					if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, enchants) * 0.08)
+						e.setFire(3);
+
+					// Remove projectiles
 					if (e instanceof ProjectileEntity && random
 							.nextDouble() < getEnchantmentLevel(Enchantments.PROJECTILE_PROTECTION, enchants) * 0.05)
 						e.remove();
@@ -85,6 +112,33 @@ public class MagicRuneItem extends RuneItem {
 				// Explosion
 				if (random.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION, enchants) * 0.025)
 					world.createExplosion(player, player.getPosX(), player.getPosY(), player.getPosZ(), 2, Mode.BREAK);
+
+				int efficiency = getEnchantmentLevel(Enchantments.EFFICIENCY, enchants);
+				BlockPos.getAllInBox(box).forEach(p -> {
+					
+					// Break wood
+					BlockState state = world.getBlockState(p);
+					if (isCorrectTool(runeable, state) && random.nextDouble() < efficiency * 0.03)
+						world.destroyBlock(p, true);
+					
+					// Trail
+					if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION, enchants) * 0.01)
+						leaveTrail(world, p, Blocks.FIRE.getDefaultState());
+					if (random.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER, enchants) * 0.03)
+						leaveTrail(world, p, Blocks.SNOW.getDefaultState());
+				});
+
+				// Heal player
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.MENDING, enchants) / 3f)
+					player.heal(1);
+
+				// Send out magic ball
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.MULTISHOT, enchants) / 3f) {
+					float pitch = random.nextFloat() * 360;
+					float yaw = random.nextFloat() * 360;
+					Vector3d position = player.getPositionVec().add(0, 1.5, 0);
+					shootMagicBall(player, world, enchants, position, pitch, yaw, 0, 0.5f);
+				}
 
 				// Send particle message
 				Network.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player),
@@ -120,8 +174,8 @@ public class MagicRuneItem extends RuneItem {
 				if (multishot <= 0) {
 					Vector3d direction = Vector3d.fromPitchYaw(player.getPitchYaw());
 					Vector3d position = player.getPositionVec().add(direction.getX() * 1, 1.2, direction.getZ() * 1);
-					shoot(player, world, enchantments, position, player.rotationPitch, player.rotationYaw, inaccuracy,
-							speed);
+					shootMagicBall(player, world, enchantments, position, player.rotationPitch, player.rotationYaw,
+							inaccuracy, speed);
 				} else { // Multishot
 					int count = random.nextInt(multishot) + 1;
 					for (int i = 0; i < count; i++) {
@@ -129,7 +183,8 @@ public class MagicRuneItem extends RuneItem {
 								.rotateYaw((random.nextFloat() - 0.5f) * 0.1f);
 						Vector3d position = player.getPositionVec().add(direction.getX() * 1,
 								1.2 + (random.nextDouble() - 0.5) * 0.5, direction.getZ() * 1);
-						shoot(player, world, enchantments, position, player.rotationPitch + random.nextInt(30) - 15,
+						shootMagicBall(player, world, enchantments, position,
+								player.rotationPitch + random.nextInt(30) - 15,
 								player.rotationYaw + random.nextInt(30) - 15, inaccuracy, speed);
 					}
 				}
@@ -142,15 +197,6 @@ public class MagicRuneItem extends RuneItem {
 			});
 		}
 
-		private void shoot(PlayerEntity player, World world, Map<Enchantment, Integer> enchantments, Vector3d position,
-				float pitch, float yaw, float inaccuracy, float speed) {
-			MagicBallEntity ball = new MagicBallEntity(position.getX(), position.getY(), position.getZ(), world,
-					enchantments);
-			ball.setShooter(player);
-			ball.func_234612_a_(player, pitch, yaw, 0, speed, inaccuracy); // shoot()
-			world.addEntity(ball);
-		}
-
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
 			return isSword(stack);
@@ -161,6 +207,29 @@ public class MagicRuneItem extends RuneItem {
 			return enchantment.getRegistryName().getNamespace().equals("minecraft");
 		}
 
+	}
+
+	public static void leaveTrail(World world, BlockPos pos, BlockState trail) {
+		for (int i = 0; i < 5; i++) {
+			if (!world.isAirBlock(pos))
+				return;
+
+			BlockState state = world.getBlockState(pos.down());
+			if (state.isSolid() && state.isNormalCube(world, pos)) {
+				world.setBlockState(pos, trail);
+				return;
+			}
+			pos = pos.down();
+		}
+	}
+
+	private static void shootMagicBall(PlayerEntity player, World world, Map<Enchantment, Integer> enchantments,
+			Vector3d position, float pitch, float yaw, float inaccuracy, float speed) {
+		MagicBallEntity ball = new MagicBallEntity(position.getX(), position.getY(), position.getZ(), world,
+				enchantments);
+		ball.setShooter(player);
+		ball.func_234612_a_(player, pitch, yaw, 0, speed, inaccuracy); // shoot()
+		world.addEntity(ball);
 	}
 
 	private static Set<ItemStack> minorMagicRunes(Runes runes) {

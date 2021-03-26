@@ -9,7 +9,6 @@ import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.helpers.Helper;
 import mod.vemerion.runesword.item.MagicRuneItem;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
@@ -93,9 +92,9 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			}
 
 			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION) * 0.01)
-				leaveTrail(Blocks.FIRE.getDefaultState());
+				MagicRuneItem.leaveTrail(world, getPosition(), Blocks.FIRE.getDefaultState());
 			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER) * 0.03)
-				leaveTrail(Blocks.SNOW.getDefaultState());
+				MagicRuneItem.leaveTrail(world, getPosition(), Blocks.SNOW.getDefaultState());
 
 			deflectProjectiles();
 		} else {
@@ -123,21 +122,6 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		for (ProjectileEntity projectile : projectiles) {
 			if (rand.nextDouble() < projectileProt * 0.01)
 				projectile.remove();
-		}
-	}
-
-	private void leaveTrail(BlockState trail) {
-		BlockPos pos = getPosition();
-		for (int i = 0; i < 5; i++) {
-			if (!world.isAirBlock(pos))
-				return;
-
-			BlockState state = world.getBlockState(pos.down());
-			if (state.isSolid() && state.isNormalCube(world, pos)) {
-				world.setBlockState(pos, trail);
-				return;
-			}
-			pos = pos.down();
 		}
 	}
 
