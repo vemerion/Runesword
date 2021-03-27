@@ -9,6 +9,8 @@ import mod.vemerion.runesword.item.MagicRuneItem;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.vector.Vector3d;
@@ -63,22 +65,33 @@ public class AxeMagicPowersMessage {
 
 				@Override
 				public void run() {
-					World world = Minecraft.getInstance().world;
-					if (world != null) {
-						Random rand = world.rand;
-						Enchantment[] enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
+					Minecraft mc = Minecraft.getInstance();
+					World world = mc.world;
+					PlayerEntity player = mc.player;
+					if (world != null && player != null) {
+						createParticles(enchantments, pos, radius, world);
 
-						for (int i = 0; i < 200; i++) {
-							Color color = MagicRuneItem.getRandEnchColor(rand, enchantmentArr);
-							double direction = Math.toRadians(rand.nextDouble() * 360);
-							double distance = rand.nextDouble() * radius;
-							Vector3d particlePos = pos.add(Math.cos(direction) * distance, rand.nextDouble() * 2,
-									Math.sin(direction) * distance);
-							world.addParticle(
-									new MagicBallParticleData(color.getRed() / 255f, color.getGreen() / 255f,
-											color.getBlue() / 255f),
-									particlePos.x, particlePos.y, particlePos.z, 0, 0, 0);
-						}
+						// Move player
+						double up = enchantments.getOrDefault(Enchantments.FEATHER_FALLING, 0) / 12d;
+						double forward = enchantments.getOrDefault(Enchantments.RIPTIDE, 0) / 9d;
+						Vector3d direction = Vector3d.fromPitchYaw(0, player.rotationYaw);
+						player.addVelocity(direction.x * forward, up, direction.z * forward);
+					}
+				}
+
+				private void createParticles(Map<Enchantment, Integer> enchantments, Vector3d pos, double radius,
+						World world) {
+					Random rand = world.rand;
+					Enchantment[] enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
+
+					for (int i = 0; i < 200; i++) {
+						Color color = MagicRuneItem.getRandEnchColor(rand, enchantmentArr);
+						double direction = Math.toRadians(rand.nextDouble() * 360);
+						double distance = rand.nextDouble() * radius;
+						Vector3d particlePos = pos.add(Math.cos(direction) * distance, rand.nextDouble() * 2,
+								Math.sin(direction) * distance);
+						world.addParticle(new MagicBallParticleData(color.getRed() / 255f, color.getGreen() / 255f,
+								color.getBlue() / 255f), particlePos.x, particlePos.y, particlePos.z, 0, 0, 0);
 					}
 				}
 			};

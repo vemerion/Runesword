@@ -23,9 +23,12 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureAttribute;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.item.BoneMealItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.potion.EffectInstance;
@@ -38,6 +41,7 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.Explosion.Mode;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -79,29 +83,47 @@ public class MagicRuneItem extends RuneItem {
 				// More radius with sweeping
 				radius += getEnchantmentLevel(Enchantments.SWEEPING, enchants) / 9d;
 
+				// Bypass armor
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.UNBREAKING, enchants) * 0.1) {
+					source.setDamageBypassesArmor();
+				}
+				
+				// More damage if full attack strength
+				if (player.getCooledAttackStrength(0) > 0.99)
+					damage += getEnchantmentLevel(Enchantments.POWER, enchants) * 0.5;
+
 				AxisAlignedBB box = new AxisAlignedBB(player.getPositionVec(), player.getPositionVec())
 						.grow(radius, 0, radius).expand(0, 2, 0);
 				int channeling = getEnchantmentLevel(Enchantments.CHANNELING, enchants);
 				int lure = getEnchantmentLevel(Enchantments.LURE, enchants);
+				int looting = getEnchantmentLevel(Enchantments.LOOTING, enchants);
+				int knockback = getEnchantmentLevel(Enchantments.KNOCKBACK, enchants);
+				int punch = getEnchantmentLevel(Enchantments.PUNCH, enchants);
 				for (Entity e : world.getEntitiesWithinAABBExcludingEntity(player, box)) {
 					// More damage further away with channeling
 					damage += channeling * player.getDistance(e) * 0.3f;
-					
+
 					// More damage in nether with flame
 					if (world.getDimensionKey() == World.THE_NETHER)
 						damage += getEnchantmentLevel(Enchantments.FLAME, enchants);
 
-					System.out.println(damage);
 					applyMagicDamage(e, source, damage, enchants, random, 0.7f);
 
 					// Pull
-					Vector3d direction = player.getPositionVec().subtract(e.getPositionVec()).normalize()
-							.scale(lure / 9d);
-					e.addVelocity(direction.x, direction.y, direction.z);
-					
+					Vector3d inwards = player.getPositionVec().subtract(e.getPositionVec()).normalize();
+					Vector3d pull = inwards.scale(lure / 9d);
+					e.addVelocity(pull.x, pull.y, pull.z);
+
 					// Fire
 					if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, enchants) * 0.08)
 						e.setFire(3);
+
+					// Exp
+					if (!e.isAlive() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))
+						bonusExp(world, looting, e.getPositionVec());
+
+					// Knockback
+					knockback(knockback, punch, inwards.scale(-1), e);
 
 					// Remove projectiles
 					if (e instanceof ProjectileEntity && random
@@ -114,18 +136,28 @@ public class MagicRuneItem extends RuneItem {
 					world.createExplosion(player, player.getPosX(), player.getPosY(), player.getPosZ(), 2, Mode.BREAK);
 
 				int efficiency = getEnchantmentLevel(Enchantments.EFFICIENCY, enchants);
+				int thorns = getEnchantmentLevel(Enchantments.THORNS, enchants);
+				int fireProt = getEnchantmentLevel(Enchantments.FIRE_PROTECTION, enchants);
+				int frostWalker = getEnchantmentLevel(Enchantments.FROST_WALKER, enchants);
+				int silkTouch = getEnchantmentLevel(Enchantments.SILK_TOUCH, enchants);
 				BlockPos.getAllInBox(box).forEach(p -> {
-					
+
 					// Break wood
 					BlockState state = world.getBlockState(p);
 					if (isCorrectTool(runeable, state) && random.nextDouble() < efficiency * 0.03)
 						world.destroyBlock(p, true);
-					
+
 					// Trail
-					if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION, enchants) * 0.01)
+					if (random.nextDouble() < thorns * 0.02)
+						leaveTrail(world, p, Blocks.OAK_SAPLING.getDefaultState());
+					else if (random.nextDouble() < fireProt * 0.01)
 						leaveTrail(world, p, Blocks.FIRE.getDefaultState());
-					if (random.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER, enchants) * 0.03)
+					else if (random.nextDouble() < frostWalker * 0.03)
 						leaveTrail(world, p, Blocks.SNOW.getDefaultState());
+
+					// Bonemeal
+					if (random.nextDouble() < silkTouch * 0.1)
+						BoneMealItem.applyBonemeal(Items.BONE_MEAL.getDefaultInstance(), world, p, player);
 				});
 
 				// Heal player
@@ -209,17 +241,36 @@ public class MagicRuneItem extends RuneItem {
 
 	}
 
+	public static void knockback(int knockback, int punch, Vector3d direction, Entity target) {
+		Vector3d motion = direction.scale(knockback * 0.15);
+		target.addVelocity(motion.x, punch * 0.05, motion.z);
+		target.setOnGround(false);
+	}
+
 	public static void leaveTrail(World world, BlockPos pos, BlockState trail) {
 		for (int i = 0; i < 5; i++) {
 			if (!world.isAirBlock(pos))
 				return;
 
 			BlockState state = world.getBlockState(pos.down());
-			if (state.isSolid() && state.isNormalCube(world, pos)) {
+			if (state.isSolid() && state.isNormalCube(world, pos.down()) && trail.isValidPosition(world, pos)) {
 				world.setBlockState(pos, trail);
 				return;
 			}
 			pos = pos.down();
+		}
+	}
+
+	public static void bonusExp(World world, int looting, Vector3d pos) {
+		if (looting <= 0)
+			return;
+
+		int exp = world.rand.nextInt(looting + 1);
+
+		while (exp > 0) {
+			int fragment = ExperienceOrbEntity.getXPSplit(exp);
+			exp -= fragment;
+			world.addEntity(new ExperienceOrbEntity(world, pos.x, pos.y, pos.z, fragment));
 		}
 	}
 

@@ -16,7 +16,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.entity.item.ExperienceOrbEntity;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -284,7 +283,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			// Drops
 			if (!target.isAlive() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
 				spawnEgg(target);
-				spawnExp();
+				MagicRuneItem.bonusExp(world, getEnchantmentLevel(Enchantments.LOOTING), getPositionVec());
 			}
 
 			// Fire
@@ -293,9 +292,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			}
 
 			// Knockback
-			Vector3d direction = getMotion().scale(getEnchantmentLevel(Enchantments.KNOCKBACK) * 0.15);
-			target.addVelocity(direction.x, getEnchantmentLevel(Enchantments.PUNCH) * 0.05, direction.z);
-			target.setOnGround(false);
+			MagicRuneItem.knockback(getEnchantmentLevel(Enchantments.KNOCKBACK), getEnchantmentLevel(Enchantments.PUNCH), getMotion(), target);
 
 			// Piercing
 			if (rand.nextDouble() >= getEnchantmentLevel(Enchantments.PIERCING) * 0.04)
@@ -318,20 +315,6 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			ItemEntity eggEntity = new ItemEntity(world, target.getPosX(), target.getPosY(), target.getPosZ(),
 					new ItemStack(egg));
 			world.addEntity(eggEntity);
-		}
-	}
-
-	private void spawnExp() {
-		int looting = getEnchantmentLevel(Enchantments.LOOTING);
-		if (looting <= 0)
-			return;
-
-		int exp = rand.nextInt(looting + 1);
-
-		while (exp > 0) {
-			int fragment = ExperienceOrbEntity.getXPSplit(exp);
-			exp -= fragment;
-			world.addEntity(new ExperienceOrbEntity(world, getPosX(), getPosY(), getPosZ(), fragment));
 		}
 	}
 
