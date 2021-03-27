@@ -143,6 +143,10 @@ public abstract class RunePowers implements IRunePowers {
 		Vector3d position = Vector3d.copyCentered(pos);
 		ItemEntity entity = new ItemEntity(world, position.getX(), position.getY(), position.getZ(), stack);
 		world.addEntity(entity);
-
+	}
+	
+	protected final void restoreAir(PlayerEntity player, float fraction) {
+		int air = (int) (player.getAir() + fraction * player.getMaxAir());
+		player.setAir(Math.min(player.getMaxAir(), air));
 	}
 }
