@@ -15,24 +15,34 @@ public class GuideChapters {
 	private static IGuideChapter runeforge;
 	private static IGuideChapter enchant;
 	private static IGuideChapter blood;
-	private static IGuideChapter bloodSword;
 	private static IGuideChapter air;
-	private static IGuideChapter airSword;
 	private static IGuideChapter earth;
-	private static IGuideChapter earthSword;
 	private static IGuideChapter water;
-	private static IGuideChapter waterSword;
 	private static IGuideChapter fire;
-	private static IGuideChapter fireSword;
 	private static IGuideChapter frost;
-	private static IGuideChapter frostSword;
 	private static IGuideChapter magic;
-	private static IGuideChapter magicSword;
 	private static IGuideChapter start;
+
+	private static IGuideChapter bloodSword;
+	private static IGuideChapter airSword;
+	private static IGuideChapter earthSword;
+	private static IGuideChapter waterSword;
+	private static IGuideChapter fireSword;
+	private static IGuideChapter frostSword;
+	private static IGuideChapter magicSword;
+
+	private static IGuideChapter bloodAxe;
+	private static IGuideChapter airAxe;
+	private static IGuideChapter earthAxe;
+	private static IGuideChapter waterAxe;
+	private static IGuideChapter fireAxe;
+	private static IGuideChapter frostAxe;
+	private static IGuideChapter magicAxe;
 
 	public static IGuideChapter getStartChapter() {
 		if (start == null) {
 			TranslationTextComponent swordPowers = new TranslationTextComponent(transKey("swordpowers"));
+			TranslationTextComponent axePowers = new TranslationTextComponent(transKey("axepowers"));
 
 			IGuide guide = RuneswordAPI.guide;
 			runeforge = guide.createGuideChapter(Main.RUNEFORGE_BLOCK, Main.RUNEFORGE_BLOCK.getTranslatedName());
@@ -55,71 +65,58 @@ public class GuideChapters {
 			frostSword = guide.createGuideChapter(Items.NETHERITE_SWORD, swordPowers);
 			magicSword = guide.createGuideChapter(Items.NETHERITE_SWORD, swordPowers);
 
+			bloodAxe = guide.createGuideChapter(Items.NETHERITE_AXE, axePowers);
+			airAxe = guide.createGuideChapter(Items.NETHERITE_AXE, axePowers);
+			earthAxe = guide.createGuideChapter(Items.NETHERITE_AXE, axePowers);
+			waterAxe = guide.createGuideChapter(Items.NETHERITE_AXE, axePowers);
+			fireAxe = guide.createGuideChapter(Items.NETHERITE_AXE, axePowers);
+			frostAxe = guide.createGuideChapter(Items.NETHERITE_AXE, axePowers);
+			magicAxe = guide.createGuideChapter(Items.NETHERITE_AXE, axePowers);
+
 			runeforge.addText(transKey("runeforge1")).addImage(image("runeforge_crafting"), 518, 265)
 					.addText(transKey("runeforge2")).addImage(image("runeforge"), 176, 166)
 					.addText(transKey("runeforge3")).addText(transKey("runeforge4"));
 			enchant.addText(transKey("enchantingtext"));
-			blood.addChild(bloodSword).addText(transKey("blood.obtain"));
-			bloodSword.addText(transKey("blood.sword.minor")).addText(transKey("blood.sword.major"))
-					.addHeader(transKey("minorenchants")).addText(transKey("blood.sword.minorenchant1"))
-					.addText(transKey("blood.sword.minorenchant2")).addText(transKey("blood.sword.minorenchant3"))
-					.addHeader(transKey("majorenchants")).addText(transKey("blood.sword.majorenchant1"))
-					.addText(transKey("blood.sword.majorenchant2"));
-			air.addChild(airSword).addText(transKey("air.obtain"));
-			airSword.addText(transKey("air.sword.minor")).addText(transKey("air.sword.major"))
-					.addHeader(transKey("minorenchants")).addText(transKey("air.sword.minorenchant1"))
-					.addText(transKey("air.sword.minorenchant2")).addHeader(transKey("majorenchants"))
-					.addText(transKey("air.sword.majorenchant1")).addText(transKey("air.sword.majorenchant2"))
-					.addText(transKey("air.sword.majorenchant3"));
-			earth.addChild(earthSword).addText(transKey("earth.obtain"));
-			earthSword.addText(transKey("earth.sword.minor")).addText(transKey("earth.sword.major"))
-					.addHeader(transKey("minorenchants")).addText(transKey("earth.sword.minorenchant1"))
-					.addText(transKey("earth.sword.minorenchant2")).addText(transKey("earth.sword.minorenchant3"))
-					.addHeader(transKey("majorenchants")).addText(transKey("earth.sword.majorenchant1"))
-					.addText(transKey("earth.sword.majorenchant2"));
-			water.addChild(waterSword).addText(transKey("water.obtain"));
-			waterSword.addText(transKey("water.sword.minor")).addText(transKey("water.sword.major"))
-					.addHeader(transKey("minorenchants")).addText(transKey("water.sword.minorenchant1"))
-					.addText(transKey("water.sword.minorenchant2")).addHeader(transKey("majorenchants"))
-					.addText(transKey("water.sword.majorenchant1")).addText(transKey("water.sword.majorenchant2"))
-					.addText(transKey("water.sword.majorenchant3"));
-			fire.addChild(fireSword).addText(transKey("fire.obtain"));
-			fireSword.addText(transKey("fire.sword.minor")).addText(transKey("fire.sword.major"))
-					.addHeader(transKey("minorenchants")).addText(transKey("fire.sword.minorenchant1"))
-					.addText(transKey("fire.sword.minorenchant2")).addText(transKey("fire.sword.minorenchant3"))
-					.addHeader(transKey("majorenchants")).addText(transKey("fire.sword.majorenchant1"))
-					.addText(transKey("fire.sword.majorenchant2"));
-			frost.addChild(frostSword).addText(transKey("frost.obtain"));
-			frostSword.addText(transKey("frost.sword.minor")).addText(transKey("frost.sword.major"))
-					.addHeader(transKey("minorenchants")).addText(transKey("frost.sword.minorenchant1"))
-					.addText(transKey("frost.sword.minorenchant2")).addText(transKey("frost.sword.minorenchant3"))
-					.addHeader(transKey("majorenchants")).addText(transKey("frost.sword.majorenchant1"))
-					.addText(transKey("frost.sword.majorenchant2")).addText(transKey("frost.sword.majorenchant3"));
-			magic.addChild(magicSword).addText(transKey("magic.obtain")).addText(transKey("magic.text"));
-			magicSword.addText(transKey("magic.sword.minor")).addText(transKey("magic.sword.major"))
-					.addHeader(transKey("minorenchants")).addText(transKey("magic.sword.minorenchant1"))
-					.addText(transKey("magic.sword.minorenchant2")).addText(transKey("magic.sword.minorenchant3"))
-					.addText(transKey("magic.sword.minorenchant4")).addText(transKey("magic.sword.minorenchant5"))
-					.addText(transKey("magic.sword.minorenchant6")).addText(transKey("magic.sword.minorenchant7"))
-					.addText(transKey("magic.sword.minorenchant8")).addText(transKey("magic.sword.minorenchant9"))
-					.addText(transKey("magic.sword.minorenchant10")).addText(transKey("magic.sword.minorenchant1"))
-					.addText(transKey("magic.sword.minorenchant12")).addText(transKey("magic.sword.minorenchant13"))
-					.addText(transKey("magic.sword.minorenchant14")).addText(transKey("magic.sword.minorenchant15"))
-					.addText(transKey("magic.sword.minorenchant16")).addText(transKey("magic.sword.minorenchant17"))
-					.addText(transKey("magic.sword.minorenchant18")).addText(transKey("magic.sword.minorenchant19"))
-					.addText(transKey("magic.sword.minorenchant20")).addText(transKey("magic.sword.minorenchant21"))
-					.addText(transKey("magic.sword.minorenchant22")).addText(transKey("magic.sword.minorenchant23"))
-					.addText(transKey("magic.sword.minorenchant24")).addText(transKey("magic.sword.minorenchant25"))
-					.addText(transKey("magic.sword.minorenchant26")).addText(transKey("magic.sword.minorenchant27"))
-					.addText(transKey("magic.sword.minorenchant28")).addText(transKey("magic.sword.minorenchant29"))
-					.addText(transKey("magic.sword.minorenchant30")).addText(transKey("magic.sword.minorenchant31"))
-					.addText(transKey("magic.sword.minorenchant32")).addText(transKey("magic.sword.minorenchant33"))
-					.addText(transKey("magic.sword.minorenchant34")).addText(transKey("magic.sword.minorenchant35"))
-					.addText(transKey("magic.sword.minorenchant36"));
+			blood.addChild(bloodSword).addChild(bloodAxe).addText(transKey("blood.obtain"));
+			powers(bloodSword, "blood.sword", 3, 2);
+			powers(bloodAxe, "blood.axe", 3, 2);
+			air.addChild(airSword).addChild(airAxe).addText(transKey("air.obtain"));
+			powers(airSword, "air.sword", 2, 3);
+			powers(airAxe, "air.axe", 3, 2);
+			earth.addChild(earthSword).addChild(earthAxe).addText(transKey("earth.obtain"));
+			powers(earthSword, "earth.sword", 3, 2);
+			powers(earthAxe, "earth.axe", 3, 2);
+			water.addChild(waterSword).addChild(waterAxe).addText(transKey("water.obtain"));
+			powers(waterSword, "water.sword", 2, 3);
+			powers(waterAxe, "water.axe", 3, 2);
+			fire.addChild(fireSword).addChild(fireAxe).addText(transKey("fire.obtain"));
+			powers(fireSword, "fire.sword", 3, 2);
+			powers(fireAxe, "fire.axe", 3, 2);
+			frost.addChild(frostSword).addChild(frostAxe).addText(transKey("frost.obtain"));
+			powers(frostSword, "frost.sword", 3, 3);
+			powers(frostAxe, "frost.axe", 2, 4);
+			magic.addChild(magicSword).addChild(magicAxe).addText(transKey("magic.obtain"))
+					.addText(transKey("magic.text"));
+			powers(magicSword, "magic.sword", 36, 0);
+			powers(magicAxe, "magic.axe", 36, 0);
 			start.addChild(runeforge).addChild(enchant).addChild(blood).addChild(air).addChild(earth).addChild(water)
 					.addChild(fire).addChild(frost).addChild(magic).addText(transKey("intro"));
 		}
 		return start;
+	}
+
+	private static void powers(IGuideChapter chapter, String prefix, int minorEnchants, int majorEnchants) {
+		chapter.addText(transKey(prefix + ".minor")).addText(transKey(prefix + ".major"));
+		if (minorEnchants > 0) {
+			chapter.addHeader(transKey("minorenchants"));
+			for (int i = 1; i <= minorEnchants; i++)
+				chapter.addText(transKey(prefix + ".minorenchant" + i));
+		}
+		if (majorEnchants > 0) {
+			chapter.addHeader(transKey("majorenchants"));
+			for (int i = 1; i <= majorEnchants; i++)
+				chapter.addText(transKey(prefix + ".majorenchant" + i));
+		}
 	}
 
 	private static String transKey(String suffix) {
