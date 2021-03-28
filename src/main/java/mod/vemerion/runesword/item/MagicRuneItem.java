@@ -103,6 +103,9 @@ public class MagicRuneItem extends RuneItem {
 		}
 
 		private void magicArea(Map<Enchantment, Integer> enchants, PlayerEntity player, World world) {
+			world.playSound(null, player.getPosition(), Main.PROJECTILE_IMPACT_SOUND, SoundCategory.PLAYERS, 1,
+					Helper.soundPitch(random));
+			
 			double radius = START_RADIUS;
 			float damage = START_DAMAGE;
 			DamageSource source = Helper.magicDamage(player);
