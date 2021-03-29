@@ -187,7 +187,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		Vector3d pos = result.getHitVec();
 		Entity shooter = func_234616_v_();
 		if (!world.isRemote) {
-			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.04)
+			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.05)
 				world.createExplosion(null, pos.x, pos.y, pos.z, 2, Mode.BREAK);
 
 			// AoE
@@ -246,7 +246,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 				player.setAir(Math.min(player.getMaxAir(), air));
 
 				// Lightning
-				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.CHANNELING) * 0.1) {
+				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.CHANNELING) * 0.15) {
 					LightningBoltEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
 					lightning.moveForced(Vector3d.copyCenteredHorizontally(target.getPosition()));
 					lightning.setCaster((ServerPlayerEntity) player);
@@ -255,7 +255,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 
 				// Heal
 				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.MENDING) * 0.33) {
-					player.heal(1);
+					player.heal(2);
 				}
 
 				// Protection buff
@@ -264,7 +264,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 			}
 
 			// Bypass armor
-			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.UNBREAKING) * 0.1) {
+			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.UNBREAKING) * 0.01) {
 				source.setDamageBypassesArmor();
 			}
 
