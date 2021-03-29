@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 
 import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.block.RuneforgeBlock;
+import mod.vemerion.runesword.capability.EntityRuneData;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeContainer;
 import mod.vemerion.runesword.effect.BleedEffect;
@@ -24,6 +25,7 @@ import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
 import mod.vemerion.runesword.network.AxeMagicPowersMessage;
 import mod.vemerion.runesword.network.Network;
+import mod.vemerion.runesword.network.SyncBleedingMessage;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
 import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
 import net.minecraft.block.Block;
@@ -171,9 +173,12 @@ public class ModEventSubscriber {
 		RuneswordAPI.guide = new Guide();
 
 		CapabilityManager.INSTANCE.register(Runes.class, new Runes.Storage(), Runes::new);
+		CapabilityManager.INSTANCE.register(EntityRuneData.class, new EntityRuneData.Storage(), EntityRuneData::new);
 
 		Network.INSTANCE.registerMessage(0, AxeMagicPowersMessage.class, AxeMagicPowersMessage::encode,
 				AxeMagicPowersMessage::decode, AxeMagicPowersMessage::handle);
+		Network.INSTANCE.registerMessage(1, SyncBleedingMessage.class, SyncBleedingMessage::encode,
+				SyncBleedingMessage::decode, SyncBleedingMessage::handle);
 	}
 
 	@SubscribeEvent

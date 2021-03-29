@@ -14,9 +14,6 @@ import net.minecraft.potion.EffectType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.vector.Vector3d;
 
-// TODO: Synch to client
-// Since potion effects are only synched to client for players
-// The bleed particle will only work for players, and no other entity.
 public class BleedEffect extends Effect {
 
 	public static final DamageSource BLEED = new DamageSource(Main.MODID + ".bleed");
@@ -33,7 +30,7 @@ public class BleedEffect extends Effect {
 			addBleedingParticles(entityLivingBaseIn);
 	}
 
-	private void addBleedingParticles(LivingEntity entity) {
+	public static void addBleedingParticles(LivingEntity entity) {
 		Random rand = entity.getRNG();
 		for (int i = 0; i < 5; i++) {
 			Vector3d position = Helper.randomInBox(rand, entity.getBoundingBox());

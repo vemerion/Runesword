@@ -1,10 +1,16 @@
 package mod.vemerion.runesword;
 
+import mod.vemerion.runesword.capability.EntityRuneData;
 import mod.vemerion.runesword.capability.Runes;
+import mod.vemerion.runesword.effect.BleedEffect;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -16,6 +22,34 @@ import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 
 @EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
 public class ForgeEventSubscriber {
+
+	@SubscribeEvent
+	public static void synchBleeding(PlayerEvent.StartTracking event) {
+		PlayerEntity player = event.getPlayer();
+		Entity target = event.getTarget();
+		if (!player.world.isRemote && target instanceof LivingEntity)
+			EntityRuneData.synchBleeding(player, (LivingEntity) target);
+	}
+
+	@SubscribeEvent
+	public static void bleeding(LivingUpdateEvent event) {
+
+		LivingEntity entity = event.getEntityLiving();
+		World world = entity.world;
+		if (!world.isRemote) {
+			boolean isBleeding = entity.isPotionActive(Main.BLEED_EFFECT);
+			EntityRuneData.get(entity).ifPresent(d -> {
+				if (isBleeding != d.isBleeding())
+					EntityRuneData.synchBleeding(entity);
+				d.setBleeding(isBleeding);
+			});
+		} else {
+			EntityRuneData.get(entity).ifPresent(d -> {
+				if (d.isBleeding() && entity.ticksExisted % 10 == 0)
+					BleedEffect.addBleedingParticles(entity);
+			});
+		}
+	}
 
 	@SubscribeEvent
 	public static void runeAttack(AttackEntityEvent event) {
