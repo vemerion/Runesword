@@ -28,7 +28,7 @@ logoFile="logo.png" #optional
 authors="Vemerion" #optional
 # The description text for the mod (multi line!) (#mandatory)
 description='''
-This mod adds several runes to the game, which can be used to give swords magical abilities.
+This mod adds several runes to the game, which can be used to give swords and axes magical abilities.
 '''
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.runesword]] #optional
