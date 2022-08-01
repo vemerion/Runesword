@@ -3,14 +3,14 @@ package mod.vemerion.runesword.helpers;
 import java.util.Random;
 
 import mod.vemerion.runesword.Main;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityDamageSource;
-import net.minecraft.util.IndirectEntityDamageSource;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.EntityDamageSource;
+import net.minecraft.world.damagesource.IndirectEntityDamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
 public class Helper {
 
@@ -24,23 +24,23 @@ public class Helper {
 	}
 
 	public static DamageSource magicDamage() {
-		return (new DamageSource(Main.MODID + ".magic")).setMagicDamage();
+		return (new DamageSource(Main.MODID + ".magic")).setMagic();
 	}
 
-	public static DamageSource magicDamage(PlayerEntity player) {
-		return new EntityDamageSource(Main.MODID + ".magicplayer", player).setMagicDamage();
+	public static DamageSource magicDamage(Player player) {
+		return new EntityDamageSource(Main.MODID + ".magicplayer", player).setMagic();
 	}
 
 	public static DamageSource magicDamage(Entity source, Entity shooter) {
-		return new IndirectEntityDamageSource(Main.MODID + ".magicindirect", source, shooter).setMagicDamage();
+		return new IndirectEntityDamageSource(Main.MODID + ".magicindirect", source, shooter).setMagic();
 	}
 
 	public static float soundPitch(Random rand) {
 		return 0.8f + rand.nextFloat() * 0.4f;
 	}
 
-	public static Vector3d randomInBox(Random rand, AxisAlignedBB box) {
-		return new Vector3d(MathHelper.nextDouble(rand, box.minX, box.maxX),
-				MathHelper.nextDouble(rand, box.minY, box.maxY), MathHelper.nextDouble(rand, box.minZ, box.maxZ));
+	public static Vec3 randomInBox(Random rand, AABB box) {
+		return new Vec3(Mth.nextDouble(rand, box.minX, box.maxX), Mth.nextDouble(rand, box.minY, box.maxY),
+				Mth.nextDouble(rand, box.minZ, box.maxZ));
 	}
 }

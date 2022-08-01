@@ -5,10 +5,10 @@ import mod.vemerion.runesword.api.IGuide;
 import mod.vemerion.runesword.api.IGuideChapter;
 import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.item.RuneItem;
-import net.minecraft.block.Blocks;
-import net.minecraft.item.Items;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Blocks;
 
 public class GuideChapters {
 
@@ -41,21 +41,21 @@ public class GuideChapters {
 
 	public static IGuideChapter getStartChapter() {
 		if (start == null) {
-			TranslationTextComponent swordPowers = new TranslationTextComponent(transKey("swordpowers"));
-			TranslationTextComponent axePowers = new TranslationTextComponent(transKey("axepowers"));
+			var swordPowers = new TranslatableComponent(transKey("swordpowers"));
+			var axePowers = new TranslatableComponent(transKey("axepowers"));
 
 			IGuide guide = RuneswordAPI.guide;
-			runeforge = guide.createGuideChapter(Main.RUNEFORGE_BLOCK, Main.RUNEFORGE_BLOCK.getTranslatedName());
+			runeforge = guide.createGuideChapter(Main.RUNEFORGE_BLOCK, Main.RUNEFORGE_BLOCK.getName());
 			enchant = guide.createGuideChapter(Blocks.ENCHANTING_TABLE,
-					new TranslationTextComponent(transKey("enchanting")));
-			blood = guide.createGuideChapter(RuneItem.BLOOD_RUNE_ITEM, RuneItem.BLOOD_RUNE_ITEM.getName());
-			air = guide.createGuideChapter(RuneItem.AIR_RUNE_ITEM, RuneItem.AIR_RUNE_ITEM.getName());
-			earth = guide.createGuideChapter(RuneItem.EARTH_RUNE_ITEM, RuneItem.EARTH_RUNE_ITEM.getName());
-			water = guide.createGuideChapter(RuneItem.WATER_RUNE_ITEM, RuneItem.WATER_RUNE_ITEM.getName());
-			fire = guide.createGuideChapter(RuneItem.FIRE_RUNE_ITEM, RuneItem.FIRE_RUNE_ITEM.getName());
-			frost = guide.createGuideChapter(RuneItem.FROST_RUNE_ITEM, RuneItem.FROST_RUNE_ITEM.getName());
-			magic = guide.createGuideChapter(RuneItem.MAGIC_RUNE_ITEM, RuneItem.MAGIC_RUNE_ITEM.getName());
-			start = guide.createGuideChapter(Main.GUIDE_ITEM, new TranslationTextComponent(transKey("guide")));
+					new TranslatableComponent(transKey("enchanting")));
+			blood = guide.createGuideChapter(RuneItem.BLOOD_RUNE_ITEM, RuneItem.BLOOD_RUNE_ITEM.getDescription());
+			air = guide.createGuideChapter(RuneItem.AIR_RUNE_ITEM, RuneItem.AIR_RUNE_ITEM.getDescription());
+			earth = guide.createGuideChapter(RuneItem.EARTH_RUNE_ITEM, RuneItem.EARTH_RUNE_ITEM.getDescription());
+			water = guide.createGuideChapter(RuneItem.WATER_RUNE_ITEM, RuneItem.WATER_RUNE_ITEM.getDescription());
+			fire = guide.createGuideChapter(RuneItem.FIRE_RUNE_ITEM, RuneItem.FIRE_RUNE_ITEM.getDescription());
+			frost = guide.createGuideChapter(RuneItem.FROST_RUNE_ITEM, RuneItem.FROST_RUNE_ITEM.getDescription());
+			magic = guide.createGuideChapter(RuneItem.MAGIC_RUNE_ITEM, RuneItem.MAGIC_RUNE_ITEM.getDescription());
+			start = guide.createGuideChapter(Main.GUIDE_ITEM, new TranslatableComponent(transKey("guide")));
 
 			bloodSword = guide.createGuideChapter(Items.NETHERITE_SWORD, swordPowers);
 			airSword = guide.createGuideChapter(Items.NETHERITE_SWORD, swordPowers);

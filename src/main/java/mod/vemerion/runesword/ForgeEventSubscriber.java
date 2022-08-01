@@ -3,10 +3,10 @@ package mod.vemerion.runesword;
 import mod.vemerion.runesword.capability.EntityRuneData;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.effect.BleedEffect;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent.Phase;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -25,9 +25,9 @@ public class ForgeEventSubscriber {
 
 	@SubscribeEvent
 	public static void synchBleeding(PlayerEvent.StartTracking event) {
-		PlayerEntity player = event.getPlayer();
+		Player player = event.getPlayer();
 		Entity target = event.getTarget();
-		if (!player.world.isRemote && target instanceof LivingEntity)
+		if (!player.level.isClientSide && target instanceof LivingEntity)
 			EntityRuneData.synchBleeding(player, (LivingEntity) target);
 	}
 
@@ -35,9 +35,9 @@ public class ForgeEventSubscriber {
 	public static void bleeding(LivingUpdateEvent event) {
 
 		LivingEntity entity = event.getEntityLiving();
-		World world = entity.world;
-		if (!world.isRemote) {
-			boolean isBleeding = entity.isPotionActive(Main.BLEED_EFFECT);
+		Level level = entity.level;
+		if (!level.isClientSide) {
+			boolean isBleeding = entity.hasEffect(Main.BLEED_EFFECT);
 			EntityRuneData.get(entity).ifPresent(d -> {
 				if (isBleeding != d.isBleeding())
 					EntityRuneData.synchBleeding(entity);
@@ -45,7 +45,7 @@ public class ForgeEventSubscriber {
 			});
 		} else {
 			EntityRuneData.get(entity).ifPresent(d -> {
-				if (d.isBleeding() && entity.ticksExisted % 10 == 0)
+				if (d.isBleeding() && entity.tickCount % 10 == 0)
 					BleedEffect.addBleedingParticles(entity);
 			});
 		}
@@ -53,15 +53,15 @@ public class ForgeEventSubscriber {
 
 	@SubscribeEvent
 	public static void runeAttack(AttackEntityEvent event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+		event.getPlayer().getMainHandItem().getCapability(Runes.CAPABILITY)
 				.ifPresent(runes -> runes.onAttack(event.getPlayer(), event.getTarget()));
 	}
 
 	@SubscribeEvent
 	public static void runeKill(LivingDeathEvent event) {
-		if (event.getSource().getTrueSource() instanceof PlayerEntity) {
-			PlayerEntity player = (PlayerEntity) event.getSource().getTrueSource();
-			player.getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+		if (event.getSource().getEntity() instanceof Player) {
+			Player player = (Player) event.getSource().getEntity();
+			player.getMainHandItem().getCapability(Runes.CAPABILITY)
 					.ifPresent(runes -> runes.onKill(player, event.getEntityLiving(), event.getSource()));
 		}
 	}
@@ -69,40 +69,39 @@ public class ForgeEventSubscriber {
 	@SubscribeEvent
 	public static void runeTick(PlayerTickEvent event) {
 		if (event.phase == Phase.START)
-			event.player.getHeldItemMainhand().getCapability(Runes.CAPABILITY)
-					.ifPresent(runes -> runes.tick(event.player));
+			event.player.getMainHandItem().getCapability(Runes.CAPABILITY).ifPresent(runes -> runes.tick(event.player));
 	}
 
 	@SubscribeEvent
 	public static void runeHurt(LivingHurtEvent event) {
-		if (!(event.getEntityLiving() instanceof PlayerEntity))
+		if (!(event.getEntityLiving() instanceof Player))
 			return;
 
-		event.getEntityLiving().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event
-				.setAmount(runes.onHurt((PlayerEntity) event.getEntityLiving(), event.getSource(), event.getAmount())));
+		event.getEntityLiving().getMainHandItem().getCapability(Runes.CAPABILITY).ifPresent(runes -> event
+				.setAmount(runes.onHurt((Player) event.getEntityLiving(), event.getSource(), event.getAmount())));
 	}
 
 	@SubscribeEvent
 	public static void runeRightClick(PlayerInteractEvent.RightClickItem event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+		event.getPlayer().getMainHandItem().getCapability(Runes.CAPABILITY)
 				.ifPresent(runes -> runes.onRightClick(event.getPlayer()));
 	}
 
 	@SubscribeEvent
 	public static void runeBreakSpeed(PlayerEvent.BreakSpeed event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event.setNewSpeed(
+		event.getPlayer().getMainHandItem().getCapability(Runes.CAPABILITY).ifPresent(runes -> event.setNewSpeed(
 				runes.onBreakSpeed(event.getPlayer(), event.getState(), event.getPos(), event.getOriginalSpeed())));
 	}
 
 	@SubscribeEvent
 	public static void runeHarvestCheck(PlayerEvent.HarvestCheck event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY).ifPresent(runes -> event
+		event.getPlayer().getMainHandItem().getCapability(Runes.CAPABILITY).ifPresent(runes -> event
 				.setCanHarvest(runes.onHarvestCheck(event.getPlayer(), event.getTargetBlock(), event.canHarvest())));
 	}
 
 	@SubscribeEvent
 	public static void runeBlockBreak(BlockEvent.BreakEvent event) {
-		event.getPlayer().getHeldItemMainhand().getCapability(Runes.CAPABILITY)
+		event.getPlayer().getMainHandItem().getCapability(Runes.CAPABILITY)
 				.ifPresent(runes -> runes.onBlockBreak(event.getPlayer(), event.getState(), event.getPos()));
 	}
 }

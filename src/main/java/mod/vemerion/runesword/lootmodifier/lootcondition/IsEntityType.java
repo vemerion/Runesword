@@ -5,17 +5,17 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.loot.ILootSerializer;
-import net.minecraft.loot.LootConditionType;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.Serializer;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraftforge.registries.ForgeRegistries;
 
-public class IsEntityType implements ILootCondition {
+public class IsEntityType implements LootItemCondition {
 
 	private EntityType<?> entityType;
 
@@ -25,24 +25,24 @@ public class IsEntityType implements ILootCondition {
 
 	@Override
 	public boolean test(LootContext t) {
-		return t.has(LootParameters.THIS_ENTITY) && t.get(LootParameters.THIS_ENTITY).getType() == entityType;
+		return t.hasParam(LootContextParams.THIS_ENTITY) && t.getParamOrNull(LootContextParams.THIS_ENTITY).getType() == entityType;
 	}
 
 	@Override
-	public LootConditionType func_230419_b_() {
+	public LootItemConditionType getType() {
 		return LootConditions.IS_ENTITY_TYPE;
 	}
 
-	public static class Serializer implements ILootSerializer<IsEntityType> {
+	public static class ConditionSerializer implements Serializer<IsEntityType> {
 		public void serialize(JsonObject json, IsEntityType instance, JsonSerializationContext p_230424_3_) {
 			json.addProperty("type", ForgeRegistries.ENTITIES.getKey(instance.entityType).toString());
 		}
 
 		public IsEntityType deserialize(JsonObject json, JsonDeserializationContext p_230423_2_) {
-			ResourceLocation resourcelocation = new ResourceLocation(JSONUtils.getString(json, "type"));
-			EntityType<?> type = ForgeRegistries.ENTITIES.getValue(resourcelocation);
+			var rl = new ResourceLocation(GsonHelper.getAsString(json, "type"));
+			var type = ForgeRegistries.ENTITIES.getValue(rl);
 			if (type == null) {
-				throw new JsonSyntaxException("Unknown type '" + resourcelocation + "'");
+				throw new JsonSyntaxException("Unknown type '" + rl + "'");
 			}
 
 			return new IsEntityType(type);

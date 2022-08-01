@@ -1,14 +1,14 @@
 package mod.vemerion.runesword.api;
 
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
 
 public interface IGuide {
 
 	void openGuide(IGuideChapter startChapter);
 
-	IGuideChapter createGuideChapter(IItemProvider icon, ITextComponent title);
+	IGuideChapter createGuideChapter(ItemLike icon, Component title);
 
-	IGuideChapter createGuideChapter(ResourceLocation icon, ITextComponent title);
+	IGuideChapter createGuideChapter(ResourceLocation icon, Component title);
 }

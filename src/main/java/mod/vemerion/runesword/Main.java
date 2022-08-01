@@ -1,6 +1,6 @@
 package mod.vemerion.runesword;
 
-import mod.vemerion.runesword.container.RuneforgeContainer;
+import mod.vemerion.runesword.container.RuneforgeMenu;
 import mod.vemerion.runesword.effect.BleedEffect;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
@@ -8,16 +8,16 @@ import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.item.RuneswordItemGroup;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
-import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.particles.ParticleType;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.SoundEvent;
+import mod.vemerion.runesword.tileentity.RuneforgeBlockEntity;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ObjectHolder;
@@ -27,10 +27,10 @@ public class Main {
 	public static final String MODID = "runesword";
 	
 	@ObjectHolder(Main.MODID + ":runeforge_tile_entity")
-	public static final TileEntityType<RuneforgeTileEntity> RUNEFORGE_TILE_ENTITY = null;
+	public static final BlockEntityType<RuneforgeBlockEntity> RUNEFORGE_BLOCK_ENTITY = null;
 
 	@ObjectHolder(Main.MODID + ":runeforge_container")
-	public static final ContainerType<RuneforgeContainer> RUNEFORGE_CONTAINER = null;
+	public static final MenuType<RuneforgeMenu> RUNEFORGE_MENU = null;
 	
 	@ObjectHolder(Main.MODID + ":runeforge_block")
 	public static final Block RUNEFORGE_BLOCK = null;
@@ -75,11 +75,11 @@ public class Main {
 	public static final ParticleType<MagicBallParticleData> MAGIC_BALL_PARTICLE = null;
 	
 	@ObjectHolder(Main.MODID + ":bleed_particle")
-	public static final BasicParticleType BLEED_PARTICLE = null;
+	public static final SimpleParticleType BLEED_PARTICLE = null;
 	
 	@ObjectHolder(Main.MODID + ":bleed_effect")
 	public static final BleedEffect BLEED_EFFECT = null;
 	
-	public static final ItemGroup RUNES_ITEM_GROUP = new RuneswordItemGroup();
+	public static final CreativeModeTab RUNES_ITEM_GROUP = new RuneswordItemGroup();
 
 }

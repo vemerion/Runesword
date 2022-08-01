@@ -6,18 +6,17 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.CreatureAttribute;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class WaterRuneItem extends RuneItem {
 
@@ -27,8 +26,8 @@ public class WaterRuneItem extends RuneItem {
 
 	public static class AxePowers extends RunePowers {
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.LUCK_OF_THE_SEA,
-				Enchantments.LURE, Enchantments.FLAME, Enchantments.EFFICIENCY, Enchantments.RESPIRATION);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FISHING_LUCK,
+				Enchantments.FISHING_SPEED, Enchantments.FLAMING_ARROWS, Enchantments.BLOCK_EFFICIENCY, Enchantments.RESPIRATION);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -41,39 +40,39 @@ public class WaterRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onKill(ItemStack runeable, PlayerEntity player, LivingEntity target, DamageSource source,
+		public void onKill(ItemStack runeable, Player player, LivingEntity target, DamageSource source,
 				Set<ItemStack> runes) {
-			if (target.getCreatureAttribute() == CreatureAttribute.WATER) {
+			if (target.getMobType() == MobType.WATER) {
 				double chance = runes.size() * 0.1;
-				chance += getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, runes) * 0.03;
+				chance += getEnchantmentLevel(Enchantments.FISHING_LUCK, runes) * 0.03;
 				if (!target.isInWater())
-					chance += getEnchantmentLevel(Enchantments.LURE, runes) * 0.1;
-				if (random.nextDouble() < chance) {
-					Block log = Blocks.OAK_LOG;
-					if (random.nextDouble() < getEnchantmentLevel(Enchantments.FLAME, runes) * 0.1)
-						log = random.nextBoolean() ? Blocks.CRIMSON_HYPHAE : Blocks.WARPED_HYPHAE;
-					spawnItem(player.world, target.getPosition(), log.asItem().getDefaultInstance());
+					chance += getEnchantmentLevel(Enchantments.FISHING_SPEED, runes) * 0.1;
+				if (player.getRandom().nextDouble() < chance) {
+					var log = Blocks.OAK_LOG;
+					if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.FLAMING_ARROWS, runes) * 0.1)
+						log = player.getRandom().nextBoolean() ? Blocks.CRIMSON_HYPHAE : Blocks.WARPED_HYPHAE;
+					spawnItem(player.level, target.blockPosition(), log.asItem().getDefaultInstance());
 				}
 			}
 		}
 
 		@Override
-		public float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+		public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 				float speed, ItemStack rune) {
 			if (isCorrectTool(runeable, state)) {
-				if (player.isInWaterRainOrBubbleColumn()) {
-					speed += 20 + getEnchantmentLevel(Enchantments.EFFICIENCY, rune) * 2;
+				if (player.isInWaterRainOrBubble()) {
+					speed += 20 + getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, rune) * 2;
 				}
 			}
 			return speed;
 		}
 
 		@Override
-		public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+		public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 				ItemStack rune) {
-			if (isCorrectTool(runeable, state) && player.isInWaterRainOrBubbleColumn())
-				if (random.nextDouble() < getEnchantmentLevel(Enchantments.RESPIRATION, rune) * 0.1)
-					player.setAir(Math.min(player.getMaxAir(), player.getAir() + (int) (player.getMaxAir() * 0.1)));
+			if (isCorrectTool(runeable, state) && player.isInWaterRainOrBubble())
+				if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.RESPIRATION, rune) * 0.1)
+					player.setAirSupply(Math.min(player.getMaxAirSupply(), player.getAirSupply() + (int) (player.getMaxAirSupply() * 0.1)));
 		}
 
 	}
@@ -81,8 +80,8 @@ public class WaterRuneItem extends RuneItem {
 	private static class SwordPowers extends RunePowers {
 
 		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.AQUA_AFFINITY,
-				Enchantments.SHARPNESS, Enchantments.PROTECTION, Enchantments.RESPIRATION,
-				Enchantments.LUCK_OF_THE_SEA);
+				Enchantments.SHARPNESS, Enchantments.ALL_DAMAGE_PROTECTION, Enchantments.RESPIRATION,
+				Enchantments.FISHING_LUCK);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -95,37 +94,37 @@ public class WaterRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
-			if (player.isInWater() || (getEnchantmentLevel(Enchantments.AQUA_AFFINITY, rune) > 0 && player.isWet())) {
+		public void onAttackMajor(ItemStack sword, Player player, Entity target, ItemStack rune) {
+			if (player.isInWater() || (getEnchantmentLevel(Enchantments.AQUA_AFFINITY, rune) > 0 && player.isInWaterOrRain())) {
 				float damage = 3 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.4f;
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
-				target.hurtResistantTime = 0;
+				target.hurt(DamageSource.playerAttack(player), damage);
+				target.invulnerableTime = 0;
 			}
 		}
 
 		@Override
-		public float onHurtMajor(ItemStack sword, PlayerEntity player, DamageSource source, float amount,
+		public float onHurtMajor(ItemStack sword, Player player, DamageSource source, float amount,
 				ItemStack rune) {
-			if (player.isInWater() || (getEnchantmentLevel(Enchantments.AQUA_AFFINITY, rune) > 0 && player.isWet())) {
-				amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.PROTECTION, rune);
+			if (player.isInWater() || (getEnchantmentLevel(Enchantments.AQUA_AFFINITY, rune) > 0 && player.isInWaterOrRain())) {
+				amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, rune);
 			}
 			return amount;
 		}
 
 		@Override
-		public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+		public void onKill(ItemStack sword, Player player, LivingEntity entityLiving, DamageSource source,
 				Set<ItemStack> runes) {
 			int respiration = getEnchantmentLevel(Enchantments.RESPIRATION, runes);
-			int air = player.getAir() + (int) ((runes.size() + respiration * 0.34) * ((float) player.getMaxAir() / 10));
-			player.setAir(Math.min(player.getMaxAir(), air));
+			int air = player.getAirSupply() + (int) ((runes.size() + respiration * 0.34) * ((float) player.getMaxAirSupply() / 10));
+			player.setAirSupply(Math.min(player.getMaxAirSupply(), air));
 		}
 
 		@Override
-		public float onHurt(ItemStack sword, PlayerEntity player, DamageSource source, float amount,
+		public float onHurt(ItemStack sword, Player player, DamageSource source, float amount,
 				Set<ItemStack> runes) {
 			if (source == DamageSource.DROWN
-					&& player.getRNG().nextDouble() < getEnchantmentLevel(Enchantments.LUCK_OF_THE_SEA, runes) * 0.03) {
-				player.setAir(Math.min(player.getMaxAir(), player.getAir() + (int) (player.getMaxAir() * 0.1)));
+					&& player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.FISHING_LUCK, runes) * 0.03) {
+				player.setAirSupply(Math.min(player.getMaxAirSupply(), player.getAirSupply() + (int) (player.getMaxAirSupply() * 0.1)));
 			}
 			return super.onHurt(sword, player, source, amount, runes);
 		}

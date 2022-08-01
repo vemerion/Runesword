@@ -2,41 +2,39 @@ package mod.vemerion.runesword.guide;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 
 import mod.vemerion.runesword.api.IGuideChapter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.client.gui.GuiUtils;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ItemLike;
 
 public class GuideChapter implements IGuideChapter {
 
 	private static final int ICON_SIZE = 16;
 	private static final int COMPONENT_PADDING = 6;
 
-	private IItemProvider itemIcon;
+	private ItemLike itemIcon;
 	private ResourceLocation rlIcon;
 	private HeaderComponent title;
 	private List<GuideChapter> children = new ArrayList<>();
 	private List<ChapterComponent> components = new ArrayList<>();
 
-	public GuideChapter(IItemProvider icon, ITextComponent title) {
+	public GuideChapter(ItemLike icon, Component title) {
 		this.itemIcon = icon;
 		this.title = new HeaderComponent(title);
 	}
 
-	public GuideChapter(ResourceLocation icon, ITextComponent title) {
+	public GuideChapter(ResourceLocation icon, Component title) {
 		this.rlIcon = icon;
 		this.title = new HeaderComponent(title);
 	}
@@ -56,13 +54,13 @@ public class GuideChapter implements IGuideChapter {
 
 	@Override
 	public GuideChapter addText(String translationKey) {
-		components.add(new TextComponent(new TranslationTextComponent(translationKey)));
+		components.add(new TextComponent(new TranslatableComponent(translationKey)));
 		return this;
 	}
 
 	@Override
 	public GuideChapter addHeader(String translationKey) {
-		components.add(new HeaderComponent(new TranslationTextComponent(translationKey)));
+		components.add(new HeaderComponent(new TranslatableComponent(translationKey)));
 		return this;
 	}
 
@@ -72,12 +70,12 @@ public class GuideChapter implements IGuideChapter {
 		return this;
 	}
 
-	public ITextComponent getTitle() {
+	public Component getTitle() {
 		return title.text;
 	}
 
-	public void renderTitle(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height) {
-		title.render(matrix, mc, x, y, y, width, height);
+	public void renderTitle(PoseStack poseStack, Minecraft mc, int x, int y, int width, int height) {
+		title.render(poseStack, mc, x, y, y, width, height);
 	}
 
 	public boolean mouseClicked(int x, int y, int top, int width, int height, double mouseX, double mouseY, int button,
@@ -97,13 +95,13 @@ public class GuideChapter implements IGuideChapter {
 		return false;
 	}
 
-	public int renderComponents(MatrixStack matrix, Minecraft mc, int x, int y, int top, int width, int height,
+	public int renderComponents(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height,
 			int mouseX, int mouseY) {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
 			GuideChapter c = children.get(i);
 			if (isInsideScreen(y, ICON_SIZE, top, height))
-				c.renderIcon(matrix, mc, x, y, width, height, mouseX, mouseY);
+				c.renderIcon(poseStack, mc, x, y, width, height, mouseX, mouseY);
 			x += ICON_SIZE;
 			if (x + ICON_SIZE > left + width && i + 1 != children.size()) {
 				x = left;
@@ -114,23 +112,24 @@ public class GuideChapter implements IGuideChapter {
 		x = left;
 		y += children.isEmpty() ? COMPONENT_PADDING : ICON_SIZE + COMPONENT_PADDING;
 		for (ChapterComponent comp : components) {
-			y = comp.render(matrix, mc, x, y, top, width, height) + COMPONENT_PADDING;
+			y = comp.render(poseStack, mc, x, y, top, width, height) + COMPONENT_PADDING;
 		}
 		return y;
 	}
 
-	private void renderIcon(MatrixStack matrix, Minecraft mc, int x, int y, int width, int height, int mouseX,
+	private void renderIcon(PoseStack poseStack, Minecraft mc, int x, int y, int width, int height, int mouseX,
 			int mouseY) {
 		if (isInside(x, y, ICON_SIZE, mouseX, mouseY)) {
-			GuiUtils.drawHoveringText(matrix, Arrays.asList(title.text), mouseX, mouseY, width, height, -1,
-					mc.fontRenderer);
+			mc.screen.renderTooltip(poseStack, title.text, mouseX, mouseY);
 		}
 
 		if (itemIcon != null) {
-			mc.getItemRenderer().renderItemAndEffectIntoGUI(new ItemStack(itemIcon), x, y);
+			mc.getItemRenderer().renderAndDecorateItem(new ItemStack(itemIcon), x, y);
 		} else {
-			mc.getTextureManager().bindTexture(rlIcon);
-			AbstractGui.blit(matrix, x, y, 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+			RenderSystem.setShaderTexture(0, rlIcon);
+			Screen.blit(poseStack, x, y, 0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
 		}
 	}
 
@@ -143,27 +142,27 @@ public class GuideChapter implements IGuideChapter {
 	}
 
 	private static interface ChapterComponent {
-		int render(MatrixStack matrix, Minecraft mc, int x, int y, int top, int width, int height);
+		int render(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height);
 	}
 
 	private static class TextComponent implements ChapterComponent {
 
 		private static final int COLOR = Color.BLACK.getRGB();
 
-		private ITextComponent text;
+		private Component text;
 
-		private TextComponent(ITextComponent text) {
+		private TextComponent(Component text) {
 			this.text = text;
 		}
 
 		@Override
-		public int render(MatrixStack matrix, Minecraft mc, int x, int y, int top, int width, int height) {
-			FontRenderer font = mc.fontRenderer;
-			List<IReorderingProcessor> lines = font.trimStringToWidth(text, width);
-			for (IReorderingProcessor line : lines) {
-				if (isInsideScreen(y, font.FONT_HEIGHT, top, height))
-					font.func_238422_b_(matrix, line, x, y, COLOR);
-				y += font.FONT_HEIGHT;
+		public int render(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height) {
+			var font = mc.font;
+			var lines = font.split(text, width);
+			for (var line : lines) {
+				if (isInsideScreen(y, font.lineHeight, top, height))
+					font.draw(poseStack, line, x, y, COLOR);
+				y += font.lineHeight;
 			}
 			return y;
 		}
@@ -175,25 +174,25 @@ public class GuideChapter implements IGuideChapter {
 		private static final int COLOR = Color.BLACK.getRGB();
 		private static final float SCALE = 1.3f;
 
-		private ITextComponent text;
+		private Component text;
 
-		private HeaderComponent(ITextComponent text) {
+		private HeaderComponent(Component text) {
 			this.text = text;
 		}
 
 		@Override
-		public int render(MatrixStack matrix, Minecraft mc, int x, int y, int top, int width, int height) {
-			FontRenderer font = mc.fontRenderer;
+		public int render(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height) {
+			var font = mc.font;
 
-			List<IReorderingProcessor> lines = font.trimStringToWidth(text, (int) (width / SCALE));
-			for (IReorderingProcessor line : lines) {
-				float textWidth = font.func_243245_a(line) * SCALE;
-				matrix.push();
-				matrix.scale(SCALE, SCALE, 1);
-				if (isInsideScreen(y, (int) (font.FONT_HEIGHT * SCALE), top, height))
-					font.func_238422_b_(matrix, line, (x + width / 2 - textWidth / 2) / SCALE, y / SCALE, COLOR);
-				y += font.FONT_HEIGHT * SCALE;
-				matrix.pop();
+			var lines = font.split(text, (int) (width / SCALE));
+			for (var line : lines) {
+				float textWidth = font.width(line) * SCALE;
+				poseStack.pushPose();
+				poseStack.scale(SCALE, SCALE, 1);
+				if (isInsideScreen(y, (int) (font.lineHeight * SCALE), top, height))
+					font.draw(poseStack, line, (x + width / 2 - textWidth / 2) / SCALE, y / SCALE, COLOR);
+				y += font.lineHeight * SCALE;
+				poseStack.popPose();
 			}
 			return y + 2;
 		}
@@ -215,8 +214,10 @@ public class GuideChapter implements IGuideChapter {
 		}
 
 		@Override
-		public int render(MatrixStack matrix, Minecraft mc, int x, int y, int top, int width, int height) {
-			mc.getTextureManager().bindTexture(image);
+		public int render(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height) {
+			RenderSystem.setShader(GameRenderer::getPositionTexShader);
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+			RenderSystem.setShaderTexture(0, image);
 			float scale = (float) width / imgWidth * SCALE;
 			int drawWidth = (int) (imgWidth * scale);
 			int drawHeight = (int) (imgHeight * scale);
@@ -245,7 +246,7 @@ public class GuideChapter implements IGuideChapter {
 				drawHeight = (int) (drawHeight * ratio);
 				vHeight = (int) (vHeight * ratio);
 			}
-			AbstractGui.blit(matrix, x + width / 2 - drawWidth / 2, drawY, drawWidth, drawHeight, 0, v, imgWidth,
+			Screen.blit(poseStack, x + width / 2 - drawWidth / 2, drawY, drawWidth, drawHeight, 0, v, imgWidth,
 					vHeight, imgWidth, imgHeight);
 			return y + offset;
 		}

@@ -4,15 +4,15 @@ import java.util.function.Consumer;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.ShapelessRecipeBuilder;
-import net.minecraft.item.Item;
-import net.minecraft.tags.ITag;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraftforge.common.Tags;
 
 public class ModRecipeProvider extends RecipeProvider {
@@ -22,23 +22,23 @@ public class ModRecipeProvider extends RecipeProvider {
 	}
 
 	@Override
-	protected void registerRecipes(Consumer<IFinishedRecipe> consumer) {
-		ShapelessRecipeBuilder.shapelessRecipe(RuneItem.FROST_RUNE_ITEM).addIngredient(RuneItem.WATER_RUNE_ITEM)
-				.addIngredient(RuneItem.AIR_RUNE_ITEM).addCriterion("has_water_rune", hasItem(RuneItem.WATER_RUNE_ITEM))
-				.addCriterion("has_air_rune", hasItem(RuneItem.AIR_RUNE_ITEM)).build(consumer);
+	protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer) {
+		ShapelessRecipeBuilder.shapeless(RuneItem.FROST_RUNE_ITEM).requires(RuneItem.WATER_RUNE_ITEM)
+				.requires(RuneItem.AIR_RUNE_ITEM).unlockedBy("has_water_rune", has(RuneItem.WATER_RUNE_ITEM))
+				.unlockedBy("has_air_rune", has(RuneItem.AIR_RUNE_ITEM)).save(consumer);
 
-		ShapelessRecipeBuilder.shapelessRecipe(RuneItem.MAGIC_RUNE_ITEM).addIngredient(RuneItem.WATER_RUNE_ITEM)
-				.addIngredient(RuneItem.AIR_RUNE_ITEM).addIngredient(RuneItem.EARTH_RUNE_ITEM)
-				.addIngredient(RuneItem.FIRE_RUNE_ITEM).addIngredient(RuneItem.BLOOD_RUNE_ITEM)
-				.addCriterion("has_blood_rune", hasItem(RuneItem.BLOOD_RUNE_ITEM)).build(consumer);
+		ShapelessRecipeBuilder.shapeless(RuneItem.MAGIC_RUNE_ITEM).requires(RuneItem.WATER_RUNE_ITEM)
+				.requires(RuneItem.AIR_RUNE_ITEM).requires(RuneItem.EARTH_RUNE_ITEM)
+				.requires(RuneItem.FIRE_RUNE_ITEM).requires(RuneItem.BLOOD_RUNE_ITEM)
+				.unlockedBy("has_blood_rune", has(RuneItem.BLOOD_RUNE_ITEM)).save(consumer);
 
-		ITag<Item> runes = ItemTags.createOptional(new ResourceLocation(Main.MODID, "runes"));
-		ShapedRecipeBuilder.shapedRecipe(Main.RUNEFORGE_BLOCK).patternLine("sss").patternLine("srs").patternLine("sss")
-				.key('s', ItemTags.STONE_CRAFTING_MATERIALS).key('r', runes).addCriterion("has_rune", hasItem(runes))
-				.build(consumer);
+		var runes = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation(Main.MODID, "runes"));
+		ShapedRecipeBuilder.shaped(Main.RUNEFORGE_BLOCK).pattern("sss").pattern("srs").pattern("sss")
+				.define('s', ItemTags.STONE_CRAFTING_MATERIALS).define('r', runes).unlockedBy("has_rune", has(runes))
+				.save(consumer);
 
-		ShapelessRecipeBuilder.shapelessRecipe(Main.GUIDE_ITEM).addIngredient(runes)
-				.addIngredient(Tags.Items.COBBLESTONE).addCriterion("has_rune", hasItem(runes)).build(consumer);
+		ShapelessRecipeBuilder.shapeless(Main.GUIDE_ITEM).requires(runes)
+				.requires(Tags.Items.COBBLESTONE).unlockedBy("has_rune", has(runes)).save(consumer);
 	}
 
 }

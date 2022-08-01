@@ -8,24 +8,23 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class EarthRuneItem extends RuneItem {
 
@@ -35,8 +34,9 @@ public class EarthRuneItem extends RuneItem {
 
 	private static class AxePowers extends RunePowers {
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.MENDING,
-				Enchantments.EFFICIENCY, Enchantments.FLAME, Enchantments.FIRE_ASPECT);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.BLOCK_FORTUNE,
+				Enchantments.MENDING, Enchantments.BLOCK_EFFICIENCY, Enchantments.FLAMING_ARROWS,
+				Enchantments.FIRE_ASPECT);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -49,17 +49,17 @@ public class EarthRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 				Set<ItemStack> runes) {
-			if (state.getHarvestTool() == ToolType.PICKAXE) {
+			if (state.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
 				speed += runes.size();
 
-				speed += getEnchantmentLevel(Enchantments.EFFICIENCY, runes);
+				speed += getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, runes);
 
-				if (player.world.getDimensionKey() == World.THE_NETHER)
-					speed += getEnchantmentLevel(Enchantments.FLAME, runes) * 3;
+				if (player.level.dimension() == Level.NETHER)
+					speed += getEnchantmentLevel(Enchantments.FLAMING_ARROWS, runes) * 3;
 
-				if (player.getFireTimer() > 0)
+				if (player.getRemainingFireTicks() > 0)
 					speed += getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 2;
 			}
 
@@ -67,20 +67,20 @@ public class EarthRuneItem extends RuneItem {
 		}
 
 		@Override
-		public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state,
-				boolean canHarvest, ItemStack rune) {
-			return canHarvest || state.getHarvestTool() == ToolType.PICKAXE;
+		public boolean onHarvestCheckMajor(ItemStack runeable, Player player, BlockState state, boolean canHarvest,
+				ItemStack rune) {
+			return canHarvest || state.is(BlockTags.MINEABLE_WITH_PICKAXE);
 		}
 
 		@Override
-		public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+		public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 				ItemStack rune) {
-			if (getEnchantmentLevel(Enchantments.MENDING, rune) > 0 && random.nextDouble() < 0.3)
+			if (getEnchantmentLevel(Enchantments.MENDING, rune) > 0 && player.getRandom().nextDouble() < 0.3)
 				mendItem(runeable, 2);
 
 			if (state.getBlock() == Blocks.STONE && !player.isCreative()
-					&& random.nextDouble() < getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.2)
-				spawnItem(player.world, pos, Blocks.COBBLESTONE.asItem().getDefaultInstance());
+					&& player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.BLOCK_FORTUNE, rune) * 0.2)
+				spawnItem(player.level, pos, Blocks.COBBLESTONE.asItem().getDefaultInstance());
 		}
 
 	}
@@ -91,8 +91,9 @@ public class EarthRuneItem extends RuneItem {
 		private static final List<Item> LOOTING_DROPS = ImmutableList.of(Items.DIAMOND_ORE, Items.GOLD_ORE,
 				Items.EMERALD_ORE);
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.FIRE_ASPECT,
-				Enchantments.LOOTING, Enchantments.SHARPNESS, Enchantments.PROTECTION);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.BLOCK_FORTUNE,
+				Enchantments.FIRE_ASPECT, Enchantments.MOB_LOOTING, Enchantments.SHARPNESS,
+				Enchantments.ALL_DAMAGE_PROTECTION);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -105,50 +106,49 @@ public class EarthRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onHurtMajor(ItemStack sword, PlayerEntity player, DamageSource source, float amount,
-				ItemStack rune) {
+		public float onHurtMajor(ItemStack sword, Player player, DamageSource source, float amount, ItemStack rune) {
 
-			if (player.getPosY() < 30 && !source.isUnblockable()) {
-				amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.PROTECTION, rune);
+			if (player.getY() < 30 && !source.isBypassArmor()) {
+				amount *= 1 - 0.05f * getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, rune);
 			}
 
 			return amount;
 		}
 
 		@Override
-		public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
-			if (player.getPosY() < 30) {
+		public void onAttackMajor(ItemStack sword, Player player, Entity target, ItemStack rune) {
+			if (player.getY() < 30) {
 				float damage = 3 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.2f;
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
-				target.hurtResistantTime = 0;
+				target.hurt(DamageSource.playerAttack(player), damage);
+				target.invulnerableTime = 0;
 			}
 		}
 
 		@Override
-		public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+		public void onKill(ItemStack sword, Player player, LivingEntity entityLiving, DamageSource source,
 				Set<ItemStack> runes) {
-			if (player.getRNG().nextDouble() < runes.size() * 0.1
-					+ getEnchantmentLevel(Enchantments.FORTUNE, runes) * 0.02) {
-				ItemEntity dirt = new ItemEntity(player.world, entityLiving.getPosX(), entityLiving.getPosY(),
-						entityLiving.getPosZ(), getDrop(player, runes));
-				player.world.addEntity(dirt);
+			if (player.getRandom().nextDouble() < runes.size() * 0.1
+					+ getEnchantmentLevel(Enchantments.BLOCK_FORTUNE, runes) * 0.02) {
+				ItemEntity dirt = new ItemEntity(player.level, entityLiving.getX(), entityLiving.getY(),
+						entityLiving.getZ(), getDrop(player, runes));
+				player.level.addFreshEntity(dirt);
 			}
 		}
 
-		private ItemStack getDrop(PlayerEntity player, Set<ItemStack> runes) {
-			World world = player.world;
-			ItemStack drop = new ItemStack(DROPS.get(random.nextInt(DROPS.size())));
+		private ItemStack getDrop(Player player, Set<ItemStack> runes) {
+			Level level = player.level;
+			ItemStack drop = new ItemStack(DROPS.get(player.getRandom().nextInt(DROPS.size())));
 
 			// Rare ores
-			if (random.nextDouble() < getEnchantmentLevel(Enchantments.LOOTING, runes) * 0.01) {
-				drop = new ItemStack(LOOTING_DROPS.get(random.nextInt(LOOTING_DROPS.size())));
+			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.MOB_LOOTING, runes) * 0.01) {
+				drop = new ItemStack(LOOTING_DROPS.get(player.getRandom().nextInt(LOOTING_DROPS.size())));
 			}
 
 			// Auto-smelt
-			if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.05) {
-				IInventory inv = new Inventory(drop);
-				Optional<ItemStack> smelted = world.getRecipeManager().getRecipe(IRecipeType.SMELTING, inv, world)
-						.map(r -> r.getCraftingResult(inv));
+			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.05) {
+				var inv = new SimpleContainer(drop);
+				Optional<ItemStack> smelted = level.getRecipeManager().getRecipeFor(RecipeType.SMELTING, inv, level)
+						.map(r -> r.assemble(inv));
 				if (smelted.isPresent())
 					drop = smelted.get();
 			}

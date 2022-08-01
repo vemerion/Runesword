@@ -12,25 +12,23 @@ import java.util.Set;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.item.RunePowers;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.TieredItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.Color;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
@@ -41,8 +39,8 @@ import net.minecraftforge.items.ItemStackHandler;
 
 public class Runes extends ItemStackHandler {
 
-	@CapabilityInject(Runes.class)
-	public static final Capability<Runes> CAPABILITY = null;
+	public static final Capability<Runes> CAPABILITY = CapabilityManager.get(new CapabilityToken<Runes>() {
+	});
 
 	public static final int RUNES_COUNT = 4;
 	public static final int MAJOR_SLOT = 0;
@@ -67,7 +65,7 @@ public class Runes extends ItemStackHandler {
 		if (owner.isEmpty())
 			return;
 
-		CompoundNBT nbt = owner.getOrCreateTag();
+		CompoundTag nbt = owner.getOrCreateTag();
 		if (nbt.contains(Main.MODID))
 			deserializeNBT(nbt.getCompound(Main.MODID));
 	}
@@ -96,8 +94,8 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// On both sides
-	public void onAttack(PlayerEntity player, Entity target) {
-		if (player.world.isRemote || player.getCooledAttackStrength(0) < 0.9)
+	public void onAttack(Player player, Entity target) {
+		if (player.level.isClientSide || player.getAttackStrengthScale(0) < 0.9)
 			return;
 
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
@@ -109,7 +107,7 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// Logical-Server only
-	public void onKill(PlayerEntity player, LivingEntity entityLiving, DamageSource source) {
+	public void onKill(Player player, LivingEntity entityLiving, DamageSource source) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			entry.getKey().onKill(owner, player, entityLiving, source, entry.getValue());
 
@@ -119,12 +117,12 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// On both sides
-	public void tick(PlayerEntity player) {
+	public void tick(Player player) {
 
 	}
 
-	public float onHurt(PlayerEntity player, DamageSource source, float amount) {
-		if (!player.world.isRemote) {
+	public float onHurt(Player player, DamageSource source, float amount) {
+		if (!player.level.isClientSide) {
 
 			for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 				amount = entry.getKey().onHurt(owner, player, source, amount, entry.getValue());
@@ -138,8 +136,8 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// On both sides
-	public void onRightClick(PlayerEntity player) {
-		if (player.world.isRemote)
+	public void onRightClick(Player player) {
+		if (player.level.isClientSide)
 			return;
 
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
@@ -152,7 +150,7 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// On both sides
-	public float onBreakSpeed(PlayerEntity player, BlockState state, BlockPos pos, float speed) {
+	public float onBreakSpeed(Player player, BlockState state, BlockPos pos, float speed) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			speed = entry.getKey().onBreakSpeed(owner, player, state, pos, speed, entry.getValue());
 
@@ -164,7 +162,7 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// Server only
-	public boolean onHarvestCheck(PlayerEntity player, BlockState state, boolean canHarvest) {
+	public boolean onHarvestCheck(Player player, BlockState state, boolean canHarvest) {
 		ItemStack major = getStackInSlot(MAJOR_SLOT);
 		if (!major.isEmpty())
 			canHarvest = ((RuneItem) major.getItem()).onHarvestCheckMajor(owner, player, state, canHarvest, major);
@@ -173,7 +171,7 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// Server only
-	public void onBlockBreak(PlayerEntity player, BlockState state, BlockPos pos) {
+	public void onBlockBreak(Player player, BlockState state, BlockPos pos) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			entry.getKey().onBlockBreak(owner, player, state, pos, entry.getValue());
 
@@ -182,16 +180,16 @@ public class Runes extends ItemStackHandler {
 			((RuneItem) major.getItem()).onBlockBreakMajor(owner, player, state, pos, major);
 	}
 
-	public Collection<? extends ITextComponent> getTooltip() {
-		List<ITextComponent> tooltip = new ArrayList<>();
+	public Collection<? extends Component> getTooltip() {
+		List<Component> tooltip = new ArrayList<>();
 		for (int i = 0; i < RUNES_COUNT; i++) {
 			ItemStack rune = getStackInSlot(i);
-			TranslationTextComponent prefix = i == MAJOR_SLOT
-					? new TranslationTextComponent("tooltip." + Main.MODID + ".major")
-					: new TranslationTextComponent("tooltip." + Main.MODID + ".minor");
+			TranslatableComponent prefix = i == MAJOR_SLOT
+					? new TranslatableComponent("tooltip." + Main.MODID + ".major")
+					: new TranslatableComponent("tooltip." + Main.MODID + ".minor");
 			if (!rune.isEmpty()) {
-				ITextComponent text = new TranslationTextComponent(rune.getTranslationKey())
-						.mergeStyle(Style.EMPTY.setColor(Color.fromInt(((RuneItem) rune.getItem()).getColor())));
+				var text = new TranslatableComponent(rune.getDescriptionId())
+						.withStyle(Style.EMPTY.withColor(((RuneItem) rune.getItem()).getColor()));
 				tooltip.add(prefix.append(text));
 			}
 		}
@@ -201,7 +199,7 @@ public class Runes extends ItemStackHandler {
 	public boolean isSlotUnlocked(int slot) {
 		int level = 4;
 		if (owner.getItem() instanceof TieredItem)
-			level = ((TieredItem) owner.getItem()).getTier().getHarvestLevel();
+			level = ((TieredItem) owner.getItem()).getTier().getLevel();
 
 		switch (slot) {
 		case FIRST_MINOR_SLOT:
@@ -240,7 +238,7 @@ public class Runes extends ItemStackHandler {
 	}
 
 	@EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
-	public static class Provider implements ICapabilitySerializable<INBT> {
+	public static class Provider implements ICapabilitySerializable<CompoundTag> {
 		private static final ResourceLocation SAVE_LOCATION = new ResourceLocation(Main.MODID, "runes");
 
 		@SubscribeEvent
@@ -262,30 +260,15 @@ public class Runes extends ItemStackHandler {
 		}
 
 		@Override
-		public INBT serializeNBT() {
-			return CAPABILITY.getStorage().writeNBT(CAPABILITY,
-					instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null);
+		public CompoundTag serializeNBT() {
+			return instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!"))
+					.serializeNBT();
 		}
 
 		@Override
-		public void deserializeNBT(INBT nbt) {
-			CAPABILITY.getStorage().readNBT(CAPABILITY,
-					instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null,
-					nbt);
-		}
-	}
-
-	public static class Storage implements IStorage<Runes> {
-
-		@Override
-		public INBT writeNBT(Capability<Runes> capability, Runes instance, Direction side) {
-			return instance.serializeNBT();
-
-		}
-
-		@Override
-		public void readNBT(Capability<Runes> capability, Runes instance, Direction side, INBT nbt) {
-			instance.deserializeNBT((CompoundNBT) nbt);
+		public void deserializeNBT(CompoundTag nbt) {
+			instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!"))
+					.deserializeNBT(nbt);
 		}
 	}
 }

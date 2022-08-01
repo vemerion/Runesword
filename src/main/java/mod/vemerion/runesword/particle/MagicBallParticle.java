@@ -1,39 +1,39 @@
 package mod.vemerion.runesword.particle;
 
-import net.minecraft.client.particle.IAnimatedSprite;
-import net.minecraft.client.particle.IParticleFactory;
-import net.minecraft.client.particle.IParticleRenderType;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.SpriteTexturedParticle;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 
-public class MagicBallParticle extends SpriteTexturedParticle {
+public class MagicBallParticle extends TextureSheetParticle {
 
-	protected MagicBallParticle(ClientWorld world, double x, double y, double z, double motionX, double motionY,
+	protected MagicBallParticle(ClientLevel level, double x, double y, double z, double motionX, double motionY,
 			double motionZ, MagicBallParticleData data) {
-		super(world, x, y, z, motionX, motionY, motionZ);
-		this.particleRed = data.getRed();
-		this.particleGreen = data.getGreen();
-		this.particleBlue = data.getBlue();
+		super(level, x, y, z, motionX, motionY, motionZ);
+		this.rCol = data.getRed();
+		this.gCol = data.getGreen();
+		this.bCol = data.getBlue();
 	}
 	
 	@Override
-	public IParticleRenderType getRenderType() {
-		return IParticleRenderType.PARTICLE_SHEET_OPAQUE;
+	public ParticleRenderType getRenderType() {
+		return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
 	}
 
-	public static class Factory implements IParticleFactory<MagicBallParticleData> {
-		private final IAnimatedSprite spriteSet;
+	public static class Provider implements ParticleProvider<MagicBallParticleData> {
+		private final SpriteSet sprites;
 
-		public Factory(IAnimatedSprite spriteSet) {
-			this.spriteSet = spriteSet;
+		public Provider(SpriteSet sprites) {
+			this.sprites = sprites;
 		}
 
 		@Override
-		public Particle makeParticle(MagicBallParticleData data, ClientWorld worldIn, double x, double y, double z,
+		public Particle createParticle(MagicBallParticleData data, ClientLevel level, double x, double y, double z,
 				double xSpeed, double ySpeed, double zSpeed) {
-			MagicBallParticle particle = new MagicBallParticle(worldIn, x, y, z, xSpeed, ySpeed, zSpeed, data);
-			particle.selectSpriteRandomly(spriteSet);
+			MagicBallParticle particle = new MagicBallParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, data);
+			particle.pickSprite(sprites);
 			return particle;
 		}
 	}

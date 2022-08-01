@@ -1,81 +1,89 @@
 package mod.vemerion.runesword.block;
 
-import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.tileentity.RuneforgeBlockEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.network.NetworkHooks;
 
-public class RuneforgeBlock extends Block {
-	private static final VoxelShape SHAPE = Block.makeCuboidShape(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
+public class RuneforgeBlock extends Block implements EntityBlock {
+	private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
 	public RuneforgeBlock(Properties properties) {
 		super(properties);
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context) {
+	public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext) {
 		return SHAPE;
 	}
 
 	@Override
-	public boolean hasTileEntity(BlockState state) {
-		return true;
+	public MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
+		var blockEntity = level.getBlockEntity(pos);
+		if (blockEntity instanceof MenuProvider menuProvider)
+			return menuProvider;
+		return null;
 	}
 
 	@Override
-	public TileEntity createTileEntity(BlockState state, IBlockReader world) {
-		return new RuneforgeTileEntity();
-	}
-
-	@Override
-	public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos) {
-		TileEntity tileentity = worldIn.getTileEntity(pos);
-		return tileentity instanceof INamedContainerProvider ? (INamedContainerProvider) tileentity : null;
-	}
-
-	@Override
-	public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player,
-			Hand handIn, BlockRayTraceResult hit) {
-		if (!worldIn.isRemote) {
-			TileEntity tileentity = worldIn.getTileEntity(pos);
-			if (tileentity != null) {
-				INamedContainerProvider containerProvider = getContainer(state, worldIn, pos);
-				NetworkHooks.openGui((ServerPlayerEntity) player, containerProvider);
+	public InteractionResult use(BlockState pState, Level pLevel, BlockPos pPos, Player pPlayer, InteractionHand pHand,
+			BlockHitResult pHit) {
+		if (!pLevel.isClientSide) {
+			var blockEntity = pLevel.getBlockEntity(pPos);
+			if (blockEntity instanceof MenuProvider menuProvider) {
+				NetworkHooks.openGui((ServerPlayer) pPlayer, menuProvider);
 			}
 		}
-		return ActionResultType.SUCCESS;
+		return InteractionResult.sidedSuccess(pLevel.isClientSide);
 	}
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public void onReplaced(BlockState state, World worldIn, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (!state.isIn(newState.getBlock())) {
-			TileEntity tileentity = worldIn.getTileEntity(pos);
-			if (tileentity != null) {
-				tileentity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (!state.is(newState.getBlock())) {
+			var blockEntity = level.getBlockEntity(pos);
+			if (blockEntity != null) {
+				blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
 					if (handler.getSlots() > 0) {
-						ItemEntity item = new ItemEntity(worldIn, pos.getX(), pos.getY(), pos.getZ(),
-								handler.extractItem(RuneforgeTileEntity.RUNEABLE_SLOT, 1, false));
-						worldIn.addEntity(item);
+						ItemEntity item = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(),
+								handler.extractItem(RuneforgeBlockEntity.RUNEABLE_SLOT, 1, false));
+						level.addFreshEntity(item);
 					}
 				});
 			}
-			super.onReplaced(state, worldIn, pos, newState, isMoving);
+			super.onRemove(state, level, pos, newState, isMoving);
 		}
+	}
+
+	@Override
+	public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+		return new RuneforgeBlockEntity(pPos, pState);
+	}
+
+	@Override
+	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
+			BlockEntityType<T> pBlockEntityType) {
+		return pBlockEntityType == Main.RUNEFORGE_BLOCK_ENTITY
+				? (level, pos, state, tileEntity) -> ((RuneforgeBlockEntity) tileEntity).tick()
+				: null;
 	}
 
 }

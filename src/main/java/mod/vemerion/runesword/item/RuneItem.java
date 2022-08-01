@@ -7,15 +7,15 @@ import java.util.Set;
 import com.google.common.collect.Iterables;
 
 import mod.vemerion.runesword.Main;
-import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.registries.ObjectHolder;
 
 @ObjectHolder(Main.MODID)
@@ -42,21 +42,21 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public void onAttack(ItemStack runeable, PlayerEntity player, Entity target, Set<ItemStack> runes) {
+	public void onAttack(ItemStack runeable, Player player, Entity target, Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
 				p.onAttack(runeable, player, target, runes);
 	}
 
 	@Override
-	public void onAttackMajor(ItemStack runeable, PlayerEntity player, Entity target, ItemStack rune) {
+	public void onAttackMajor(ItemStack runeable, Player player, Entity target, ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
 				p.onAttackMajor(runeable, player, target, rune);
 	}
 
 	@Override
-	public void onKill(ItemStack runeable, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+	public void onKill(ItemStack runeable, Player player, LivingEntity entityLiving, DamageSource source,
 			Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -64,7 +64,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public void onKillMajor(ItemStack runeable, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+	public void onKillMajor(ItemStack runeable, Player player, LivingEntity entityLiving, DamageSource source,
 			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -72,7 +72,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public float onHurt(ItemStack runeable, PlayerEntity player, DamageSource source, float amount,
+	public float onHurt(ItemStack runeable, Player player, DamageSource source, float amount,
 			Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -81,7 +81,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public float onHurtMajor(ItemStack runeable, PlayerEntity player, DamageSource source, float amount,
+	public float onHurtMajor(ItemStack runeable, Player player, DamageSource source, float amount,
 			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -90,21 +90,21 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public void onRightClick(ItemStack runeable, PlayerEntity player, Set<ItemStack> runes) {
+	public void onRightClick(ItemStack runeable, Player player, Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
 				p.onRightClick(runeable, player, runes);
 	}
 
 	@Override
-	public void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune) {
+	public void onRightClickMajor(ItemStack runeable, Player player, ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
 				p.onRightClickMajor(runeable, player, rune);
 	}
 
 	@Override
-	public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+	public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 			Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -113,7 +113,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+	public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -122,7 +122,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+	public boolean onHarvestCheckMajor(ItemStack runeable, Player player, BlockState state, boolean canHarvest,
 			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -131,7 +131,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public void onBlockBreak(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+	public void onBlockBreak(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 			Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -139,7 +139,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+	public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -160,7 +160,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public int getItemEnchantability() {
+	public int getEnchantmentValue() {
 		return 10;
 	}
 

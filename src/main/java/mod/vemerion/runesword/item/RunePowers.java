@@ -4,96 +4,93 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AxeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ToolType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class RunePowers implements IRunePowers {
 
 	@Override
-	public void onAttack(ItemStack runeable, PlayerEntity player, Entity target, Set<ItemStack> runes) {
+	public void onAttack(ItemStack runeable, Player player, Entity target, Set<ItemStack> runes) {
 	}
 
 	@Override
-	public void onAttackMajor(ItemStack runeable, PlayerEntity player, Entity target, ItemStack rune) {
+	public void onAttackMajor(ItemStack runeable, Player player, Entity target, ItemStack rune) {
 	}
 
 	@Override
-	public void onKill(ItemStack runeable, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+	public void onKill(ItemStack runeable, Player player, LivingEntity entityLiving, DamageSource source,
 			Set<ItemStack> runes) {
 	}
 
 	@Override
-	public void onKillMajor(ItemStack runeable, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+	public void onKillMajor(ItemStack runeable, Player player, LivingEntity entityLiving, DamageSource source,
 			ItemStack rune) {
 	}
 
 	@Override
-	public float onHurt(ItemStack runeable, PlayerEntity player, DamageSource source, float amount,
+	public float onHurt(ItemStack runeable, Player player, DamageSource source, float amount,
 			Set<ItemStack> runes) {
 		return amount;
 	}
 
 	@Override
-	public float onHurtMajor(ItemStack runeable, PlayerEntity player, DamageSource source, float amount,
+	public float onHurtMajor(ItemStack runeable, Player player, DamageSource source, float amount,
 			ItemStack rune) {
 		return amount;
 	}
 
 	@Override
-	public void onRightClick(ItemStack runeable, PlayerEntity player, Set<ItemStack> runes) {
+	public void onRightClick(ItemStack runeable, Player player, Set<ItemStack> runes) {
 	}
 
 	@Override
-	public void onRightClickMajor(ItemStack runeable, PlayerEntity player, ItemStack rune) {
+	public void onRightClickMajor(ItemStack runeable, Player player, ItemStack rune) {
 	}
 
 	@Override
-	public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+	public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 			Set<ItemStack> runes) {
 		return speed;
 	}
 
 	@Override
-	public float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+	public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 			ItemStack rune) {
 		return speed;
 	}
 
 	@Override
-	public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state, boolean canHarvest,
+	public boolean onHarvestCheckMajor(ItemStack runeable, Player player, BlockState state, boolean canHarvest,
 			ItemStack rune) {
 		return canHarvest;
 	}
 
 	@Override
-	public void onBlockBreak(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+	public void onBlockBreak(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 			Set<ItemStack> runes) {
 	}
 
 	@Override
-	public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+	public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 			ItemStack rune) {
 	}
 
 	public static boolean isSword(ItemStack stack) {
-		return stack.getItem() instanceof SwordItem;
+		return true; // TODO
 	}
 
 	public static boolean isAxe(ItemStack stack) {
-		return stack.getItem() instanceof AxeItem || stack.getToolTypes().contains(ToolType.AXE);
+		return true; // TODO
 	}
 
 	public abstract boolean canActivatePowers(ItemStack stack);
@@ -104,12 +101,12 @@ public abstract class RunePowers implements IRunePowers {
 	protected final int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
 		int level = 0;
 		for (ItemStack stack : stacks)
-			level += EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
+			level += EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
 		return level;
 	}
 
 	protected final int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
-		return EnchantmentHelper.getEnchantmentLevel(enchantment, stack);
+		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
 	}
 	
 	protected final int getEnchantmentLevel(Enchantment enchantment, Map<Enchantment, Integer> enchants) {
@@ -127,26 +124,26 @@ public abstract class RunePowers implements IRunePowers {
 	}
 
 	protected final void mendItem(ItemStack item, int amount) {
-		item.setDamage(item.getDamage() - amount);
+		item.setDamageValue(item.getDamageValue() - amount);
 	}
 
-	protected final void attack(PlayerEntity player, Entity target, float damage) {
-		target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
-		target.hurtResistantTime = 0;
+	protected final void attack(Player player, Entity target, float damage) {
+		target.hurt(DamageSource.playerAttack(player), damage);
+		target.invulnerableTime = 0;
 	}
 
 	protected final boolean isCorrectTool(ItemStack stack, BlockState state) {
-		return stack.getToolTypes().contains(state.getHarvestTool());
+		return stack.isCorrectToolForDrops(state);
 	}
 
-	protected final void spawnItem(World world, BlockPos pos, ItemStack stack) {
-		Vector3d position = Vector3d.copyCentered(pos);
-		ItemEntity entity = new ItemEntity(world, position.getX(), position.getY(), position.getZ(), stack);
-		world.addEntity(entity);
+	protected final void spawnItem(Level level, BlockPos pos, ItemStack stack) {
+		var position = Vec3.atCenterOf(pos);
+		var entity = new ItemEntity(level, position.x(), position.y(), position.z(), stack);
+		level.addFreshEntity(entity);
 	}
 	
-	protected final void restoreAir(PlayerEntity player, float fraction) {
-		int air = (int) (player.getAir() + fraction * player.getMaxAir());
-		player.setAir(Math.min(player.getMaxAir(), air));
+	protected final void restoreAir(Player player, float fraction) {
+		int air = (int) (player.getAirSupply() + fraction * player.getMaxAirSupply());
+		player.setAirSupply(Math.min(player.getMaxAirSupply(), air));
 	}
 }

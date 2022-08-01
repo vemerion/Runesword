@@ -6,7 +6,7 @@
     },
     {
       "condition": "runesword:in_biome",
-      "category": "ocean"
+      "biome": "minecraft:is_ocean"
     },
     {
       "condition": "runesword:from_chest"

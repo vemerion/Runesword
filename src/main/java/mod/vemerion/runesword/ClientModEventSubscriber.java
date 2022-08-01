@@ -3,24 +3,23 @@ package mod.vemerion.runesword;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.particle.BleedParticle;
 import mod.vemerion.runesword.particle.MagicBallParticle;
-import mod.vemerion.runesword.renderer.RuneforgeTileEntityRenderer;
+import mod.vemerion.runesword.renderer.RuneforgeBlockEntityRenderer;
 import mod.vemerion.runesword.screen.RuneforgeScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ScreenManager;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.entity.SnowManRenderer;
-import net.minecraft.client.renderer.entity.SpriteRenderer;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.SnowGolemRenderer;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
@@ -29,23 +28,27 @@ public class ClientModEventSubscriber {
 
 	@SubscribeEvent
 	public static void onClientSetupEvent(FMLClientSetupEvent event) {
-		RenderTypeLookup.setRenderLayer(Main.RUNEFORGE_BLOCK, RenderType.getCutout());
+		ItemBlockRenderTypes.setRenderLayer(Main.RUNEFORGE_BLOCK, RenderType.cutout());
 
-		ClientRegistry.bindTileEntityRenderer(Main.RUNEFORGE_TILE_ENTITY, RuneforgeTileEntityRenderer::new);
-
-		ScreenManager.registerFactory(Main.RUNEFORGE_CONTAINER, RuneforgeScreen::new);
-
-		RenderingRegistry.registerEntityRenderingHandler(Main.FROST_GOLEM_ENTITY, SnowManRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(Main.MAGIC_BALL_ENTITY, NoRenderer::new);
-		RenderingRegistry.registerEntityRenderingHandler(Main.FROSTBALL_ENTITY,
-				r -> new SpriteRenderer<>(r, Minecraft.getInstance().getItemRenderer()));
+		event.enqueueWork(() -> {
+			MenuScreens.register(Main.RUNEFORGE_MENU, RuneforgeScreen::new);
+		});
 	}
-	
+
+	@SubscribeEvent
+	public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+		event.registerBlockEntityRenderer(Main.RUNEFORGE_BLOCK_ENTITY, RuneforgeBlockEntityRenderer::new);
+
+		event.registerEntityRenderer(Main.FROST_GOLEM_ENTITY, SnowGolemRenderer::new);
+		event.registerEntityRenderer(Main.MAGIC_BALL_ENTITY, NoRenderer::new);
+		event.registerEntityRenderer(Main.FROSTBALL_ENTITY, r -> new ThrownItemRenderer<>(r));
+	}
+
 	@SubscribeEvent
 	public static void onRegisterParticleFactory(ParticleFactoryRegisterEvent event) {
 		Minecraft mc = Minecraft.getInstance();
-		mc.particles.registerFactory(Main.MAGIC_BALL_PARTICLE, (s) -> new MagicBallParticle.Factory(s));
-		mc.particles.registerFactory(Main.BLEED_PARTICLE, (s) -> new BleedParticle.Factory(s));
+		mc.particleEngine.register(Main.MAGIC_BALL_PARTICLE, (s) -> new MagicBallParticle.Provider(s));
+		mc.particleEngine.register(Main.BLEED_PARTICLE, (s) -> new BleedParticle.Provider(s));
 	}
 
 	@SubscribeEvent
@@ -59,12 +62,12 @@ public class ClientModEventSubscriber {
 
 	private static class NoRenderer<T extends Entity> extends EntityRenderer<T> {
 
-		protected NoRenderer(EntityRendererManager renderManager) {
-			super(renderManager);
+		protected NoRenderer(EntityRendererProvider.Context pContext) {
+			super(pContext);
 		}
 
 		@Override
-		public ResourceLocation getEntityTexture(T entity) {
+		public ResourceLocation getTextureLocation(T entity) {
 			return null;
 		}
 

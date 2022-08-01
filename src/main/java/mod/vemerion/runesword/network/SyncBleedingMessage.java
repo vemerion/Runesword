@@ -4,13 +4,11 @@ import java.util.function.Supplier;
 
 import mod.vemerion.runesword.capability.EntityRuneData;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.world.World;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.DistExecutor.SafeRunnable;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 public class SyncBleedingMessage {
 
@@ -22,12 +20,12 @@ public class SyncBleedingMessage {
 		this.id = id;
 	}
 
-	public void encode(final PacketBuffer buffer) {
+	public void encode(final FriendlyByteBuf buffer) {
 		buffer.writeBoolean(isBleeding);
 		buffer.writeInt(id);
 	}
 
-	public static SyncBleedingMessage decode(final PacketBuffer buffer) {
+	public static SyncBleedingMessage decode(final FriendlyByteBuf buffer) {
 		return new SyncBleedingMessage(buffer.readBoolean(), buffer.readInt());
 	}
 
@@ -44,10 +42,10 @@ public class SyncBleedingMessage {
 
 				@Override
 				public void run() {
-					Minecraft mc = Minecraft.getInstance();
-					World world = mc.world;
-					if (world != null) {
-						Entity e = world.getEntityByID(id);
+					var mc = Minecraft.getInstance();
+					var level = mc.level;
+					if (level != null) {
+						var e = level.getEntity(id);
 						if (e != null)
 							EntityRuneData.get(e).ifPresent(d -> d.setBleeding(isBleeding));
 					}

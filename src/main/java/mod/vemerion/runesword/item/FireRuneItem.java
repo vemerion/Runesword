@@ -6,17 +6,17 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class FireRuneItem extends RuneItem {
 
@@ -26,8 +26,8 @@ public class FireRuneItem extends RuneItem {
 
 	public static class AxePowers extends RunePowers {
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FIRE_ASPECT, Enchantments.FLAME,
-				Enchantments.AQUA_AFFINITY, Enchantments.EFFICIENCY, Enchantments.SHARPNESS);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FIRE_ASPECT, Enchantments.FLAMING_ARROWS,
+				Enchantments.AQUA_AFFINITY, Enchantments.BLOCK_EFFICIENCY, Enchantments.SHARPNESS);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -40,51 +40,51 @@ public class FireRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 				Set<ItemStack> runes) {
 			if (isCorrectTool(runeable, state)) {
 				speed += runes.size() * 4;
 
 				speed += getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 2;
 
-				if (player.isBurning())
-					speed += getEnchantmentLevel(Enchantments.FLAME, runes) * 4;
+				if (player.isOnFire())
+					speed += getEnchantmentLevel(Enchantments.FLAMING_ARROWS, runes) * 4;
 			}
 			return speed;
 		}
 
 		@Override
-		public void onBlockBreak(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+		public void onBlockBreak(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 				Set<ItemStack> runes) {
 			if (!isCorrectTool(runeable, state))
 				return;
 
-			if (random.nextDouble() < runes.size() * 0.1 + getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.5
+			if (player.getRandom().nextDouble() < runes.size() * 0.1 + getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.5
 					- getEnchantmentLevel(Enchantments.AQUA_AFFINITY, runes) * 0.5) {
-				player.setFire(4);
+				player.setSecondsOnFire(4);
 			}
 		}
 
 		@Override
-		public boolean onHarvestCheckMajor(ItemStack runeable, PlayerEntity player, BlockState state,
+		public boolean onHarvestCheckMajor(ItemStack runeable, Player player, BlockState state,
 				boolean canHarvest, ItemStack rune) {
-			return canHarvest && player.world.getDimensionKey() == World.THE_NETHER;
+			return canHarvest && player.level.dimension() == Level.NETHER;
 		}
 
 		@Override
-		public float onBreakSpeedMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+		public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 				float speed, ItemStack rune) {
-			if (player.world.getDimensionKey() == World.THE_NETHER && isCorrectTool(runeable, state)) {
+			if (player.level.dimension() == Level.NETHER && isCorrectTool(runeable, state)) {
 				speed += 20;
 
-				speed += getEnchantmentLevel(Enchantments.EFFICIENCY, rune);
+				speed += getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, rune);
 			}
 
 			return speed;
 		}
 
 		@Override
-		public void onAttackMajor(ItemStack runeable, PlayerEntity player, Entity target, ItemStack rune) {
+		public void onAttackMajor(ItemStack runeable, Player player, Entity target, ItemStack rune) {
 			EntityType<?> type = target.getType();
 			if (type == EntityType.PIGLIN || type == EntityType.HOGLIN) {
 				int sharpness = getEnchantmentLevel(Enchantments.SHARPNESS, rune);
@@ -97,7 +97,7 @@ public class FireRuneItem extends RuneItem {
 	private static class SwordPowers extends RunePowers {
 
 		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FIRE_PROTECTION,
-				Enchantments.FIRE_ASPECT, Enchantments.FLAME, Enchantments.POWER, Enchantments.MENDING);
+				Enchantments.FIRE_ASPECT, Enchantments.FLAMING_ARROWS, Enchantments.POWER_ARROWS, Enchantments.MENDING);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -110,38 +110,38 @@ public class FireRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
-			if (player.getFireTimer() > 0) {
+		public void onAttackMajor(ItemStack sword, Player player, Entity target, ItemStack rune) {
+			if (player.getRemainingFireTicks() > 0) {
 				float damage = 4 + getEnchantmentLevel(Enchantments.FIRE_ASPECT, rune) * 0.5f;
-				target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
-				target.hurtResistantTime = 0;
+				target.hurt(DamageSource.playerAttack(player), damage);
+				target.invulnerableTime = 0;
 			}
 		}
 
 		@Override
-		public float onHurtMajor(ItemStack sword, PlayerEntity player, DamageSource source, float amount,
+		public float onHurtMajor(ItemStack sword, Player player, DamageSource source, float amount,
 				ItemStack rune) {
-			if (source.isFireDamage()
-					&& player.getRNG().nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION, rune) * 0.05) {
+			if (source.isFire()
+					&& player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION, rune) * 0.05) {
 				amount = 0;
 			}
 			return amount;
 		}
 
 		@Override
-		public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
-			if (player.getRNG().nextDouble() < runes.size() * 0.1
-					+ getEnchantmentLevel(Enchantments.FLAME, runes) * 0.05) {
-				BlockPos targetPos = target.getPosition();
-				if (player.world.isAirBlock(targetPos)) {
-					BlockState fire = Blocks.FIRE.getDefaultState();
-					if (player.getRNG().nextDouble() < getEnchantmentLevel(Enchantments.POWER, runes) * 0.01)
-						fire = Blocks.LAVA.getDefaultState();
-					player.world.setBlockState(targetPos, fire);
+		public void onAttack(ItemStack sword, Player player, Entity target, Set<ItemStack> runes) {
+			if (player.getRandom().nextDouble() < runes.size() * 0.1
+					+ getEnchantmentLevel(Enchantments.FLAMING_ARROWS, runes) * 0.05) {
+				BlockPos targetPos = target.blockPosition();
+				if (player.level.isEmptyBlock(targetPos)) {
+					BlockState fire = Blocks.FIRE.defaultBlockState();
+					if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.POWER_ARROWS, runes) * 0.01)
+						fire = Blocks.LAVA.defaultBlockState();
+					player.level.setBlockAndUpdate(targetPos, fire);
 				}
 			}
-			if (target.getFireTimer() > 0)
-				sword.setDamage(sword.getDamage() - getEnchantmentLevel(Enchantments.MENDING, runes));
+			if (target.getRemainingFireTicks() > 0)
+				sword.setDamageValue(sword.getDamageValue() - getEnchantmentLevel(Enchantments.MENDING, runes));
 		}
 
 	}

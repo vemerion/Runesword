@@ -4,36 +4,35 @@ import java.util.function.Supplier;
 
 import mod.vemerion.runesword.capability.Runes;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.DistExecutor.SafeRunnable;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 @Deprecated
 public class SyncRunesMessage {
 
-	private CompoundNBT compound;
+	private CompoundTag compound;
 	private int slot;
 	private int windowId;
 
-	public SyncRunesMessage(CompoundNBT compound, int slot, int windowId) {
+	public SyncRunesMessage(CompoundTag compound, int slot, int windowId) {
 		this.compound = compound;
 		this.slot = slot;
 		this.windowId = windowId;
 	}
 
-	public void encode(final PacketBuffer buffer) {
-		buffer.writeCompoundTag(compound);
+	public void encode(final FriendlyByteBuf buffer) {
+		buffer.writeNbt(compound);
 		buffer.writeInt(slot);
 		buffer.writeInt(windowId);
 	}
 
-	public static SyncRunesMessage decode(final PacketBuffer buffer) {
-		return new SyncRunesMessage(buffer.readCompoundTag(), buffer.readInt(), buffer.readInt());
+	public static SyncRunesMessage decode(final FriendlyByteBuf buffer) {
+		return new SyncRunesMessage(buffer.readNbt(), buffer.readInt(), buffer.readInt());
 	}
 
 	public void handle(final Supplier<NetworkEvent.Context> supplier) {
@@ -44,18 +43,19 @@ public class SyncRunesMessage {
 	}
 
 	private static class Handle {
-		private static SafeRunnable syncRunes(CompoundNBT compound, int slot, int windowId) {
+		private static SafeRunnable syncRunes(CompoundTag compound, int slot, int windowId) {
 			return new SafeRunnable() {
 				private static final long serialVersionUID = 1L;
 
 				@Override
 				public void run() {
-					ItemStack stack = ItemStack.EMPTY;
-					PlayerEntity player = Minecraft.getInstance().player;
+					var stack = ItemStack.EMPTY;
+					var mc = Minecraft.getInstance();
+					var player = mc.player;
 					if (windowId == 0) {
-						stack = player.container.getSlot(slot).getStack();
+						stack = player.inventoryMenu.getSlot(slot).getItem();
 					} else {
-						stack = player.openContainer.getSlot(slot).getStack();
+						stack = player.containerMenu.getSlot(slot).getItem();
 					}
 					stack.getCapability(Runes.CAPABILITY).ifPresent(runes -> runes.deserializeNBT(compound));
 				}

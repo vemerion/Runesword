@@ -11,7 +11,9 @@
       "conditions": {
         "items": [
           {
-            "item": "runesword:water_rune_item"
+            "items": [
+              "runesword:water_rune_item"
+            ]
           }
         ]
       }
@@ -21,7 +23,9 @@
       "conditions": {
         "items": [
           {
-            "item": "runesword:air_rune_item"
+            "items": [
+              "runesword:air_rune_item"
+            ]
           }
         ]
       }

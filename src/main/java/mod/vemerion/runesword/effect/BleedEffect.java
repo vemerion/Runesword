@@ -7,39 +7,39 @@ import com.google.common.collect.ImmutableList;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.helpers.Helper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectCategory;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
-public class BleedEffect extends Effect {
+public class BleedEffect extends MobEffect {
 
 	public static final DamageSource BLEED = new DamageSource(Main.MODID + ".bleed");
 
 	public BleedEffect() {
-		super(EffectType.HARMFUL, Helper.color(150, 0, 0, 255));
+		super(MobEffectCategory.HARMFUL, Helper.color(150, 0, 0, 255));
 	}
 
 	@Override
-	public void performEffect(LivingEntity entityLivingBaseIn, int amplifier) {
-		entityLivingBaseIn.attackEntityFrom(BLEED, 1);
+	public void applyEffectTick(LivingEntity entityLivingBaseIn, int amplifier) {
+		entityLivingBaseIn.hurt(BLEED, 1);
 
-		if (entityLivingBaseIn.world.isRemote)
+		if (entityLivingBaseIn.level.isClientSide)
 			addBleedingParticles(entityLivingBaseIn);
 	}
 
 	public static void addBleedingParticles(LivingEntity entity) {
-		Random rand = entity.getRNG();
+		Random rand = entity.getRandom();
 		for (int i = 0; i < 5; i++) {
-			Vector3d position = Helper.randomInBox(rand, entity.getBoundingBox());
-			entity.world.addParticle(Main.BLEED_PARTICLE, position.x, position.y, position.z, 0, 0, 0);
+			Vec3 position = Helper.randomInBox(rand, entity.getBoundingBox());
+			entity.level.addParticle(Main.BLEED_PARTICLE, position.x, position.y, position.z, 0, 0, 0);
 		}
 	}
 
 	@Override
-	public boolean isReady(int duration, int amplifier) {
+	public boolean isDurationEffectTick(int duration, int amplifier) {
 		int interval = 25 >> amplifier;
 		if (interval > 0) {
 			return duration % interval == 0;

@@ -1,60 +1,60 @@
 package mod.vemerion.runesword.entity;
 
 import mod.vemerion.runesword.Main;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.projectile.SnowballEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.network.NetworkHooks;
 
-public class FrostballEntity extends SnowballEntity {
+public class FrostballEntity extends Snowball {
 
 	public static final int SLOW_DURATION = 20 * 5;
 
 	private int knockback;
 	private int slowDuration = SLOW_DURATION;
 
-	public FrostballEntity(EntityType<? extends FrostballEntity> type, World world) {
-		super(type, world);
+	public FrostballEntity(EntityType<? extends FrostballEntity> type, Level level) {
+		super(type, level);
 	}
 
-	public FrostballEntity(World world, LivingEntity shooter, int knockback, int slowDuration) {
-		this(Main.FROSTBALL_ENTITY, world);
-		this.setShooter(shooter);
-		this.setPosition(shooter.getPosX(), shooter.getPosYEye() - 0.1, shooter.getPosZ());
+	public FrostballEntity(Level level, LivingEntity shooter, int knockback, int slowDuration) {
+		this(Main.FROSTBALL_ENTITY, level);
+		this.setOwner(shooter);
+		this.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
 		this.knockback = knockback;
 		this.slowDuration = slowDuration;
 	}
 
-	public FrostballEntity(World world, LivingEntity shooter) {
-		this(world, shooter, 0, SLOW_DURATION);
+	public FrostballEntity(Level level, LivingEntity shooter) {
+		this(level, shooter, 0, SLOW_DURATION);
 	}
 
-	protected void onEntityHit(EntityRayTraceResult result) {
-		super.onEntityHit(result);
+	protected void onHitEntity(EntityHitResult result) {
+		super.onHitEntity(result);
 		Entity entity = result.getEntity();
-		Vector3d direction = getMotion();
-		entity.addVelocity(direction.x * 0.3 * (1 + knockback * 0.1), 0.1, direction.z * 0.3 * (1 + knockback * 0.1));
+		Vec3 direction = getDeltaMovement();
+		entity.push(direction.x * 0.3 * (1 + knockback * 0.1), 0.1, direction.z * 0.3 * (1 + knockback * 0.1));
 		if (entity instanceof LivingEntity) {
 			LivingEntity living = (LivingEntity) entity;
-			living.addPotionEffect(new EffectInstance(Effects.SLOWNESS, slowDuration));
+			living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, slowDuration));
 		}
 	}
 
 	@Override
-	public IPacket<?> createSpawnPacket() {
+	public Packet<?> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 
 	@Override
-	public void deserializeNBT(CompoundNBT nbt) {
+	public void deserializeNBT(CompoundTag nbt) {
 		super.deserializeNBT(nbt);
 		if (nbt.contains("duration"))
 			knockback = nbt.getInt("knockback");
@@ -63,8 +63,8 @@ public class FrostballEntity extends SnowballEntity {
 	}
 
 	@Override
-	public CompoundNBT serializeNBT() {
-		CompoundNBT nbt = super.serializeNBT();
+	public CompoundTag serializeNBT() {
+		CompoundTag nbt = super.serializeNBT();
 		nbt.putInt("knockback", knockback);
 		nbt.putInt("slowDuration", slowDuration);
 		return nbt;

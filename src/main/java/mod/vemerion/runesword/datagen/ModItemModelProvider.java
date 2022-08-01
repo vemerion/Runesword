@@ -3,7 +3,7 @@ package mod.vemerion.runesword.datagen;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.item.RuneItem;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 

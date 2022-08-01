@@ -6,19 +6,19 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
+import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 
 public class AirRuneItem extends RuneItem {
 
@@ -27,9 +27,10 @@ public class AirRuneItem extends RuneItem {
 	}
 
 	public static class AxePowers extends RunePowers {
-		
+
 		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.SILK_TOUCH,
-				Enchantments.EFFICIENCY, Enchantments.FEATHER_FALLING, Enchantments.FORTUNE, Enchantments.INFINITY);
+				Enchantments.BLOCK_EFFICIENCY, Enchantments.FALL_PROTECTION, Enchantments.BLOCK_FORTUNE,
+				Enchantments.INFINITY_ARROWS);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -42,30 +43,31 @@ public class AirRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 				Set<ItemStack> runes) {
-			boolean isLeave = state.isIn(BlockTags.LEAVES);
+			boolean isLeave = state.is(BlockTags.LEAVES);
 			boolean hasSilkTouch = getEnchantmentLevel(Enchantments.SILK_TOUCH, runes) > 0;
-			if (runeable.getToolTypes().contains(state.getHarvestTool()) || (isLeave && hasSilkTouch)) {
+			if (runeable.isCorrectToolForDrops(state) || (isLeave && hasSilkTouch)) {
 				if (!player.isOnGround())
-					speed += 7 + getEnchantmentLevel(Enchantments.EFFICIENCY, runes);
+					speed += 7 + getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, runes);
 
-				if (player.isPotionActive(Effects.LEVITATION))
-					speed += getEnchantmentLevel(Enchantments.FEATHER_FALLING, runes);
+				if (player.hasEffect(MobEffects.LEVITATION))
+					speed += getEnchantmentLevel(Enchantments.FALL_PROTECTION, runes);
 			}
 
 			return speed;
 		}
 
 		@Override
-		public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+		public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 				ItemStack rune) {
-			if (runeable.getToolTypes().contains(state.getHarvestTool())) {
-				if (random.nextDouble() < 0.2 + getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.1) {
+			if (runeable.isCorrectToolForDrops(state)) {
+				if (player.getRandom().nextDouble() < 0.2
+						+ getEnchantmentLevel(Enchantments.BLOCK_FORTUNE, rune) * 0.1) {
 					int duration = 20 * 10;
-					if (getEnchantmentLevel(Enchantments.INFINITY, rune) > 0)
+					if (getEnchantmentLevel(Enchantments.INFINITY_ARROWS, rune) > 0)
 						duration *= 2;
-					player.addPotionEffect(new EffectInstance(Effects.LEVITATION, duration, 0));
+					player.addEffect(new MobEffectInstance(MobEffects.LEVITATION, duration, 0));
 				}
 			}
 		}
@@ -74,8 +76,9 @@ public class AirRuneItem extends RuneItem {
 
 	private static class SwordPowers extends RunePowers {
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.INFINITY,
-				Enchantments.FEATHER_FALLING, Enchantments.EFFICIENCY, Enchantments.PUNCH, Enchantments.KNOCKBACK);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.INFINITY_ARROWS,
+				Enchantments.FALL_PROTECTION, Enchantments.BLOCK_EFFICIENCY, Enchantments.PUNCH_ARROWS,
+				Enchantments.KNOCKBACK);
 
 		@Override
 		public boolean isBeneficialEnchantment(Enchantment enchantment) {
@@ -88,31 +91,31 @@ public class AirRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
+		public void onAttack(ItemStack sword, Player player, Entity target, Set<ItemStack> runes) {
 
-			if (player.getRNG().nextDouble() < runes.size() * 0.1) {
-				Vector3d direction = Vector3d.fromPitchYaw(player.getPitchYaw())
+			if (player.getRandom().nextDouble() < runes.size() * 0.1) {
+				Vec3 direction = Vec3.directionFromRotation(player.getRotationVector())
 						.scale(getEnchantmentLevel(Enchantments.KNOCKBACK, runes) * 0.1);
-				target.addVelocity(direction.x, 0.8 + getEnchantmentLevel(Enchantments.PUNCH, runes) * 0.03,
+				target.push(direction.x, 0.8 + getEnchantmentLevel(Enchantments.PUNCH_ARROWS, runes) * 0.03,
 						direction.z);
 				target.setOnGround(false);
 			}
 		}
 
 		@Override
-		public void onKillMajor(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+		public void onKillMajor(ItemStack sword, Player player, LivingEntity entityLiving, DamageSource source,
 				ItemStack rune) {
 			int duration = 20 * 10;
 			int level = 0;
-			if (getEnchantmentLevel(Enchantments.INFINITY, rune) > 0)
+			if (getEnchantmentLevel(Enchantments.INFINITY_ARROWS, rune) > 0)
 				duration *= 2;
-			if (player.getRNG().nextDouble() < getEnchantmentLevel(Enchantments.EFFICIENCY, rune) * 0.8)
+			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, rune) * 0.8)
 				level = 1;
 
-			player.addPotionEffect(new EffectInstance(Effects.SPEED, duration, level));
+			player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, level));
 
-			if (player.getRNG().nextDouble() < getEnchantmentLevel(Enchantments.FEATHER_FALLING, rune) * 0.1)
-				player.addPotionEffect(new EffectInstance(Effects.JUMP_BOOST, duration, level));
+			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.FALL_PROTECTION, rune) * 0.1)
+				player.addEffect(new MobEffectInstance(MobEffects.JUMP, duration, level));
 
 		}
 	}

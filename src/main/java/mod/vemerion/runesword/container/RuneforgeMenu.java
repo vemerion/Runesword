@@ -7,23 +7,23 @@ import javax.annotation.Nonnull;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.capability.Runes;
-import mod.vemerion.runesword.tileentity.RuneforgeTileEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.IWorldPosCallable;
+import mod.vemerion.runesword.tileentity.RuneforgeBlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerLevelAccess;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
-public class RuneforgeContainer extends Container {
+public class RuneforgeMenu extends AbstractContainerMenu {
 
-	private IWorldPosCallable pos;
+	private ContainerLevelAccess access;
 
 	public static final int[] RUNE_SLOTS_Y = new int[] { 9, 35, 61, 35 };
 	public static final int[] RUNE_SLOTS_X = new int[] { 80, 106, 80, 54 };
@@ -32,17 +32,18 @@ public class RuneforgeContainer extends Container {
 	private List<Slot> runeSlots;
 	private WrapperRuneHandler runeHandler;
 
-	public RuneforgeContainer(int id, PlayerInventory playerInv, PacketBuffer buffer) {
-		this(id, playerInv, new ItemStackHandler(), IWorldPosCallable.DUMMY);
+	public RuneforgeMenu(int id, Inventory playerInv, FriendlyByteBuf buffer) {
+		this(id, playerInv, new ItemStackHandler(), ContainerLevelAccess.NULL);
 	}
 
-	public RuneforgeContainer(int id, PlayerInventory playerInv, ItemStackHandler runeableHandler, IWorldPosCallable pos) {
-		super(Main.RUNEFORGE_CONTAINER, id);
-		this.pos = pos;
+	public RuneforgeMenu(int id, Inventory playerInv, ItemStackHandler runeableHandler,
+			ContainerLevelAccess access) {
+		super(Main.RUNEFORGE_MENU, id);
+		this.access = access;
 
 		runeSlots = new ArrayList<>();
 		runeHandler = new WrapperRuneHandler();
-		runeableSlot = addSlot(new SlotRuneableHandler(runeableHandler, RuneforgeTileEntity.RUNEABLE_SLOT, 80, 35));
+		runeableSlot = addSlot(new SlotRuneableHandler(runeableHandler, RuneforgeBlockEntity.RUNEABLE_SLOT, 80, 35));
 		updateRuneSlots();
 		for (int i = 0; i < Runes.RUNES_COUNT; i++) {
 			runeSlots.add(addSlot(new SlotRuneHandler(runeHandler, i, RUNE_SLOTS_X[i], RUNE_SLOTS_Y[i])));
@@ -63,12 +64,12 @@ public class RuneforgeContainer extends Container {
 	}
 
 	@Override
-	public boolean canInteractWith(PlayerEntity playerIn) {
-		return isWithinUsableDistance(pos, playerIn, Main.RUNEFORGE_BLOCK);
+	public boolean stillValid(Player playerIn) {
+		return stillValid(access, playerIn, Main.RUNEFORGE_BLOCK);
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+	public ItemStack quickMoveStack(Player playerIn, int index) {
 		int runeforgeEnd = 5;
 		int playerInvStart = runeforgeEnd;
 		int playerInvEnd = playerInvStart + 3 * 9;
@@ -76,28 +77,28 @@ public class RuneforgeContainer extends Container {
 		int hotbarEnd = hotbarStart + 9;
 
 		ItemStack copy = ItemStack.EMPTY;
-		Slot slot = inventorySlots.get(index);
-		if (slot != null && slot.getHasStack()) {
-			ItemStack stack = slot.getStack();
+		Slot slot = slots.get(index);
+		if (slot != null && slot.hasItem()) {
+			ItemStack stack = slot.getItem();
 			copy = stack.copy();
 			if (index < runeforgeEnd) { // Runeable slot + rune slots
-				if (!mergeItemStack(stack, 5, 39, false)) {
+				if (!moveItemStackTo(stack, 5, 39, false)) {
 					return ItemStack.EMPTY;
 				}
 			} else if (index >= hotbarStart && index < hotbarEnd) { // Hotbar
-				if (!mergeItemStack(stack, 0, runeforgeEnd, false))
-					if (!mergeItemStack(stack, playerInvStart, playerInvEnd, false))
+				if (!moveItemStackTo(stack, 0, runeforgeEnd, false))
+					if (!moveItemStackTo(stack, playerInvStart, playerInvEnd, false))
 						return ItemStack.EMPTY;
 			} else if (index >= playerInvStart && index < playerInvEnd) { // Player Inventory
-				if (!mergeItemStack(stack, 0, runeforgeEnd, false))
-					if (!mergeItemStack(stack, hotbarStart, hotbarEnd, false))
+				if (!moveItemStackTo(stack, 0, runeforgeEnd, false))
+					if (!moveItemStackTo(stack, hotbarStart, hotbarEnd, false))
 						return ItemStack.EMPTY;
 			}
 
 			if (stack.isEmpty()) {
-				slot.putStack(ItemStack.EMPTY);
+				slot.set(ItemStack.EMPTY);
 			} else {
-				slot.onSlotChanged();
+				slot.setChanged();
 			}
 
 			if (stack.getCount() == copy.getCount()) {
@@ -111,11 +112,11 @@ public class RuneforgeContainer extends Container {
 	}
 
 	public ItemStack getRuneable() {
-		return runeableSlot.getStack();
+		return runeableSlot.getItem();
 	}
 
 	private void updateRuneSlots() {
-		LazyOptional<Runes> maybeRunes = Runes.getRunes(runeableSlot.getStack());
+		LazyOptional<Runes> maybeRunes = Runes.getRunes(runeableSlot.getItem());
 		maybeRunes.ifPresent(runes -> {
 			runeHandler.enable(runes);
 		});
@@ -131,13 +132,13 @@ public class RuneforgeContainer extends Container {
 		}
 
 		@Override
-		public boolean isItemValid(ItemStack stack) {
-			return super.isItemValid(stack) && Runes.isRuneable(stack);
+		public boolean mayPlace(ItemStack stack) {
+			return super.mayPlace(stack) && Runes.isRuneable(stack);
 		}
 
 		@Override
-		public void onSlotChanged() {
-			super.onSlotChanged();
+		public void setChanged() {
+			super.setChanged();
 			updateRuneSlots();
 		}
 	}
@@ -152,7 +153,7 @@ public class RuneforgeContainer extends Container {
 		}
 
 		@Override
-		public boolean isEnabled() {
+		public boolean isActive() {
 			return !itemHandler.disabled;
 		}
 
@@ -217,12 +218,12 @@ public class RuneforgeContainer extends Container {
 		}
 
 		@Override
-		public CompoundNBT serializeNBT() {
+		public CompoundTag serializeNBT() {
 			return inner.serializeNBT();
 		}
 
 		@Override
-		public void deserializeNBT(CompoundNBT nbt) {
+		public void deserializeNBT(CompoundTag nbt) {
 			inner.deserializeNBT(nbt);
 		}
 	}

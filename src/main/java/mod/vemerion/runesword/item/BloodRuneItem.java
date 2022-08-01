@@ -7,14 +7,14 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import mod.vemerion.runesword.Main;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 public class BloodRuneItem extends RuneItem {
 
@@ -24,8 +24,8 @@ public class BloodRuneItem extends RuneItem {
 
 	public static class AxePowers extends RunePowers {
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.INFINITY,
-				Enchantments.POWER, Enchantments.SHARPNESS, Enchantments.LOYALTY);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.BLOCK_FORTUNE, Enchantments.INFINITY_ARROWS,
+				Enchantments.POWER_ARROWS, Enchantments.SHARPNESS, Enchantments.LOYALTY);
 
 		private static final int BASE_DURATION = 20 * 6;
 		private static final int INF_DURATION = 20 * 2;
@@ -41,23 +41,23 @@ public class BloodRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onAttack(ItemStack runeable, PlayerEntity player, Entity target, Set<ItemStack> runes) {
-			int fortune = getEnchantmentLevel(Enchantments.FORTUNE, runes);
-			if (target instanceof LivingEntity && random.nextDouble() < runes.size() * 0.1 + fortune * 0.03) {
-				int duration = BASE_DURATION + getEnchantmentLevel(Enchantments.INFINITY, runes) * INF_DURATION;
-				int level = random.nextDouble() < getEnchantmentLevel(Enchantments.POWER, runes) * 0.01 ? 1 : 0;
+		public void onAttack(ItemStack runeable, Player player, Entity target, Set<ItemStack> runes) {
+			int fortune = getEnchantmentLevel(Enchantments.BLOCK_FORTUNE, runes);
+			if (target instanceof LivingEntity && player.getRandom().nextDouble() < runes.size() * 0.1 + fortune * 0.03) {
+				int duration = BASE_DURATION + getEnchantmentLevel(Enchantments.INFINITY_ARROWS, runes) * INF_DURATION;
+				int level = player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.POWER_ARROWS, runes) * 0.01 ? 1 : 0;
 				((LivingEntity) target)
-						.addPotionEffect(new EffectInstance(Main.BLEED_EFFECT, duration, level, false, false, true));
+						.addEffect(new MobEffectInstance(Main.BLEED_EFFECT, duration, level, false, false, true));
 			}
 		}
 
 		@Override
-		public void onAttackMajor(ItemStack runeable, PlayerEntity player, Entity target, ItemStack rune) {
-			if (target instanceof LivingEntity && ((LivingEntity) target).isPotionActive(Main.BLEED_EFFECT)) {
+		public void onAttackMajor(ItemStack runeable, Player player, Entity target, ItemStack rune) {
+			if (target instanceof LivingEntity && ((LivingEntity) target).hasEffect(Main.BLEED_EFFECT)) {
 				float damage = 4 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.5f;
 				attack(player, target, damage);
 
-				if (random.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY, rune) * 0.1)
+				if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY, rune) * 0.1)
 					player.heal(0.5f);
 			}
 		}
@@ -66,7 +66,7 @@ public class BloodRuneItem extends RuneItem {
 
 	private static class SwordPowers extends RunePowers {
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.PROTECTION,
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.ALL_DAMAGE_PROTECTION,
 				Enchantments.SHARPNESS, Enchantments.MENDING, Enchantments.FIRE_ASPECT, Enchantments.AQUA_AFFINITY);
 
 		@Override
@@ -80,20 +80,20 @@ public class BloodRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onAttackMajor(ItemStack sword, PlayerEntity player, Entity target, ItemStack rune) {
+		public void onAttackMajor(ItemStack sword, Player player, Entity target, ItemStack rune) {
 			float damage = 4 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.2f;
-			target.attackEntityFrom(DamageSource.causePlayerDamage(player), damage);
-			if (!(player.getRNG().nextDouble() < getEnchantmentLevel(Enchantments.PROTECTION, rune) * 0.05))
-				player.attackEntityFrom(DamageSource.MAGIC, 2);
-			target.hurtResistantTime = 0;
+			target.hurt(DamageSource.playerAttack(player), damage);
+			if (!(player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, rune) * 0.05))
+				player.hurt(DamageSource.MAGIC, 2);
+			target.invulnerableTime = 0;
 		}
 
 		@Override
-		public void onKill(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+		public void onKill(ItemStack sword, Player player, LivingEntity entityLiving, DamageSource source,
 				Set<ItemStack> runes) {
-			if (player.getRNG().nextDouble() < runes.size() * 0.05) {
+			if (player.getRandom().nextDouble() < runes.size() * 0.05) {
 				float heal = 2;
-				if (entityLiving.getFireTimer() > 0)
+				if (entityLiving.getRemainingFireTicks() > 0)
 					heal += getEnchantmentLevel(Enchantments.FIRE_ASPECT, runes) * 0.5f;
 				if (player.isInWater())
 					heal += getEnchantmentLevel(Enchantments.AQUA_AFFINITY, runes);

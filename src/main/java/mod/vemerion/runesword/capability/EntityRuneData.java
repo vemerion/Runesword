@@ -3,17 +3,16 @@ package mod.vemerion.runesword.capability;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncBleedingMessage;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.Capability.IStorage;
-import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
@@ -21,12 +20,13 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
-public class EntityRuneData implements INBTSerializable<CompoundNBT> {
+public class EntityRuneData implements INBTSerializable<CompoundTag> {
 
-	@CapabilityInject(EntityRuneData.class)
-	public static final Capability<EntityRuneData> CAPABILITY = null;
+	public static final Capability<EntityRuneData> CAPABILITY = CapabilityManager
+			.get(new CapabilityToken<EntityRuneData>() {
+			});
 
 	private boolean isBleeding;
 
@@ -42,14 +42,14 @@ public class EntityRuneData implements INBTSerializable<CompoundNBT> {
 	}
 
 	@Override
-	public CompoundNBT serializeNBT() {
-		CompoundNBT compound = new CompoundNBT();
+	public CompoundTag serializeNBT() {
+		CompoundTag compound = new CompoundTag();
 		compound.putBoolean("isBleeding", isBleeding);
 		return compound;
 	}
 
 	@Override
-	public void deserializeNBT(CompoundNBT nbt) {
+	public void deserializeNBT(CompoundTag nbt) {
 		isBleeding = nbt.getBoolean("isBleeding");
 	}
 
@@ -59,16 +59,16 @@ public class EntityRuneData implements INBTSerializable<CompoundNBT> {
 
 	public static void synchBleeding(LivingEntity e) {
 		Network.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> e),
-				new SyncBleedingMessage(e.isPotionActive(Main.BLEED_EFFECT), e.getEntityId()));
+				new SyncBleedingMessage(e.hasEffect(Main.BLEED_EFFECT), e.getId()));
 	}
 
-	public static void synchBleeding(PlayerEntity player, LivingEntity e) {
-		Network.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player),
-				new SyncBleedingMessage(e.isPotionActive(Main.BLEED_EFFECT), e.getEntityId()));
+	public static void synchBleeding(Player player, LivingEntity e) {
+		Network.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
+				new SyncBleedingMessage(e.hasEffect(Main.BLEED_EFFECT), e.getId()));
 	}
 
 	@EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
-	public static class Provider implements ICapabilitySerializable<INBT> {
+	public static class Provider implements ICapabilitySerializable<CompoundTag> {
 		private static final ResourceLocation SAVE_LOCATION = new ResourceLocation(Main.MODID, "entityrunedata");
 
 		@SubscribeEvent
@@ -85,30 +85,15 @@ public class EntityRuneData implements INBTSerializable<CompoundNBT> {
 		}
 
 		@Override
-		public INBT serializeNBT() {
-			return CAPABILITY.getStorage().writeNBT(CAPABILITY,
-					instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null);
+		public CompoundTag serializeNBT() {
+			return instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!"))
+					.serializeNBT();
 		}
 
 		@Override
-		public void deserializeNBT(INBT nbt) {
-			CAPABILITY.getStorage().readNBT(CAPABILITY,
-					instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!")), null,
-					nbt);
-		}
-	}
-
-	public static class Storage implements IStorage<EntityRuneData> {
-
-		@Override
-		public INBT writeNBT(Capability<EntityRuneData> capability, EntityRuneData instance, Direction side) {
-			return instance.serializeNBT();
-
-		}
-
-		@Override
-		public void readNBT(Capability<EntityRuneData> capability, EntityRuneData instance, Direction side, INBT nbt) {
-			instance.deserializeNBT((CompoundNBT) nbt);
+		public void deserializeNBT(CompoundTag nbt) {
+			instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional cannot be empty!"))
+					.deserializeNBT(nbt);
 		}
 	}
 }

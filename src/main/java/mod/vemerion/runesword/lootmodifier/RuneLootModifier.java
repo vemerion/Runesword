@@ -4,28 +4,19 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.conditions.ILootCondition;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import net.minecraftforge.common.loot.GlobalLootModifierSerializer;
 import net.minecraftforge.common.loot.LootModifier;
 
-
-/* TODO:
- * It turns out there is a corner case with using the RandomChanceWithLooting LootCondition with global loot modifier,
- * since then the DamageSource will be null if there is no entity (and this might happen because every loot modifier is run after every block destroyed etc)
- * Normally this is not a problem, but if another mod subscribes to the LootingLevelEvent and assumes that the DamageSource is not null,
- * there might be a null pointer exception.
- * Easy fix: Replace RandomChanceWithLooting with RandomChance in all loot modifier jsons
- * More involved fix: Create a new loot condition that works around the problem?
- */
 public class RuneLootModifier extends LootModifier {
 
 	private Item rune;
 
-	public RuneLootModifier(ILootCondition[] conditionsIn, Item rune) {
+	public RuneLootModifier(LootItemCondition[] conditionsIn, Item rune) {
 		super(conditionsIn);
 		this.rune = rune;
 	}
@@ -46,7 +37,7 @@ public class RuneLootModifier extends LootModifier {
 		}
 
 		@Override
-		public RuneLootModifier read(ResourceLocation name, JsonObject object, ILootCondition[] conditionsIn) {
+		public RuneLootModifier read(ResourceLocation name, JsonObject object, LootItemCondition[] conditionsIn) {
 			return new RuneLootModifier(conditionsIn, rune);
 		}
 

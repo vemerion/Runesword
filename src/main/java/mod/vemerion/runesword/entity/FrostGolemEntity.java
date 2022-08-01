@@ -1,27 +1,26 @@
 package mod.vemerion.runesword.entity;
 
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.SnowGolemEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.SnowGolem;
+import net.minecraft.world.level.Level;
 
-public class FrostGolemEntity extends SnowGolemEntity {
+public class FrostGolemEntity extends SnowGolem {
 
 	private int duration;
 	private int efficiency;
-	
-	public FrostGolemEntity(EntityType<? extends FrostGolemEntity> type, World worldIn) {
-		super(type, worldIn);
+
+	public FrostGolemEntity(EntityType<? extends FrostGolemEntity> type, Level level) {
+		super(type, level);
 		duration = 100;
 	}
 
-	public FrostGolemEntity(EntityType<? extends FrostGolemEntity> type, World worldIn, int duration, int efficiency) {
-		this(type, worldIn);
+	public FrostGolemEntity(EntityType<? extends FrostGolemEntity> type, Level level, int duration, int efficiency) {
+		this(type, level);
 		this.duration = duration;
 		this.efficiency = efficiency;
 	}
@@ -30,32 +29,32 @@ public class FrostGolemEntity extends SnowGolemEntity {
 	public void tick() {
 		super.tick();
 		duration--;
-		if (!world.isRemote && duration <= 0) {
-			remove();
-			((ServerWorld) world).spawnParticle(ParticleTypes.ITEM_SNOWBALL, getPosX(), getPosY() + 1, getPosZ(), 20,
-					0.3, 0.3, 0.3, 0.5);
-			this.playSound(getDeathSound(), getSoundVolume(), getSoundPitch());
+		if (!level.isClientSide && duration <= 0) {
+			discard();
+			((ServerLevel) level).sendParticles(ParticleTypes.ITEM_SNOWBALL, getX(), getY() + 1, getZ(), 20, 0.3, 0.3,
+					0.3, 0.5);
+			this.playSound(getDeathSound(), getSoundVolume(), getVoicePitch());
 		}
 	}
 
 	@Override
-	public void attackEntityWithRangedAttack(LivingEntity target, float distanceFactor) {
-		if (getRNG().nextDouble() < efficiency * 0.2) {
-			FrostballEntity frostball = new FrostballEntity(world, this);
-			double x = target.getPosX() - getPosX();
-			double y = target.getPosYEye() - 1.1f - frostball.getPosY();
-			double z = target.getPosZ() - this.getPosZ();
-			double height = MathHelper.sqrt(x * x + z * z) * 0.2;
+	public void performRangedAttack(LivingEntity target, float distanceFactor) {
+		if (getRandom().nextDouble() < efficiency * 0.2) {
+			FrostballEntity frostball = new FrostballEntity(level, this);
+			double x = target.getX() - getX();
+			double y = target.getEyeY() - 1.1f - frostball.getY();
+			double z = target.getZ() - this.getZ();
+			double height = Math.sqrt(x * x + z * z) * 0.2;
 			frostball.shoot(x, y + height, z, 1.6F, 12.0F);
-			playSound(SoundEvents.ENTITY_SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (getRNG().nextFloat() * 0.4F + 0.8F));
-			world.addEntity(frostball);
+			playSound(SoundEvents.SNOW_GOLEM_SHOOT, 1.0F, 0.4F / (getRandom().nextFloat() * 0.4F + 0.8F));
+			level.addFreshEntity(frostball);
 		} else {
-			super.attackEntityWithRangedAttack(target, distanceFactor);
+			super.performRangedAttack(target, distanceFactor);
 		}
 	}
 
 	@Override
-	public void deserializeNBT(CompoundNBT nbt) {
+	public void deserializeNBT(CompoundTag nbt) {
 		super.deserializeNBT(nbt);
 		if (nbt.contains("duration"))
 			duration = nbt.getInt("duration");
@@ -64,8 +63,8 @@ public class FrostGolemEntity extends SnowGolemEntity {
 	}
 
 	@Override
-	public CompoundNBT serializeNBT() {
-		CompoundNBT nbt = super.serializeNBT();
+	public CompoundTag serializeNBT() {
+		CompoundTag nbt = super.serializeNBT();
 		nbt.putInt("duration", duration);
 		nbt.putInt("efficiency", efficiency);
 		return nbt;

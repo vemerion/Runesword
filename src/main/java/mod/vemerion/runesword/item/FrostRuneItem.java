@@ -9,19 +9,19 @@ import com.google.common.collect.ImmutableSet;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.biome.Biome.RainType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class FrostRuneItem extends RuneItem {
 
@@ -30,10 +30,10 @@ public class FrostRuneItem extends RuneItem {
 	}
 
 	private static class AxePowers extends RunePowers {
-		
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.EFFICIENCY, Enchantments.FEATHER_FALLING,
-				Enchantments.FORTUNE, Enchantments.INFINITY, Enchantments.POWER, Enchantments.FROST_WALKER);
 
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.BLOCK_EFFICIENCY,
+				Enchantments.FALL_PROTECTION, Enchantments.BLOCK_FORTUNE, Enchantments.INFINITY_ARROWS,
+				Enchantments.POWER_ARROWS, Enchantments.FROST_WALKER);
 
 		private static final int BASE_DURATION = 20 * 10;
 
@@ -48,14 +48,15 @@ public class FrostRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
 				Set<ItemStack> runes) {
 			if (isCorrectTool(runeable, state)) {
-				if (player.world.getBiome(pos).getTemperature() < 0.5) {
-					speed += runes.size() * 5 + getEnchantmentLevel(Enchantments.EFFICIENCY, runes) * 0.8;
+				if (player.level.getBiome(pos).value().coldEnoughToSnow(pos)) {
+					speed += runes.size() * 5 + getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, runes) * 0.8;
 
-					if (player.world.isRaining() && player.world.getBiome(pos).getPrecipitation() == RainType.SNOW) {
-						speed += getEnchantmentLevel(Enchantments.FEATHER_FALLING, runes) * 2;
+					if (player.level.isRaining()
+							&& player.level.getBiome(pos).value().getPrecipitation() == Biome.Precipitation.SNOW) {
+						speed += getEnchantmentLevel(Enchantments.FALL_PROTECTION, runes) * 2;
 					}
 				}
 			}
@@ -63,17 +64,18 @@ public class FrostRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onBlockBreakMajor(ItemStack runeable, PlayerEntity player, BlockState state, BlockPos pos,
+		public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
 				ItemStack rune) {
-			if (random.nextDouble() < 0.1 + getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.05
+			if (player.getRandom().nextDouble() < 0.1 + getEnchantmentLevel(Enchantments.BLOCK_FORTUNE, rune) * 0.05
 					&& state.getBlock() == Blocks.SPRUCE_LOG) {
-				int duration = BASE_DURATION * (getEnchantmentLevel(Enchantments.INFINITY, rune) > 0 ? 2 : 1);
-				int level = random.nextDouble() < getEnchantmentLevel(Enchantments.POWER, rune) * 0.02 ? 1 : 0;
+				int duration = BASE_DURATION * (getEnchantmentLevel(Enchantments.INFINITY_ARROWS, rune) > 0 ? 2 : 1);
+				int level = player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.POWER_ARROWS, rune)
+						* 0.02 ? 1 : 0;
 
-				player.addPotionEffect(new EffectInstance(Effects.HASTE, duration, level));
+				player.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, duration, level));
 
-				if (random.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER, rune) * 0.1)
-					player.addPotionEffect(new EffectInstance(Effects.SPEED, duration, level));
+				if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER, rune) * 0.1)
+					player.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SPEED, duration, level));
 
 			}
 		}
@@ -84,8 +86,9 @@ public class FrostRuneItem extends RuneItem {
 
 		private static final int MAX_DURATION = 20 * 30;
 
-		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.FORTUNE, Enchantments.INFINITY,
-				Enchantments.EFFICIENCY, Enchantments.MULTISHOT, Enchantments.KNOCKBACK, Enchantments.CHANNELING);
+		private static final Set<Enchantment> ENCHANTS = ImmutableSet.of(Enchantments.BLOCK_FORTUNE,
+				Enchantments.INFINITY_ARROWS, Enchantments.BLOCK_EFFICIENCY, Enchantments.MULTISHOT,
+				Enchantments.KNOCKBACK, Enchantments.CHANNELING);
 
 		@Override
 		public boolean canActivatePowers(ItemStack stack) {
@@ -98,30 +101,30 @@ public class FrostRuneItem extends RuneItem {
 		}
 
 		@Override
-		public void onKillMajor(ItemStack sword, PlayerEntity player, LivingEntity entityLiving, DamageSource source,
+		public void onKillMajor(ItemStack sword, Player player, LivingEntity entityLiving, DamageSource source,
 				ItemStack rune) {
-			if (player.getRNG().nextDouble() < 0.1 + getEnchantmentLevel(Enchantments.FORTUNE, rune) * 0.05) {
+			if (player.getRandom().nextDouble() < 0.1 + getEnchantmentLevel(Enchantments.BLOCK_FORTUNE, rune) * 0.05) {
 				int duration = MAX_DURATION;
-				if (getEnchantmentLevel(Enchantments.INFINITY, rune) > 0)
+				if (getEnchantmentLevel(Enchantments.INFINITY_ARROWS, rune) > 0)
 					duration *= 2;
-				FrostGolemEntity snowman = new FrostGolemEntity(Main.FROST_GOLEM_ENTITY, player.world, duration,
-						getEnchantmentLevel(Enchantments.EFFICIENCY, rune));
-				snowman.setPositionAndRotation(entityLiving.getPosX(), entityLiving.getPosY(), entityLiving.getPosZ(),
-						entityLiving.rotationYaw, entityLiving.rotationPitch);
-				player.world.addEntity(snowman);
+				FrostGolemEntity snowman = new FrostGolemEntity(Main.FROST_GOLEM_ENTITY, player.level, duration,
+						getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, rune));
+				snowman.absMoveTo(entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), entityLiving.getYRot(),
+						entityLiving.getXRot());
+				player.level.addFreshEntity(snowman);
 			}
 		}
 
 		@Override
-		public void onAttack(ItemStack sword, PlayerEntity player, Entity target, Set<ItemStack> runes) {
-			if (player.getRNG().nextDouble() < 0.1 * runes.size()
+		public void onAttack(ItemStack sword, Player player, Entity target, Set<ItemStack> runes) {
+			if (player.getRandom().nextDouble() < 0.1 * runes.size()
 					+ getEnchantmentLevel(Enchantments.MULTISHOT, runes) * 0.05) {
 				int knockback = getEnchantmentLevel(Enchantments.KNOCKBACK, runes);
 				int duration = FrostballEntity.SLOW_DURATION
 						* (1 + getEnchantmentLevel(Enchantments.CHANNELING, runes));
-				FrostballEntity snowball = new FrostballEntity(player.world, player, knockback, duration);
-				snowball.func_234612_a_(player, player.rotationPitch, player.rotationYaw, 0.0F, 1.5f, 1); // Shoot
-				player.world.addEntity(snowball);
+				FrostballEntity snowball = new FrostballEntity(player.level, player, knockback, duration);
+				snowball.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.5f, 1); // Shoot
+				player.level.addFreshEntity(snowball);
 			}
 		}
 

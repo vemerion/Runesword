@@ -4,9 +4,9 @@ import mod.vemerion.runesword.api.IGuide;
 import mod.vemerion.runesword.api.IGuideChapter;
 import mod.vemerion.runesword.screen.GuideScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.IItemProvider;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ItemLike;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 
@@ -20,12 +20,12 @@ public class Guide implements IGuide {
 	}
 
 	@Override
-	public IGuideChapter createGuideChapter(IItemProvider icon, ITextComponent title) {
+	public IGuideChapter createGuideChapter(ItemLike icon, Component title) {
 		return new GuideChapter(icon, title);
 	}
 
 	@Override
-	public IGuideChapter createGuideChapter(ResourceLocation icon, ITextComponent title) {
+	public IGuideChapter createGuideChapter(ResourceLocation icon, Component title) {
 		return new GuideChapter(icon, title);
 	}
 
@@ -38,7 +38,7 @@ public class Guide implements IGuide {
 				public void run() {
 					Minecraft mc = Minecraft.getInstance();
 					if (mc != null)
-						Minecraft.getInstance().displayGuiScreen(new GuideScreen(startChapter));
+						Minecraft.getInstance().setScreen(new GuideScreen(startChapter));
 				}
 			};
 		}

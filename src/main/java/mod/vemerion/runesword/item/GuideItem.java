@@ -2,12 +2,12 @@ package mod.vemerion.runesword.item;
 
 import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.guide.GuideChapters;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class GuideItem extends Item {
 
@@ -16,12 +16,12 @@ public class GuideItem extends Item {
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-		ItemStack itemstack = playerIn.getHeldItem(handIn);
-		if (worldIn.isRemote)
+	public InteractionResultHolder<ItemStack> use(Level level, Player playerIn, InteractionHand handIn) {
+		ItemStack itemstack = playerIn.getItemInHand(handIn);
+		if (level.isClientSide)
 			RuneswordAPI.guide.openGuide(GuideChapters.getStartChapter());
 
-		return ActionResult.func_233538_a_(itemstack, worldIn.isRemote());
+		return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide);
 
 	}
 }

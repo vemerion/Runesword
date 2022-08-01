@@ -8,11 +8,11 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 import mod.vemerion.runesword.Main;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleType;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class MagicBallParticleData implements IParticleData {
+public class MagicBallParticleData implements ParticleOptions {
 
 	public static final Codec<MagicBallParticleData> CODEC = RecordCodecBuilder.create((instance) -> {
 		return instance.group(Codec.FLOAT.fieldOf("r").forGetter((data) -> {
@@ -38,14 +38,14 @@ public class MagicBallParticleData implements IParticleData {
 	}
 
 	@Override
-	public void write(PacketBuffer buffer) {
+	public void writeToNetwork(FriendlyByteBuf buffer) {
 		buffer.writeFloat(getRed());
 		buffer.writeFloat(getGreen());
 		buffer.writeFloat(getBlue());
 	}
 
 	@Override
-	public String getParameters() {
+	public String writeToString() {
 		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f", getType().getRegistryName().toString(), getRed(),
 				getGreen(), getBlue());
 	}
@@ -62,10 +62,10 @@ public class MagicBallParticleData implements IParticleData {
 		return blue;
 	}
 
-	public static class Deserializer implements IParticleData.IDeserializer<MagicBallParticleData> {
+	public static class Deserializer implements ParticleOptions.Deserializer<MagicBallParticleData> {
 
 		@Override
-		public MagicBallParticleData deserialize(ParticleType<MagicBallParticleData> particleTypeIn,
+		public MagicBallParticleData fromCommand(ParticleType<MagicBallParticleData> particleTypeIn,
 				StringReader reader) throws CommandSyntaxException {
 			float colors[] = new float[3];
 			for (int i = 0; i < 3; i++) {
@@ -76,7 +76,8 @@ public class MagicBallParticleData implements IParticleData {
 		}
 
 		@Override
-		public MagicBallParticleData read(ParticleType<MagicBallParticleData> particleTypeIn, PacketBuffer buffer) {
+		public MagicBallParticleData fromNetwork(ParticleType<MagicBallParticleData> particleTypeIn,
+				FriendlyByteBuf buffer) {
 			return new MagicBallParticleData(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
 		}
 

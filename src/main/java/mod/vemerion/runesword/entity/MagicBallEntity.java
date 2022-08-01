@@ -2,49 +2,47 @@ package mod.vemerion.runesword.entity;
 
 import java.awt.Color;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.helpers.Helper;
 import mod.vemerion.runesword.item.MagicRuneItem;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
-import net.minecraft.block.Blocks;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.Enchantments;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.entity.projectile.AbstractArrowEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.nbt.NBTUtil;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.Effects;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion.Mode;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.level.Explosion;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 
-public class MagicBallEntity extends AbstractArrowEntity implements IEntityAdditionalSpawnData {
+public class MagicBallEntity extends AbstractArrow implements IEntityAdditionalSpawnData {
 
 	private static final int MAX_DURATION = 20 * 1;
 
@@ -54,25 +52,25 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 	private boolean boomerang;
 	private BlockPos startPos;
 
-	public MagicBallEntity(EntityType<? extends MagicBallEntity> entityTypeIn, World worldIn) {
-		super(entityTypeIn, worldIn);
-		this.setDamage(4);
+	public MagicBallEntity(EntityType<? extends MagicBallEntity> entityTypeIn, Level level) {
+		super(entityTypeIn, level);
+		this.setBaseDamage(4);
 		this.setNoGravity(true);
 		this.enchantments = new HashMap<>();
 		this.enchantmentArr = new Enchantment[0];
-		this.startPos = new BlockPos(getPosX(), getPosY(), getPosZ());
-		this.setHitSound(Main.PROJECTILE_IMPACT_SOUND);
+		this.startPos = new BlockPos(getX(), getY(), getZ());
+		this.setSoundEvent(Main.PROJECTILE_IMPACT_SOUND);
 	}
 
-	public MagicBallEntity(double x, double y, double z, World world, Map<Enchantment, Integer> enchantments) {
-		super(Main.MAGIC_BALL_ENTITY, x, y, z, world);
-		this.setDamage(4);
+	public MagicBallEntity(double x, double y, double z, Level level, Map<Enchantment, Integer> enchantments) {
+		super(Main.MAGIC_BALL_ENTITY, x, y, z, level);
+		this.setBaseDamage(4);
 		this.setNoGravity(true);
 		this.enchantments = enchantments;
 		this.enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
-		this.boomerang = rand.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY) * 0.1;
-		this.startPos = new BlockPos(getPosX(), getPosY(), getPosZ());
-		this.setHitSound(Main.PROJECTILE_IMPACT_SOUND);
+		this.boomerang = random.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY) * 0.1;
+		this.startPos = new BlockPos(getX(), getY(), getZ());
+		this.setSoundEvent(Main.PROJECTILE_IMPACT_SOUND);
 	}
 
 	private int getEnchantmentLevel(Enchantment enchantment) {
@@ -85,15 +83,15 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 
 		duration++;
 
-		if (!world.isRemote) {
+		if (!level.isClientSide) {
 			if (duration > getDuration()) {
-				remove();
+				discard();
 			}
 
-			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION) * 0.01)
-				MagicRuneItem.leaveTrail(world, getPosition(), Blocks.FIRE.getDefaultState());
-			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER) * 0.03)
-				MagicRuneItem.leaveTrail(world, getPosition(), Blocks.SNOW.getDefaultState());
+			if (random.nextDouble() < getEnchantmentLevel(Enchantments.FIRE_PROTECTION) * 0.01)
+				MagicRuneItem.leaveTrail(level, blockPosition(), Blocks.FIRE.defaultBlockState());
+			if (random.nextDouble() < getEnchantmentLevel(Enchantments.FROST_WALKER) * 0.03)
+				MagicRuneItem.leaveTrail(level, blockPosition(), Blocks.SNOW.defaultBlockState());
 
 			deflectProjectiles();
 		} else {
@@ -101,7 +99,7 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		}
 
 		if (duration == getDuration() / 2 && boomerang)
-			setMotion(getMotion().scale(-1));
+			setDeltaMovement(getDeltaMovement().scale(-1));
 	}
 
 	private void deflectProjectiles() {
@@ -109,261 +107,261 @@ public class MagicBallEntity extends AbstractArrowEntity implements IEntityAddit
 		if (projectileProt <= 0)
 			return;
 
-		List<ProjectileEntity> projectiles = world.getEntitiesWithinAABB(ProjectileEntity.class,
-				getBoundingBox().grow(1), e -> {
+		var projectiles = level.getEntitiesOfClass(Projectile.class,
+				getBoundingBox().inflate(1), e -> {
 					if (e == this)
 						return false;
 
-					Entity shooter = func_234616_v_();
-					Entity otherShooter = e.func_234616_v_();
+					Entity shooter = getOwner();
+					Entity otherShooter = e.getOwner();
 					return shooter == null || otherShooter == null || shooter != otherShooter;
 				});
-		for (ProjectileEntity projectile : projectiles) {
-			if (rand.nextDouble() < projectileProt * 0.01)
-				projectile.remove();
+		for (Projectile projectile : projectiles) {
+			if (random.nextDouble() < projectileProt * 0.01)
+				projectile.discard();
 		}
 	}
 
 	private int getDuration() {
-		return MAX_DURATION * (getEnchantmentLevel(Enchantments.INFINITY) + 1);
+		return MAX_DURATION * (getEnchantmentLevel(Enchantments.INFINITY_ARROWS) + 1);
 	}
 
 	@Override
-	protected float getWaterDrag() {
+	protected float getWaterInertia() {
 		return 0.95f + getEnchantmentLevel(Enchantments.DEPTH_STRIDER) * 0.008f;
 	}
 
 	private void createParticles() {
 		for (int i = 0; i < 10; i++) {
-			Color color = MagicRuneItem.getRandEnchColor(rand, enchantmentArr);
-			Vector3d pos = new Vector3d(getPosX() + randCoord(), getPosY() + getHeight() / 2 + randCoord(),
-					getPosZ() + randCoord());
-			world.addParticle(
+			Color color = MagicRuneItem.getRandEnchColor(random, enchantmentArr);
+			Vec3 pos = new Vec3(getX() + randCoord(), getY() + getBbHeight() / 2 + randCoord(),
+					getZ() + randCoord());
+			level.addParticle(
 					new MagicBallParticleData(color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f),
 					pos.x, pos.y, pos.z, 0, 0, 0);
 		}
 	}
 
 	private double randCoord() {
-		return (rand.nextDouble() - 0.5) * 0.5;
+		return (random.nextDouble() - 0.5) * 0.5;
 	}
 
 	@Override
-	public void readAdditional(CompoundNBT compound) {
-		super.readAdditional(compound);
+	public void readAdditionalSaveData(CompoundTag compound) {
+		super.readAdditionalSaveData(compound);
 		if (compound.contains("duration"))
 			duration = compound.getInt("duration");
 		if (compound.contains("enchantments"))
-			initEnchantments(compound.getList("enchantments", Constants.NBT.TAG_COMPOUND));
+			initEnchantments(compound.getList("enchantments", Tag.TAG_COMPOUND));
 		if (compound.contains("boomerang"))
 			boomerang = compound.getBoolean("boomerang");
 		if (compound.contains("startPos"))
-			startPos = NBTUtil.readBlockPos(compound.getCompound("startPos"));
+			startPos = NbtUtils.readBlockPos(compound.getCompound("startPos"));
 	}
 
 	@Override
-	public void writeAdditional(CompoundNBT compound) {
-		super.writeAdditional(compound);
+	public void addAdditionalSaveData(CompoundTag compound) {
+		super.addAdditionalSaveData(compound);
 		compound.putInt("duration", duration);
 		compound.put("enchantments", MagicRuneItem.serializeEnchantments(enchantments));
 		compound.putBoolean("boomerang", boomerang);
-		compound.put("startPos", NBTUtil.writeBlockPos(startPos));
+		compound.put("startPos", NbtUtils.writeBlockPos(startPos));
 	}
 
-	private void initEnchantments(ListNBT list) {
+	private void initEnchantments(ListTag list) {
 		enchantments = MagicRuneItem.deserializeEnchantments(list);
 		enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
 	}
 
 	@Override
-	protected SoundEvent getHitEntitySound() {
+	protected SoundEvent getDefaultHitGroundSoundEvent() {
 		return Main.PROJECTILE_IMPACT_SOUND;
 	}
 
 	@Override
-	protected void onImpact(RayTraceResult result) {
-		super.onImpact(result);
+	protected void onHit(HitResult result) {
+		super.onHit(result);
 
-		Vector3d pos = result.getHitVec();
-		Entity shooter = func_234616_v_();
-		if (!world.isRemote) {
-			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.05)
-				world.createExplosion(null, pos.x, pos.y, pos.z, 2, Mode.BREAK);
+		Vec3 pos = result.getLocation();
+		Entity shooter = getOwner();
+		if (!level.isClientSide) {
+			if (random.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.05)
+				level.explode(null, pos.x, pos.y, pos.z, 2, Explosion.BlockInteraction.BREAK);
 
 			// AoE
-			int sweeping = getEnchantmentLevel(Enchantments.SWEEPING);
-			Entity target = result.getType() == RayTraceResult.Type.ENTITY ? ((EntityRayTraceResult) result).getEntity()
+			int sweeping = getEnchantmentLevel(Enchantments.SWEEPING_EDGE);
+			Entity target = result.getType() == HitResult.Type.ENTITY ? ((EntityHitResult) result).getEntity()
 					: null;
 			if (sweeping > 0) {
 				DamageSource source = shooter == null ? Helper.magicDamage() : Helper.magicDamage(this, shooter);
-				for (LivingEntity e : world.getEntitiesWithinAABB(LivingEntity.class,
-						getBoundingBox().grow(sweeping * 0.2), e -> e != shooter && e != target)) {
-					e.attackEntityFrom(source, 2);
+				for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class,
+						getBoundingBox().inflate(sweeping * 0.2), e -> e != shooter && e != target)) {
+					e.hurt(source, 2);
 				}
 			}
 		}
 
 		// Pull
-		int lure = getEnchantmentLevel(Enchantments.LURE);
+		int lure = getEnchantmentLevel(Enchantments.FISHING_SPEED);
 		if (lure > 0) {
-			for (LivingEntity e : world.getEntitiesWithinAABB(LivingEntity.class, getBoundingBox().grow(lure * 0.2),
+			for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(lure * 0.2),
 					e -> e != shooter)) {
-				Vector3d direction = pos.subtract(e.getPositionVec()).normalize();
-				e.addVelocity(direction.x, direction.y, direction.z);
+				Vec3 direction = pos.subtract(e.position()).normalize();
+				e.push(direction.x, direction.y, direction.z);
 			}
 		}
 
 		// Riptide
-		if (shooter != null && rand.nextDouble() < getEnchantmentLevel(Enchantments.RIPTIDE)) {
-			Vector3d direction = pos.subtract(shooter.getPositionVec()).normalize();
-			shooter.addVelocity(direction.x, direction.y, direction.z);
+		if (shooter != null && random.nextDouble() < getEnchantmentLevel(Enchantments.RIPTIDE)) {
+			Vec3 direction = pos.subtract(shooter.position()).normalize();
+			shooter.push(direction.x, direction.y, direction.z);
 		}
 
 	}
 
 	@Override
-	protected void func_230299_a_(BlockRayTraceResult result) { // onHitBlock
-		super.func_230299_a_(result);
-		remove();
+	protected void onHitBlock(BlockHitResult result) { // onHitBlock
+		super.onHitBlock(result);
+		discard();
 	}
 
 	// Reminder for self: 1 damage = half heart
 	@Override
-	protected void onEntityHit(EntityRayTraceResult result) {
-		playSound(getHitEntitySound(), 1, Helper.soundPitch(rand));
+	protected void onHitEntity(EntityHitResult result) {
+		playSound(getDefaultHitGroundSoundEvent(), 1, Helper.soundPitch(random));
 
-		if (!world.isRemote) {
+		if (!level.isClientSide) {
 			Entity target = result.getEntity();
 			DamageSource source = Helper.magicDamage();
 
-			if (func_234616_v_() != null && func_234616_v_() instanceof PlayerEntity) { // getShooter()
-				PlayerEntity player = (PlayerEntity) func_234616_v_();
+			if (getOwner() != null && getOwner() instanceof Player) { // getShooter()
+				Player player = (Player) getOwner();
 				source = Helper.magicDamage(this, player);
 
 				// Restore air
 				int respiration = getEnchantmentLevel(Enchantments.RESPIRATION);
-				int air = player.getAir() + (int) ((respiration * 0.34) * ((float) player.getMaxAir() / 10));
-				player.setAir(Math.min(player.getMaxAir(), air));
+				int air = player.getAirSupply() + (int) ((respiration * 0.34) * ((float) player.getMaxAirSupply() / 10));
+				player.setAirSupply(Math.min(player.getMaxAirSupply(), air));
 
 				// Lightning
-				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.CHANNELING) * 0.15) {
-					LightningBoltEntity lightning = EntityType.LIGHTNING_BOLT.create(world);
-					lightning.moveForced(Vector3d.copyCenteredHorizontally(target.getPosition()));
-					lightning.setCaster((ServerPlayerEntity) player);
-					world.addEntity(lightning);
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.CHANNELING) * 0.15) {
+					var lightning = EntityType.LIGHTNING_BOLT.create(level);
+					lightning.moveTo(Vec3.atBottomCenterOf(target.blockPosition()));
+					lightning.setCause((ServerPlayer) player);
+					level.addFreshEntity(lightning);
 				}
 
 				// Heal
-				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.MENDING) * 0.33) {
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.MENDING) * 0.33) {
 					player.heal(2);
 				}
 
 				// Protection buff
-				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.PROTECTION) * 0.015)
-					player.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 20 * 10));
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION) * 0.015)
+					player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 20 * 10));
 			}
 
 			// Bypass armor
-			if (rand.nextDouble() < getEnchantmentLevel(Enchantments.UNBREAKING) * 0.01) {
-				source.setDamageBypassesArmor();
+			if (random.nextDouble() < getEnchantmentLevel(Enchantments.UNBREAKING) * 0.01) {
+				source.bypassArmor();
 			}
 
 			// Potion effects
 			if (target instanceof LivingEntity) {
 				LivingEntity living = (LivingEntity) target;
-				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.FEATHER_FALLING) * 0.015)
-					living.addPotionEffect(new EffectInstance(Effects.LEVITATION, 20 * 3));
-				if (rand.nextDouble() < getEnchantmentLevel(Enchantments.THORNS) * 0.03)
-					living.addPotionEffect(new EffectInstance(Effects.POISON, 20 * 7));
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.FALL_PROTECTION) * 0.015)
+					living.addEffect(new MobEffectInstance(MobEffects.LEVITATION, 20 * 3));
+				if (random.nextDouble() < getEnchantmentLevel(Enchantments.THORNS) * 0.03)
+					living.addEffect(new MobEffectInstance(MobEffects.POISON, 20 * 7));
 			}
 
-			MagicRuneItem.applyMagicDamage(target, source, (float) getDamage() + distanceDamage(), enchantments, rand,
+			MagicRuneItem.applyMagicDamage(target, source, (float) getBaseDamage() + distanceDamage(), enchantments, random,
 					1);
 
 			// Drops
-			if (!target.isAlive() && world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+			if (!target.isAlive() && level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT)) {
 				spawnEgg(target);
-				MagicRuneItem.bonusExp(world, getEnchantmentLevel(Enchantments.LOOTING), getPositionVec());
+				MagicRuneItem.bonusExp(level, getEnchantmentLevel(Enchantments.MOB_LOOTING), position());
 			}
 
 			// Fire
-			if (rand.nextDouble() < fireChance()) {
-				target.setFire(3);
+			if (random.nextDouble() < fireChance()) {
+				target.setSecondsOnFire(3);
 			}
 
 			// Knockback
-			MagicRuneItem.knockback(getEnchantmentLevel(Enchantments.KNOCKBACK), getEnchantmentLevel(Enchantments.PUNCH), getMotion(), target);
+			MagicRuneItem.knockback(getEnchantmentLevel(Enchantments.KNOCKBACK), getEnchantmentLevel(Enchantments.PUNCH_ARROWS), getDeltaMovement(), target);
 
 			// Piercing
-			if (rand.nextDouble() >= getEnchantmentLevel(Enchantments.PIERCING) * 0.04)
-				remove();
+			if (random.nextDouble() >= getEnchantmentLevel(Enchantments.PIERCING) * 0.04)
+				discard();
 		}
 	}
 
 	private void spawnEgg(Entity target) {
-		if (!target.isNonBoss() || rand.nextDouble() >= getEnchantmentLevel(Enchantments.SILK_TOUCH) * 0.01)
+		if (!target.canChangeDimensions() || random.nextDouble() >= getEnchantmentLevel(Enchantments.SILK_TOUCH) * 0.01)
 			return;
 
 		SpawnEggItem egg = null;
-		for (SpawnEggItem e : SpawnEggItem.getEggs()) {
+		for (SpawnEggItem e : SpawnEggItem.eggs()) {
 			if (e.getType(null) == target.getType()) {
 				egg = e;
 				break;
 			}
 		}
 		if (egg != null) {
-			ItemEntity eggEntity = new ItemEntity(world, target.getPosX(), target.getPosY(), target.getPosZ(),
+			ItemEntity eggEntity = new ItemEntity(level, target.getX(), target.getY(), target.getZ(),
 					new ItemStack(egg));
-			world.addEntity(eggEntity);
+			level.addFreshEntity(eggEntity);
 		}
 	}
 
 	private double fireChance() {
-		return getEnchantmentLevel(Enchantments.FIRE_ASPECT) * 0.08 + getEnchantmentLevel(Enchantments.FLAME) * 0.16;
+		return getEnchantmentLevel(Enchantments.FIRE_ASPECT) * 0.08 + getEnchantmentLevel(Enchantments.FLAMING_ARROWS) * 0.16;
 	}
 
 	private float distanceDamage() {
-		int efficiency = getEnchantmentLevel(Enchantments.EFFICIENCY);
-		return efficiency / 15f * (float) getPositionVec().distanceTo(Vector3d.copyCentered(startPos)) * 0.3f;
+		int efficiency = getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY);
+		return efficiency / 15f * (float) position().distanceTo(Vec3.atCenterOf(startPos)) * 0.3f;
 	}
 
 	@Override
-	public IPacket<?> createSpawnPacket() {
+	public Packet<?> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 
 	@Override
-	protected ItemStack getArrowStack() {
+	protected ItemStack getPickupItem() {
 		return ItemStack.EMPTY;
 	}
 
 	@Override
-	public void writeSpawnData(PacketBuffer buffer) {
-		CompoundNBT compound = new CompoundNBT();
+	public void writeSpawnData(FriendlyByteBuf buffer) {
+		CompoundTag compound = new CompoundTag();
 		compound.put("enchantments", MagicRuneItem.serializeEnchantments(enchantments));
-		buffer.writeCompoundTag(compound);
+		buffer.writeNbt(compound);
 		buffer.writeBoolean(boomerang);
 
 		// Shooter
-		CompoundNBT shooterNBT = new CompoundNBT();
-		Entity shooter = func_234616_v_();
-		shooterNBT.putBoolean("exists", shooter != null && shooter instanceof PlayerEntity);
+		CompoundTag shooterNBT = new CompoundTag();
+		Entity shooter = getOwner();
+		shooterNBT.putBoolean("exists", shooter != null && shooter instanceof Player);
 		if (shooter != null)
-			shooterNBT.putUniqueId("uuid", shooter.getUniqueID());
-		buffer.writeCompoundTag(shooterNBT);
+			shooterNBT.putUUID("uuid", shooter.getUUID());
+		buffer.writeNbt(shooterNBT);
 	}
 
 	@Override
-	public void readSpawnData(PacketBuffer buffer) {
-		CompoundNBT compound = buffer.readCompoundTag();
-		ListNBT list = compound.getList("enchantments", Constants.NBT.TAG_COMPOUND);
+	public void readSpawnData(FriendlyByteBuf buffer) {
+		CompoundTag compound = buffer.readNbt();
+		ListTag list = compound.getList("enchantments", Tag.TAG_COMPOUND);
 		initEnchantments(list);
 		boomerang = buffer.readBoolean();
 
 		// Shooter
-		CompoundNBT shooterNBT = buffer.readCompoundTag();
+		CompoundTag shooterNBT = buffer.readNbt();
 		if (shooterNBT.getBoolean("exists")) {
-			setShooter(world.getPlayerByUuid(shooterNBT.getUniqueId("uuid")));
+			setOwner(level.getPlayerByUUID(shooterNBT.getUUID("uuid")));
 		}
 	}
 
