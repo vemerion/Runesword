@@ -24,7 +24,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -197,22 +196,16 @@ public class Runes extends ItemStackHandler {
 	}
 
 	public boolean isSlotUnlocked(int slot) {
-		int level = 4;
-		if (owner.getItem() instanceof TieredItem)
-			level = ((TieredItem) owner.getItem()).getTier().getLevel();
-
-		switch (slot) {
-		case FIRST_MINOR_SLOT:
-			return level > 0;
-		case SECOND_MINOR_SLOT:
-			return level > 1;
-		case THIRD_MINOR_SLOT:
-			return level > 2;
-		case MAJOR_SLOT:
-			return level > 3;
-		default:
-			break;
+		if (owner.is(Main.RUNE_TIER_4)) {
+			return true;
+		} else if (owner.is(Main.RUNE_TIER_3)) {
+			return slot == FIRST_MINOR_SLOT || slot == SECOND_MINOR_SLOT || slot == THIRD_MINOR_SLOT;
+		} else if (owner.is(Main.RUNE_TIER_2)) {
+			return slot == FIRST_MINOR_SLOT || slot == SECOND_MINOR_SLOT;
+		} else if (owner.is(Main.RUNE_TIER_1)) {
+			return slot == FIRST_MINOR_SLOT;
 		}
+
 		return false;
 	}
 

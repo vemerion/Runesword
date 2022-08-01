@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import mod.vemerion.runesword.Main;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -38,14 +39,12 @@ public abstract class RunePowers implements IRunePowers {
 	}
 
 	@Override
-	public float onHurt(ItemStack runeable, Player player, DamageSource source, float amount,
-			Set<ItemStack> runes) {
+	public float onHurt(ItemStack runeable, Player player, DamageSource source, float amount, Set<ItemStack> runes) {
 		return amount;
 	}
 
 	@Override
-	public float onHurtMajor(ItemStack runeable, Player player, DamageSource source, float amount,
-			ItemStack rune) {
+	public float onHurtMajor(ItemStack runeable, Player player, DamageSource source, float amount, ItemStack rune) {
 		return amount;
 	}
 
@@ -76,21 +75,19 @@ public abstract class RunePowers implements IRunePowers {
 	}
 
 	@Override
-	public void onBlockBreak(ItemStack runeable, Player player, BlockState state, BlockPos pos,
-			Set<ItemStack> runes) {
+	public void onBlockBreak(ItemStack runeable, Player player, BlockState state, BlockPos pos, Set<ItemStack> runes) {
 	}
 
 	@Override
-	public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
-			ItemStack rune) {
+	public void onBlockBreakMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos, ItemStack rune) {
 	}
 
 	public static boolean isSword(ItemStack stack) {
-		return true; // TODO
+		return stack.is(Main.RUNEABLE_SWORDS);
 	}
 
 	public static boolean isAxe(ItemStack stack) {
-		return true; // TODO
+		return stack.is(Main.RUNEABLE_AXES);
 	}
 
 	public abstract boolean canActivatePowers(ItemStack stack);
@@ -108,7 +105,7 @@ public abstract class RunePowers implements IRunePowers {
 	protected final int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
 		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
 	}
-	
+
 	protected final int getEnchantmentLevel(Enchantment enchantment, Map<Enchantment, Integer> enchants) {
 		return enchants.getOrDefault(enchantment, 0);
 	}
@@ -141,7 +138,7 @@ public abstract class RunePowers implements IRunePowers {
 		var entity = new ItemEntity(level, position.x(), position.y(), position.z(), stack);
 		level.addFreshEntity(entity);
 	}
-	
+
 	protected final void restoreAir(Player player, float fraction) {
 		int air = (int) (player.getAirSupply() + fraction * player.getMaxAirSupply());
 		player.setAirSupply(Math.min(player.getMaxAirSupply(), air));

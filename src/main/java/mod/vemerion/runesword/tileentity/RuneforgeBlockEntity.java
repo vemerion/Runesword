@@ -35,6 +35,10 @@ public class RuneforgeBlockEntity extends BlockEntity implements MenuProvider {
 		public boolean isItemValid(int slot, ItemStack stack) {
 			return Runes.isRuneable(stack);
 		}
+
+		protected void onContentsChanged(int slot) {
+			setChanged();
+		};
 	};
 
 	public RuneforgeBlockEntity(BlockEntityType<?> tileEntityTypeIn, BlockPos pWorldPosition, BlockState pBlockState) {
