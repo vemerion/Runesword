@@ -1,0 +1,17 @@
+{
+  "guide_click": {
+    "sounds": [
+      "runesword:guide_click"
+    ]
+  },
+  "projectile_impact_sound": {
+    "sounds": [
+      "runesword:projectile_impact_sound"
+    ]
+  },
+  "projectile_launch_sound": {
+    "sounds": [
+      "runesword:projectile_launch_sound"
+    ]
+  }
+}
