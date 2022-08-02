@@ -5,11 +5,25 @@
       "chance": 0.05
     },
     {
-      "condition": "runesword:in_biome",
-      "biome": "minecraft:is_ocean"
-    },
-    {
-      "condition": "runesword:from_chest"
+      "condition": "minecraft:alternative",
+      "terms": [
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/underwater_ruin_big"
+        },
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/underwater_ruin_small"
+        },
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/shipwreck_supply"
+        },
+        {
+          "condition": "forge:loot_table_id",
+          "loot_table_id": "minecraft:chests/shipwreck_treasure"
+        }
+      ]
     }
   ],
   "type": "runesword:water_rune_loot_modifier"

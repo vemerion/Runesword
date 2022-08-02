@@ -22,7 +22,6 @@ import mod.vemerion.runesword.item.MagicRuneItem;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.item.WaterRuneItem;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
-import mod.vemerion.runesword.lootmodifier.lootcondition.LootConditions;
 import mod.vemerion.runesword.network.AxeMagicPowersMessage;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncBleedingMessage;
@@ -150,7 +149,6 @@ public class ModEventSubscriber {
 
 	@SubscribeEvent
 	public static void onRegisterLootModifier(RegistryEvent.Register<GlobalLootModifierSerializer<?>> event) {
-		LootConditions.register();
 		event.getRegistry()
 				.register(setup(new RuneLootModifier.Serializer(RuneItem.FIRE_RUNE_ITEM), "fire_rune_loot_modifier"));
 		event.getRegistry()

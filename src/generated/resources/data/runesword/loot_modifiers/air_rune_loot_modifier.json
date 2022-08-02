@@ -9,8 +9,8 @@
       "looting_multiplier": 0.02
     },
     {
-      "condition": "runesword:is_entity_type",
-      "type": "minecraft:phantom"
+      "condition": "forge:loot_table_id",
+      "loot_table_id": "minecraft:entities/phantom"
     }
   ],
   "type": "runesword:air_rune_loot_modifier"
