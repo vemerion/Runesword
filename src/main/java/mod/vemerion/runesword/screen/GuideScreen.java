@@ -28,6 +28,8 @@ public class GuideScreen extends Screen {
 			"textures/gui/home_button.png");
 	private static final ResourceLocation MUTE_BUTTON = new ResourceLocation(Main.MODID,
 			"textures/gui/mute_button.png");
+	private static final ResourceLocation BACK_BUTTON = new ResourceLocation(Main.MODID,
+			"textures/gui/back_button.png");
 	private static final int X_SIZE = 230;
 	private static final int Y_SIZE = 230;
 	private static final int TEX_SIZE = 256;
@@ -85,6 +87,15 @@ public class GuideScreen extends Screen {
 				}, (b, m, mouseX, mouseY) -> renderComponentTooltip(m, Arrays.asList(b.getMessage()), mouseX, mouseY,
 						minecraft.font),
 				muteTooltip) {
+		});
+
+		addRenderableWidget(new GuideButton(left - 2 - BUTTON_SIZE, top + Y_SIZE - BUTTON_SIZE, BUTTON_SIZE,
+				BUTTON_SIZE, 0, 0, 32, BACK_BUTTON, 256, 256, b -> {
+					if (current != null && current.getParent() != null)
+						gotoChapter(current.getParent());
+				}, (b, m, mouseX, mouseY) -> renderComponentTooltip(m, Arrays.asList(b.getMessage()), mouseX, mouseY,
+						minecraft.font),
+				new TranslatableComponent("gui." + Main.MODID + ".back")) {
 		});
 	}
 

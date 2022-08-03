@@ -26,6 +26,7 @@ public class GuideChapter implements IGuideChapter {
 	private ItemLike itemIcon;
 	private ResourceLocation rlIcon;
 	private HeaderComponent title;
+	private GuideChapter parent;
 	private List<GuideChapter> children = new ArrayList<>();
 	private List<ChapterComponent> components = new ArrayList<>();
 
@@ -42,13 +43,14 @@ public class GuideChapter implements IGuideChapter {
 	public static void throwIfInvalidChapter(IGuideChapter chapter) {
 		if (!(chapter instanceof GuideChapter))
 			throw new IllegalArgumentException("openGuide() parameter is not of type GuideChapter");
-
 	}
 
 	@Override
 	public GuideChapter addChild(IGuideChapter child) {
 		throwIfInvalidChapter(child);
-		children.add((GuideChapter) child);
+		var validChild = (GuideChapter) child;
+		children.add(validChild);
+		validChild.addParent(this);
 		return this;
 	}
 
@@ -68,6 +70,16 @@ public class GuideChapter implements IGuideChapter {
 	public GuideChapter addImage(ResourceLocation image, int imgWidth, int imgHeight) {
 		components.add(new ImageComponent(image, imgWidth, imgHeight));
 		return this;
+	}
+
+	private void addParent(GuideChapter parent) {
+		if (this.parent != null)
+			throw new IllegalArgumentException("GuidebookChapter is only allowed to have one parent!");
+		this.parent = parent;
+	}
+	
+	public GuideChapter getParent() {
+		return parent;
 	}
 
 	public Component getTitle() {
@@ -246,8 +258,8 @@ public class GuideChapter implements IGuideChapter {
 				drawHeight = (int) (drawHeight * ratio);
 				vHeight = (int) (vHeight * ratio);
 			}
-			Screen.blit(poseStack, x + width / 2 - drawWidth / 2, drawY, drawWidth, drawHeight, 0, v, imgWidth,
-					vHeight, imgWidth, imgHeight);
+			Screen.blit(poseStack, x + width / 2 - drawWidth / 2, drawY, drawWidth, drawHeight, 0, v, imgWidth, vHeight,
+					imgWidth, imgHeight);
 			return y + offset;
 		}
 

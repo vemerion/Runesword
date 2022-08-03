@@ -35,6 +35,7 @@ public class ModLanguageProvider extends LanguageProvider {
 		addGui("home", "Home");
 		addGui("mute", "Mute Guide Sounds");
 		addGui("unmute", "Unmute Guide Sounds");
+		addGui("back", "Back");
 		addText("death.attack", "magicplayer", "%1$s was magicked to death by %2$s");
 		addText("death.attack", "magicindirect", "%1$s was magicked to death by %2$s");
 		addText("death.attack", "magic", "%1$s was magicked to death");
