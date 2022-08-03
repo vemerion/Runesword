@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.google.common.collect.Iterables;
 
-import mod.vemerion.runesword.Main;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -16,18 +15,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.registries.ObjectHolder;
 
-@ObjectHolder(Main.MODID)
 public abstract class RuneItem extends Item implements IRunePowers {
-
-	public static final Item FIRE_RUNE_ITEM = null;
-	public static final Item WATER_RUNE_ITEM = null;
-	public static final Item EARTH_RUNE_ITEM = null;
-	public static final Item AIR_RUNE_ITEM = null;
-	public static final Item BLOOD_RUNE_ITEM = null;
-	public static final Item FROST_RUNE_ITEM = null;
-	public static final Item MAGIC_RUNE_ITEM = null;
 
 	private static final List<RuneItem> RUNES = new ArrayList<>();
 

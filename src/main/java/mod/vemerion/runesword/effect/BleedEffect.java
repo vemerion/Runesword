@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.helpers.Helper;
+import mod.vemerion.runesword.init.ModParticles;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -34,7 +35,7 @@ public class BleedEffect extends MobEffect {
 		Random rand = entity.getRandom();
 		for (int i = 0; i < 5; i++) {
 			Vec3 position = Helper.randomInBox(rand, entity.getBoundingBox());
-			entity.level.addParticle(Main.BLEED_PARTICLE, position.x, position.y, position.z, 0, 0, 0);
+			entity.level.addParticle(ModParticles.BLEED.get(), position.x, position.y, position.z, 0, 0, 0);
 		}
 	}
 

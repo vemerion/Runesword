@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.item;
 
 import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.init.ModItems;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -15,7 +16,7 @@ public class RuneswordItemGroup extends CreativeModeTab {
 
 	@Override
 	public ItemStack makeIcon() {
-		return new ItemStack(RuneItem.FIRE_RUNE_ITEM);
+		return new ItemStack(ModItems.FIRE_RUNE.get());
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.guide.GuideChapter;
+import mod.vemerion.runesword.init.ModSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -108,7 +109,7 @@ public class GuideScreen extends Screen {
 					current = chapter;
 					if (!mute)
 						Minecraft.getInstance().getSoundManager()
-								.play(SimpleSoundInstance.forUI(Main.GUIDE_CLICK, 1.0F));
+								.play(SimpleSoundInstance.forUI(ModSounds.GUIDE_CLICK.get(), 1.0F));
 				})) {
 			return true;
 		}
@@ -131,7 +132,7 @@ public class GuideScreen extends Screen {
 		y = current.renderComponents(poseStack, minecraft, x, y, top + Y_OFFSET, CHAPTER_WIDTH, CHAPTER_HEIGHT, mouseX,
 				mouseY);
 		canPageDown = y > top + CHAPTER_HEIGHT;
-		
+
 		super.render(poseStack, mouseX, mouseY, partialTicks);
 	}
 
@@ -152,7 +153,7 @@ public class GuideScreen extends Screen {
 		@Override
 		public void playDownSound(SoundManager handler) {
 			if (!mute)
-				handler.play(SimpleSoundInstance.forUI(Main.GUIDE_CLICK, 1.0F));
+				handler.play(SimpleSoundInstance.forUI(ModSounds.GUIDE_CLICK.get(), 1.0F));
 		}
 	}
 }

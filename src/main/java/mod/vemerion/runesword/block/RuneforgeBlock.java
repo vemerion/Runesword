@@ -1,7 +1,7 @@
 package mod.vemerion.runesword.block;
 
-import mod.vemerion.runesword.Main;
-import mod.vemerion.runesword.tileentity.RuneforgeBlockEntity;
+import mod.vemerion.runesword.blockentity.RuneforgeBlockEntity;
+import mod.vemerion.runesword.init.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -81,7 +81,7 @@ public class RuneforgeBlock extends Block implements EntityBlock {
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState,
 			BlockEntityType<T> pBlockEntityType) {
-		return pBlockEntityType == Main.RUNEFORGE_BLOCK_ENTITY
+		return pBlockEntityType == ModBlockEntities.RUNEFORGE.get()
 				? (level, pos, state, tileEntity) -> ((RuneforgeBlockEntity) tileEntity).tick()
 				: null;
 	}

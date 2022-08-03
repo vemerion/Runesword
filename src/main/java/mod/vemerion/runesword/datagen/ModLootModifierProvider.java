@@ -1,7 +1,8 @@
 package mod.vemerion.runesword.datagen;
 
 import mod.vemerion.runesword.Main;
-import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.init.ModItems;
+import mod.vemerion.runesword.init.ModLootModifiers;
 import mod.vemerion.runesword.lootmodifier.RuneLootModifier;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.entity.EntityType;
@@ -22,34 +23,34 @@ public class ModLootModifierProvider extends GlobalLootModifierProvider {
 
 	@Override
 	protected void start() {
-		add("air_rune_loot_modifier", Main.AIR_RUNE_LOOT_MODIFIER,
+		add("air_rune", ModLootModifiers.AIR_RUNE.get(),
 				new RuneLootModifier(
 						new LootItemCondition[] { LootItemKilledByPlayerCondition.killedByPlayer().build(),
 								LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.1f, 0.02f)
 										.build(),
 								LootTableIdCondition.builder(EntityType.PHANTOM.getDefaultLootTable()).build() },
-						RuneItem.AIR_RUNE_ITEM));
-		add("blood_rune_loot_modifier", Main.BLOOD_RUNE_LOOT_MODIFIER,
+						ModItems.AIR_RUNE));
+		add("blood_rune", ModLootModifiers.BLOOD_RUNE.get(),
 				new RuneLootModifier(new LootItemCondition[] { LootItemKilledByPlayerCondition.killedByPlayer().build(),
 						LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.002f, 0.001f).build() },
-						RuneItem.BLOOD_RUNE_ITEM));
-		add("earth_rune_loot_modifier", Main.EARTH_RUNE_LOOT_MODIFIER, new RuneLootModifier(
+						ModItems.BLOOD_RUNE));
+		add("earth_rune", ModLootModifiers.EARTH_RUNE.get(), new RuneLootModifier(
 				new LootItemCondition[] { LootItemRandomChanceCondition.randomChance(0.07f).build(),
 						AlternativeLootItemCondition
 								.alternative(LootTableIdCondition.builder(BuiltInLootTables.SIMPLE_DUNGEON),
 										LootTableIdCondition.builder(BuiltInLootTables.ABANDONED_MINESHAFT),
 										LootTableIdCondition.builder(BuiltInLootTables.STRONGHOLD_CORRIDOR))
 								.build() },
-				RuneItem.EARTH_RUNE_ITEM));
-		add("fire_rune_loot_modifier", Main.FIRE_RUNE_LOOT_MODIFIER,
+				ModItems.EARTH_RUNE));
+		add("fire_rune", ModLootModifiers.FIRE_RUNE.get(),
 				new RuneLootModifier(
 						new LootItemCondition[] {
 								LootItemRandomChanceWithLootingCondition.randomChanceAndLootingBoost(0.002f, 0.001f)
 										.build(),
 								LootItemKilledByPlayerCondition.killedByPlayer().build(),
 								LootTableIdCondition.builder(EntityType.BLAZE.getDefaultLootTable()).build() },
-						RuneItem.FIRE_RUNE_ITEM));
-		add("water_rune_loot_modifier", Main.WATER_RUNE_LOOT_MODIFIER, new RuneLootModifier(
+						ModItems.FIRE_RUNE));
+		add("water_rune", ModLootModifiers.WATER_RUNE.get(), new RuneLootModifier(
 				new LootItemCondition[] { LootItemRandomChanceCondition.randomChance(0.05f).build(),
 						AlternativeLootItemCondition
 								.alternative(LootTableIdCondition.builder(BuiltInLootTables.UNDERWATER_RUIN_BIG),
@@ -57,7 +58,7 @@ public class ModLootModifierProvider extends GlobalLootModifierProvider {
 										LootTableIdCondition.builder(BuiltInLootTables.SHIPWRECK_SUPPLY),
 										LootTableIdCondition.builder(BuiltInLootTables.SHIPWRECK_TREASURE))
 								.build() },
-				RuneItem.WATER_RUNE_ITEM));
+				ModItems.WATER_RUNE));
 	}
 
 }

@@ -13,5 +13,5 @@
       "loot_table_id": "minecraft:entities/phantom"
     }
   ],
-  "type": "runesword:air_rune_loot_modifier"
+  "type": "runesword:air_rune"
 }

@@ -1,10 +1,10 @@
 {
   "replace": false,
   "entries": [
-    "runesword:blood_rune_loot_modifier",
-    "runesword:air_rune_loot_modifier",
-    "runesword:fire_rune_loot_modifier",
-    "runesword:earth_rune_loot_modifier",
-    "runesword:water_rune_loot_modifier"
+    "runesword:air_rune",
+    "runesword:earth_rune",
+    "runesword:blood_rune",
+    "runesword:water_rune",
+    "runesword:fire_rune"
   ]
 }

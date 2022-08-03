@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.datagen;
 
 import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.init.ModSounds;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -14,9 +15,9 @@ public class ModSoundProvider extends SoundDefinitionsProvider {
 
 	@Override
 	public void registerSounds() {
-		addSimple(Main.GUIDE_CLICK);
-		addSimple(Main.PROJECTILE_IMPACT_SOUND);
-		addSimple(Main.PROJECTILE_LAUNCH_SOUND);
+		addSimple(ModSounds.GUIDE_CLICK.get());
+		addSimple(ModSounds.PROJECTILE_IMPACT.get());
+		addSimple(ModSounds.PROJECTILE_LAUNCH.get());
 	}
 
 	private void addSimple(SoundEvent sound) {

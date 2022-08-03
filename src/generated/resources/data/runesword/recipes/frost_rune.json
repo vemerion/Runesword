@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "ingredients": [
+    {
+      "item": "runesword:water_rune"
+    },
+    {
+      "item": "runesword:air_rune"
+    }
+  ],
+  "result": {
+    "item": "runesword:frost_rune"
+  }
+}

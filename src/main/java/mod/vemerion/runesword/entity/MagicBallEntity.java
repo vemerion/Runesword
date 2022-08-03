@@ -4,8 +4,9 @@ import java.awt.Color;
 import java.util.HashMap;
 import java.util.Map;
 
-import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.helpers.Helper;
+import mod.vemerion.runesword.init.ModEntities;
+import mod.vemerion.runesword.init.ModSounds;
 import mod.vemerion.runesword.item.MagicRuneItem;
 import mod.vemerion.runesword.particle.MagicBallParticleData;
 import net.minecraft.core.BlockPos;
@@ -59,18 +60,18 @@ public class MagicBallEntity extends AbstractArrow implements IEntityAdditionalS
 		this.enchantments = new HashMap<>();
 		this.enchantmentArr = new Enchantment[0];
 		this.startPos = new BlockPos(getX(), getY(), getZ());
-		this.setSoundEvent(Main.PROJECTILE_IMPACT_SOUND);
+		this.setSoundEvent(ModSounds.PROJECTILE_IMPACT.get());
 	}
 
 	public MagicBallEntity(double x, double y, double z, Level level, Map<Enchantment, Integer> enchantments) {
-		super(Main.MAGIC_BALL_ENTITY, x, y, z, level);
+		super(ModEntities.MAGIC_BALL.get(), x, y, z, level);
 		this.setBaseDamage(4);
 		this.setNoGravity(true);
 		this.enchantments = enchantments;
 		this.enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
 		this.boomerang = random.nextDouble() < getEnchantmentLevel(Enchantments.LOYALTY) * 0.1;
 		this.startPos = new BlockPos(getX(), getY(), getZ());
-		this.setSoundEvent(Main.PROJECTILE_IMPACT_SOUND);
+		this.setSoundEvent(ModSounds.PROJECTILE_IMPACT.get());
 	}
 
 	private int getEnchantmentLevel(Enchantment enchantment) {
@@ -175,7 +176,7 @@ public class MagicBallEntity extends AbstractArrow implements IEntityAdditionalS
 
 	@Override
 	protected SoundEvent getDefaultHitGroundSoundEvent() {
-		return Main.PROJECTILE_IMPACT_SOUND;
+		return ModSounds.PROJECTILE_IMPACT.get();
 	}
 
 	@Override

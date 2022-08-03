@@ -1,8 +1,9 @@
-package mod.vemerion.runesword.tileentity;
+package mod.vemerion.runesword.blockentity;
 
-import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.container.RuneforgeMenu;
+import mod.vemerion.runesword.init.ModBlockEntities;
+import mod.vemerion.runesword.init.ModBlocks;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -46,7 +47,7 @@ public class RuneforgeBlockEntity extends BlockEntity implements MenuProvider {
 	}
 
 	public RuneforgeBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
-		this(Main.RUNEFORGE_BLOCK_ENTITY, pWorldPosition, pBlockState);
+		this(ModBlockEntities.RUNEFORGE.get(), pWorldPosition, pBlockState);
 	}
 
 	public ItemStack getRuneable() {
@@ -76,7 +77,7 @@ public class RuneforgeBlockEntity extends BlockEntity implements MenuProvider {
 
 	@Override
 	public Component getDisplayName() {
-		return new TranslatableComponent(Main.RUNEFORGE_BLOCK.getDescriptionId());
+		return new TranslatableComponent(ModBlocks.RUNEFORGE.get().getDescriptionId());
 	}
 
 	@Override

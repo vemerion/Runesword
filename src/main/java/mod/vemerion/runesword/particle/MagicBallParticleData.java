@@ -7,7 +7,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.init.ModParticles;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
@@ -34,7 +34,7 @@ public class MagicBallParticleData implements ParticleOptions {
 
 	@Override
 	public ParticleType<?> getType() {
-		return Main.MAGIC_BALL_PARTICLE;
+		return ModParticles.MAGIC_BALL.get();
 	}
 
 	@Override

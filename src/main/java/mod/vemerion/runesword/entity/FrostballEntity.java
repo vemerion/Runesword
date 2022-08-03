@@ -1,6 +1,6 @@
 package mod.vemerion.runesword.entity;
 
-import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.init.ModEntities;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -26,7 +26,7 @@ public class FrostballEntity extends Snowball {
 	}
 
 	public FrostballEntity(Level level, LivingEntity shooter, int knockback, int slowDuration) {
-		this(Main.FROSTBALL_ENTITY, level);
+		this(ModEntities.FROSTBALL.get(), level);
 		this.setOwner(shooter);
 		this.setPos(shooter.getX(), shooter.getEyeY() - 0.1, shooter.getZ());
 		this.knockback = knockback;

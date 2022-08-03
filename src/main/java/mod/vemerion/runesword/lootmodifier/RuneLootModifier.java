@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.lootmodifier;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.google.gson.JsonObject;
 
@@ -14,9 +15,9 @@ import net.minecraftforge.common.loot.LootModifier;
 
 public class RuneLootModifier extends LootModifier {
 
-	private Item rune;
+	private Supplier<Item> rune;
 
-	public RuneLootModifier(LootItemCondition[] conditionsIn, Item rune) {
+	public RuneLootModifier(LootItemCondition[] conditionsIn, Supplier<Item> rune) {
 		super(conditionsIn);
 		this.rune = rune;
 	}
@@ -24,16 +25,16 @@ public class RuneLootModifier extends LootModifier {
 
 	@Override
 	protected List<ItemStack> doApply(List<ItemStack> generatedLoot, LootContext context) {
-		generatedLoot.add(new ItemStack(rune));
+		generatedLoot.add(new ItemStack(rune.get()));
 		return generatedLoot;
 	}
 
 	public static class Serializer extends GlobalLootModifierSerializer<RuneLootModifier> {
 
-		private Item rune;
+		private Supplier<Item> rune;
 
-		public Serializer(Item bloodRuneItem) {
-			this.rune = bloodRuneItem;
+		public Serializer(Supplier<Item> rune) {
+			this.rune = rune;
 		}
 
 		@Override

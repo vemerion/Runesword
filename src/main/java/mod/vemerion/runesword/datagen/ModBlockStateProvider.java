@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.datagen;
 
 import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.init.ModBlocks;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
@@ -20,7 +21,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 	}
 
 	private void runeforge() {
-		String name = Main.RUNEFORGE_BLOCK.getRegistryName().getPath();
+		String name = ModBlocks.RUNEFORGE.get().getRegistryName().getPath();
 		ResourceLocation top = modLoc("block/runeforge_top");
 		ResourceLocation side = modLoc("block/runeforge_side");
 		BlockModelBuilder model = models().withExistingParent(name, mcLoc("block/block")).texture("particle", top)
@@ -31,7 +32,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
 				.face(Direction.SOUTH).uvs(0, 1, 16, 16).texture("#side").cullface(Direction.SOUTH).end()
 				.face(Direction.WEST).uvs(0, 1, 16, 16).texture("#side").cullface(Direction.WEST).end()
 				.face(Direction.EAST).uvs(0, 1, 16, 16).texture("#side").cullface(Direction.EAST).end().end();
-		simpleBlock(Main.RUNEFORGE_BLOCK, model);
-        itemModels().getBuilder(Main.RUNEFORGE_BLOCK.getRegistryName().getPath() + "_item").parent(model);
+		simpleBlock(ModBlocks.RUNEFORGE.get(), model);
+		itemModels().getBuilder(ModBlocks.RUNEFORGE.get().getRegistryName().getPath()).parent(model);
 	}
 }

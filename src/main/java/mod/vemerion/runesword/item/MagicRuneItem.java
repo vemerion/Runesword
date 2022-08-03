@@ -10,10 +10,10 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 
-import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.entity.MagicBallEntity;
 import mod.vemerion.runesword.helpers.Helper;
+import mod.vemerion.runesword.init.ModSounds;
 import mod.vemerion.runesword.network.AxeMagicPowersMessage;
 import mod.vemerion.runesword.network.Network;
 import net.minecraft.core.BlockPos;
@@ -70,12 +70,11 @@ public class MagicRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onHurtMajor(ItemStack runeable, Player player, DamageSource source, float amount,
-				ItemStack rune) {
+		public float onHurtMajor(ItemStack runeable, Player player, DamageSource source, float amount, ItemStack rune) {
 			Runes.getRunes(runeable).ifPresent(runes -> {
 				Map<Enchantment, Integer> enchants = getEnchantments(minorMagicRunes(runes));
-				if (source.getEntity() instanceof LivingEntity
-						&& player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, enchants) * 0.01)
+				if (source.getEntity() instanceof LivingEntity && player.getRandom()
+						.nextDouble() < getEnchantmentLevel(Enchantments.ALL_DAMAGE_PROTECTION, enchants) * 0.01)
 					magicArea(enchants, player, player.level);
 			});
 			return super.onHurtMajor(runeable, player, source, amount, rune);
@@ -86,11 +85,11 @@ public class MagicRuneItem extends RuneItem {
 			var cdTracker = player.getCooldowns();
 			if (cdTracker.isOnCooldown(rune.getItem()))
 				return;
-			
+
 			Runes.getRunes(runeable).ifPresent(runes -> {
 				Level level = player.level;
 				Map<Enchantment, Integer> enchants = getEnchantments(minorMagicRunes(runes));
-				
+
 				int cooldown = START_COOLDOWN;
 				int quickCharge = getEnchantmentLevel(Enchantments.QUICK_CHARGE, enchants);
 				cooldown *= (1 - quickCharge * 0.05);
@@ -102,9 +101,9 @@ public class MagicRuneItem extends RuneItem {
 		}
 
 		private void magicArea(Map<Enchantment, Integer> enchants, Player player, Level level) {
-			level.playSound(null, player.blockPosition(), Main.PROJECTILE_IMPACT_SOUND, SoundSource.PLAYERS, 1,
+			level.playSound(null, player.blockPosition(), ModSounds.PROJECTILE_IMPACT.get(), SoundSource.PLAYERS, 1,
 					Helper.soundPitch(player.getRandom()));
-			
+
 			double radius = START_RADIUS;
 			float damage = START_DAMAGE;
 			DamageSource source = Helper.magicDamage(player);
@@ -115,7 +114,7 @@ public class MagicRuneItem extends RuneItem {
 
 			// More radius with sweeping
 			radius += getEnchantmentLevel(Enchantments.SWEEPING_EDGE, enchants) / 9d;
-			
+
 			// More radius if riding
 			if (player.getVehicle() instanceof Horse)
 				radius += getEnchantmentLevel(Enchantments.LOYALTY, enchants) / 6d;
@@ -128,21 +127,19 @@ public class MagicRuneItem extends RuneItem {
 			// More damage if full attack strength
 			if (player.getAttackStrengthScale(0) > 0.99)
 				damage += getEnchantmentLevel(Enchantments.POWER_ARROWS, enchants) * 0.5;
-			
+
 			// More damage in nether with flame
 			if (level.dimension() == Level.NETHER)
 				damage += getEnchantmentLevel(Enchantments.FLAMING_ARROWS, enchants);
-			
+
 			// More damage with speed effect
 			if (player.hasEffect(MobEffects.MOVEMENT_SPEED))
 				damage += getEnchantmentLevel(Enchantments.SOUL_SPEED, enchants) * 0.4;
-			
+
 			// More damage with infinity
 			damage += getEnchantmentLevel(Enchantments.INFINITY_ARROWS, enchants) * 2;
 
-
-			var box = new AABB(player.position(), player.position())
-					.inflate(radius, 0, radius).expandTowards(0, 2, 0);
+			var box = new AABB(player.position(), player.position()).inflate(radius, 0, radius).expandTowards(0, 2, 0);
 			int channeling = getEnchantmentLevel(Enchantments.CHANNELING, enchants);
 			int lure = getEnchantmentLevel(Enchantments.FISHING_SPEED, enchants);
 			int looting = getEnchantmentLevel(Enchantments.MOB_LOOTING, enchants);
@@ -151,7 +148,7 @@ public class MagicRuneItem extends RuneItem {
 			for (Entity e : level.getEntities(player, box, e -> e != player.getVehicle())) {
 				// More damage further away with channeling
 				damage += channeling * player.distanceTo(e) * 0.3f;
-				
+
 				// More damage if mob has armor
 				if (hasArmor(e))
 					damage += getEnchantmentLevel(Enchantments.PIERCING, enchants) * 0.4;
@@ -215,7 +212,7 @@ public class MagicRuneItem extends RuneItem {
 			// Heal player
 			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.MENDING, enchants) / 3f)
 				player.heal(1);
-			
+
 			// Restore air
 			int respiration = getEnchantmentLevel(Enchantments.RESPIRATION, enchants);
 			restoreAir(player, respiration * 0.03f);
@@ -263,9 +260,8 @@ public class MagicRuneItem extends RuneItem {
 				int quickCharge = enchantments.getOrDefault(Enchantments.QUICK_CHARGE, 0);
 				cdTracker.addCooldown(rune.getItem(), (int) (COOLDOWN * (1 - quickCharge * 0.05)));
 
-				level.playSound(null, player.blockPosition(), Main.PROJECTILE_LAUNCH_SOUND, SoundSource.PLAYERS, 1,
+				level.playSound(null, player.blockPosition(), ModSounds.PROJECTILE_LAUNCH.get(), SoundSource.PLAYERS, 1,
 						Helper.soundPitch(random));
-
 				if (multishot <= 0) {
 					Vec3 direction = Vec3.directionFromRotation(player.getRotationVector());
 					Vec3 position = player.position().add(direction.x() * 1, 1.2, direction.z() * 1);
@@ -279,8 +275,8 @@ public class MagicRuneItem extends RuneItem {
 						Vec3 position = player.position().add(direction.x() * 1,
 								1.2 + (random.nextDouble() - 0.5) * 0.5, direction.z() * 1);
 						shootMagicBall(player, level, enchantments, position,
-								player.getXRot() + random.nextInt(30) - 15,
-								player.getYRot() + random.nextInt(30) - 15, inaccuracy, speed);
+								player.getXRot() + random.nextInt(30) - 15, player.getYRot() + random.nextInt(30) - 15,
+								inaccuracy, speed);
 					}
 				}
 
@@ -339,8 +335,7 @@ public class MagicRuneItem extends RuneItem {
 
 	private static void shootMagicBall(Player player, Level level, Map<Enchantment, Integer> enchantments,
 			Vec3 position, float pitch, float yaw, float inaccuracy, float speed) {
-		MagicBallEntity ball = new MagicBallEntity(position.x(), position.y(), position.z(), level,
-				enchantments);
+		MagicBallEntity ball = new MagicBallEntity(position.x(), position.y(), position.z(), level, enchantments);
 		ball.setOwner(player);
 		ball.shootFromRotation(player, pitch, yaw, 0, speed, inaccuracy); // shoot()
 		level.addFreshEntity(ball);

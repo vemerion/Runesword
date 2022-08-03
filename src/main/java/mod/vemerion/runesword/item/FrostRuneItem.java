@@ -6,9 +6,9 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.entity.FrostGolemEntity;
 import mod.vemerion.runesword.entity.FrostballEntity;
+import mod.vemerion.runesword.init.ModEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -107,7 +107,7 @@ public class FrostRuneItem extends RuneItem {
 				int duration = MAX_DURATION;
 				if (getEnchantmentLevel(Enchantments.INFINITY_ARROWS, rune) > 0)
 					duration *= 2;
-				FrostGolemEntity snowman = new FrostGolemEntity(Main.FROST_GOLEM_ENTITY, player.level, duration,
+				FrostGolemEntity snowman = new FrostGolemEntity(ModEntities.FROST_GOLEM.get(), player.level, duration,
 						getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, rune));
 				snowman.absMoveTo(entityLiving.getX(), entityLiving.getY(), entityLiving.getZ(), entityLiving.getYRot(),
 						entityLiving.getXRot());

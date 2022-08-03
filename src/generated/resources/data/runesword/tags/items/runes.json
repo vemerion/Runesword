@@ -1,12 +1,12 @@
 {
   "replace": false,
   "values": [
-    "runesword:fire_rune_item",
-    "runesword:water_rune_item",
-    "runesword:earth_rune_item",
-    "runesword:air_rune_item",
-    "runesword:blood_rune_item",
-    "runesword:frost_rune_item",
-    "runesword:magic_rune_item"
+    "runesword:fire_rune",
+    "runesword:water_rune",
+    "runesword:earth_rune",
+    "runesword:air_rune",
+    "runesword:blood_rune",
+    "runesword:frost_rune",
+    "runesword:magic_rune"
   ]
 }

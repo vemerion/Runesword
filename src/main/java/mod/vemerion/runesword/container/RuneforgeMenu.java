@@ -5,9 +5,10 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.blockentity.RuneforgeBlockEntity;
 import mod.vemerion.runesword.capability.Runes;
-import mod.vemerion.runesword.tileentity.RuneforgeBlockEntity;
+import mod.vemerion.runesword.init.ModBlocks;
+import mod.vemerion.runesword.init.ModMenus;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
@@ -38,7 +39,7 @@ public class RuneforgeMenu extends AbstractContainerMenu {
 
 	public RuneforgeMenu(int id, Inventory playerInv, ItemStackHandler runeableHandler,
 			ContainerLevelAccess access) {
-		super(Main.RUNEFORGE_MENU, id);
+		super(ModMenus.RUNEFORGE.get(), id);
 		this.access = access;
 
 		runeSlots = new ArrayList<>();
@@ -65,7 +66,7 @@ public class RuneforgeMenu extends AbstractContainerMenu {
 
 	@Override
 	public boolean stillValid(Player playerIn) {
-		return stillValid(access, playerIn, Main.RUNEFORGE_BLOCK);
+		return stillValid(access, playerIn, ModBlocks.RUNEFORGE.get());
 	}
 
 	@Override

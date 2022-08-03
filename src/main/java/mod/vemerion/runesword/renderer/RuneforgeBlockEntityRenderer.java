@@ -3,8 +3,8 @@ package mod.vemerion.runesword.renderer;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 
+import mod.vemerion.runesword.blockentity.RuneforgeBlockEntity;
 import mod.vemerion.runesword.capability.Runes;
-import mod.vemerion.runesword.tileentity.RuneforgeBlockEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms.TransformType;

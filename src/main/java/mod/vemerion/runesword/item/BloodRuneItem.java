@@ -6,7 +6,7 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.init.ModEffects;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
@@ -47,13 +47,13 @@ public class BloodRuneItem extends RuneItem {
 				int duration = BASE_DURATION + getEnchantmentLevel(Enchantments.INFINITY_ARROWS, runes) * INF_DURATION;
 				int level = player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.POWER_ARROWS, runes) * 0.01 ? 1 : 0;
 				((LivingEntity) target)
-						.addEffect(new MobEffectInstance(Main.BLEED_EFFECT, duration, level, false, false, true));
+						.addEffect(new MobEffectInstance(ModEffects.BLEED.get(), duration, level, false, false, true));
 			}
 		}
 
 		@Override
 		public void onAttackMajor(ItemStack runeable, Player player, Entity target, ItemStack rune) {
-			if (target instanceof LivingEntity && ((LivingEntity) target).hasEffect(Main.BLEED_EFFECT)) {
+			if (target instanceof LivingEntity && ((LivingEntity) target).hasEffect(ModEffects.BLEED.get())) {
 				float damage = 4 + getEnchantmentLevel(Enchantments.SHARPNESS, rune) * 0.5f;
 				attack(player, target, damage);
 

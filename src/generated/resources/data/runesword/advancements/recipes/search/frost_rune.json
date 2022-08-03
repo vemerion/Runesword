@@ -2,7 +2,7 @@
   "parent": "minecraft:recipes/root",
   "rewards": {
     "recipes": [
-      "runesword:frost_rune_item"
+      "runesword:frost_rune"
     ]
   },
   "criteria": {
@@ -12,7 +12,7 @@
         "items": [
           {
             "items": [
-              "runesword:water_rune_item"
+              "runesword:water_rune"
             ]
           }
         ]
@@ -24,7 +24,7 @@
         "items": [
           {
             "items": [
-              "runesword:air_rune_item"
+              "runesword:air_rune"
             ]
           }
         ]
@@ -33,7 +33,7 @@
     "has_the_recipe": {
       "trigger": "minecraft:recipe_unlocked",
       "conditions": {
-        "recipe": "runesword:frost_rune_item"
+        "recipe": "runesword:frost_rune"
       }
     }
   },

@@ -1,7 +1,10 @@
 package mod.vemerion.runesword.datagen;
 
 import mod.vemerion.runesword.Main;
-import mod.vemerion.runesword.item.RuneItem;
+import mod.vemerion.runesword.init.ModBlocks;
+import mod.vemerion.runesword.init.ModEffects;
+import mod.vemerion.runesword.init.ModEntities;
+import mod.vemerion.runesword.init.ModItems;
 import net.minecraft.data.DataGenerator;
 import net.minecraftforge.common.data.LanguageProvider;
 
@@ -15,19 +18,19 @@ public class ModLanguageProvider extends LanguageProvider {
 	protected void addTranslations() {
 		addGui("no_sword", "Insert valid item into runeforge");
 		addGui("slot_locked", "Slot locked");
-		add(Main.RUNEFORGE_BLOCK, "Runeforge");
-		add(RuneItem.AIR_RUNE_ITEM, "Air Rune");
-		add(RuneItem.FIRE_RUNE_ITEM, "Fire Rune");
-		add(RuneItem.WATER_RUNE_ITEM, "Water Rune");
-		add(RuneItem.EARTH_RUNE_ITEM, "Earth Rune");
-		add(RuneItem.BLOOD_RUNE_ITEM, "Blood Rune");
-		add(RuneItem.FROST_RUNE_ITEM, "Frost Rune");
-		add(RuneItem.MAGIC_RUNE_ITEM, "Magic Rune");
+		add(ModBlocks.RUNEFORGE.get(), "Runeforge");
+		add(ModItems.AIR_RUNE.get(), "Air Rune");
+		add(ModItems.FIRE_RUNE.get(), "Fire Rune");
+		add(ModItems.WATER_RUNE.get(), "Water Rune");
+		add(ModItems.EARTH_RUNE.get(), "Earth Rune");
+		add(ModItems.BLOOD_RUNE.get(), "Blood Rune");
+		add(ModItems.FROST_RUNE.get(), "Frost Rune");
+		add(ModItems.MAGIC_RUNE.get(), "Magic Rune");
 		addText("tooltip", "minor", "Minor: ");
 		addText("tooltip", "major", "Major: ");
-		add(Main.GUIDE_ITEM, "Runesword Guide");
+		add(ModItems.GUIDE.get(), "Runesword Guide");
 		add("itemGroup." + Main.MODID, "Runesword");
-		add(Main.BLEED_EFFECT, "Bleed");
+		add(ModEffects.BLEED.get(), "Bleed");
 		addGui("guide", "Runesword");
 		addGui("home", "Home");
 		addGui("mute", "Mute Guide Sounds");
@@ -36,9 +39,9 @@ public class ModLanguageProvider extends LanguageProvider {
 		addText("death.attack", "magicindirect", "%1$s was magicked to death by %2$s");
 		addText("death.attack", "magic", "%1$s was magicked to death");
 		addText("death.attack", "bleed", "%1$s bled to death");
-		add(Main.FROST_GOLEM_ENTITY, "Frost Golem");
-		add(Main.FROSTBALL_ENTITY, "Frostball");
-		add(Main.MAGIC_BALL_ENTITY, "Magic Ball");
+		add(ModEntities.FROST_GOLEM.get(), "Frost Golem");
+		add(ModEntities.FROSTBALL.get(), "Frostball");
+		add(ModEntities.MAGIC_BALL.get(), "Magic Ball");
 		guide();
 	}
 
@@ -146,7 +149,8 @@ public class ModLanguageProvider extends LanguageProvider {
 
 		addGui("fire.axe.minor", "Minor: Increase block break speed, but chance to catch fire when chopping wood.");
 		addGui("fire.axe.major", "Major: The axe is more effective in the Nether, but ONLY works in the Nether.");
-		addGui("fire.axe.minorenchant1", "Fire Aspect: Further increase break speed, but also increase chance to catch fire.");
+		addGui("fire.axe.minorenchant1",
+				"Fire Aspect: Further increase break speed, but also increase chance to catch fire.");
 		addGui("fire.axe.minorenchant2", "Flame: Further increase break speed if you are on fire.");
 		addGui("fire.axe.minorenchant3", "Aqua Affinity: Reduce chance to catch fire.");
 		addGui("fire.axe.majorenchant1", "Efficiency: Further increase break speed if in the Nether.");

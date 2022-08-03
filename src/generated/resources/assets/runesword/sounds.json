@@ -4,14 +4,14 @@
       "runesword:guide_click"
     ]
   },
-  "projectile_impact_sound": {
+  "projectile_impact": {
     "sounds": [
-      "runesword:projectile_impact_sound"
+      "runesword:projectile_impact"
     ]
   },
-  "projectile_launch_sound": {
+  "projectile_launch": {
     "sounds": [
-      "runesword:projectile_launch_sound"
+      "runesword:projectile_launch"
     ]
   }
 }

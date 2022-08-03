@@ -3,6 +3,7 @@ package mod.vemerion.runesword;
 import mod.vemerion.runesword.capability.EntityRuneData;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.effect.BleedEffect;
+import mod.vemerion.runesword.init.ModEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -37,7 +38,7 @@ public class ForgeEventSubscriber {
 		LivingEntity entity = event.getEntityLiving();
 		Level level = entity.level;
 		if (!level.isClientSide) {
-			boolean isBleeding = entity.hasEffect(Main.BLEED_EFFECT);
+			boolean isBleeding = entity.hasEffect(ModEffects.BLEED.get());
 			EntityRuneData.get(entity).ifPresent(d -> {
 				if (isBleeding != d.isBleeding())
 					EntityRuneData.synchBleeding(entity);

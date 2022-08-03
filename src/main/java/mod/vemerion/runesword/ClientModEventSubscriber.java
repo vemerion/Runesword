@@ -1,5 +1,10 @@
 package mod.vemerion.runesword;
 
+import mod.vemerion.runesword.init.ModBlockEntities;
+import mod.vemerion.runesword.init.ModBlocks;
+import mod.vemerion.runesword.init.ModEntities;
+import mod.vemerion.runesword.init.ModMenus;
+import mod.vemerion.runesword.init.ModParticles;
 import mod.vemerion.runesword.item.RuneItem;
 import mod.vemerion.runesword.particle.BleedParticle;
 import mod.vemerion.runesword.particle.MagicBallParticle;
@@ -28,27 +33,27 @@ public class ClientModEventSubscriber {
 
 	@SubscribeEvent
 	public static void onClientSetupEvent(FMLClientSetupEvent event) {
-		ItemBlockRenderTypes.setRenderLayer(Main.RUNEFORGE_BLOCK, RenderType.cutout());
+		ItemBlockRenderTypes.setRenderLayer(ModBlocks.RUNEFORGE.get(), RenderType.cutout());
 
 		event.enqueueWork(() -> {
-			MenuScreens.register(Main.RUNEFORGE_MENU, RuneforgeScreen::new);
+			MenuScreens.register(ModMenus.RUNEFORGE.get(), RuneforgeScreen::new);
 		});
 	}
 
 	@SubscribeEvent
 	public static void onRegisterEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
-		event.registerBlockEntityRenderer(Main.RUNEFORGE_BLOCK_ENTITY, RuneforgeBlockEntityRenderer::new);
+		event.registerBlockEntityRenderer(ModBlockEntities.RUNEFORGE.get(), RuneforgeBlockEntityRenderer::new);
 
-		event.registerEntityRenderer(Main.FROST_GOLEM_ENTITY, SnowGolemRenderer::new);
-		event.registerEntityRenderer(Main.MAGIC_BALL_ENTITY, NoRenderer::new);
-		event.registerEntityRenderer(Main.FROSTBALL_ENTITY, r -> new ThrownItemRenderer<>(r));
+		event.registerEntityRenderer(ModEntities.FROST_GOLEM.get(), SnowGolemRenderer::new);
+		event.registerEntityRenderer(ModEntities.MAGIC_BALL.get(), NoRenderer::new);
+		event.registerEntityRenderer(ModEntities.FROSTBALL.get(), r -> new ThrownItemRenderer<>(r));
 	}
 
 	@SubscribeEvent
 	public static void onRegisterParticleFactory(ParticleFactoryRegisterEvent event) {
 		Minecraft mc = Minecraft.getInstance();
-		mc.particleEngine.register(Main.MAGIC_BALL_PARTICLE, (s) -> new MagicBallParticle.Provider(s));
-		mc.particleEngine.register(Main.BLEED_PARTICLE, (s) -> new BleedParticle.Provider(s));
+		mc.particleEngine.register(ModParticles.MAGIC_BALL.get(), (s) -> new MagicBallParticle.Provider(s));
+		mc.particleEngine.register(ModParticles.BLEED.get(), (s) -> new BleedParticle.Provider(s));
 	}
 
 	@SubscribeEvent

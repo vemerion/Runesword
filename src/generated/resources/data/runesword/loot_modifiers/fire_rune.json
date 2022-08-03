@@ -13,5 +13,5 @@
       "loot_table_id": "minecraft:entities/blaze"
     }
   ],
-  "type": "runesword:fire_rune_loot_modifier"
+  "type": "runesword:fire_rune"
 }

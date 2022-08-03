@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.capability;
 
 import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.init.ModEffects;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncBleedingMessage;
 import net.minecraft.core.Direction;
@@ -59,12 +60,12 @@ public class EntityRuneData implements INBTSerializable<CompoundTag> {
 
 	public static void synchBleeding(LivingEntity e) {
 		Network.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> e),
-				new SyncBleedingMessage(e.hasEffect(Main.BLEED_EFFECT), e.getId()));
+				new SyncBleedingMessage(e.hasEffect(ModEffects.BLEED.get()), e.getId()));
 	}
 
 	public static void synchBleeding(Player player, LivingEntity e) {
 		Network.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player),
-				new SyncBleedingMessage(e.hasEffect(Main.BLEED_EFFECT), e.getId()));
+				new SyncBleedingMessage(e.hasEffect(ModEffects.BLEED.get()), e.getId()));
 	}
 
 	@EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
