@@ -9,6 +9,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.guide.GuideChapter;
 import mod.vemerion.runesword.init.ModSounds;
+import mod.vemerion.runesword.network.GuideMessage;
+import mod.vemerion.runesword.network.Network;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
@@ -45,12 +47,27 @@ public class GuideScreen extends Screen {
 	private boolean canPageDown;
 	private final GuideChapter startChapter;
 	private int left, top;
+	private String id;
 	private boolean mute;
 
 	public GuideScreen(GuideChapter startChapter) {
+		this(startChapter, GuideMessage.DUMMY);
+	}
+
+	public GuideScreen(GuideChapter startChapter, GuideMessage message) {
 		super(startChapter.getTitle());
 		this.startChapter = startChapter;
 		this.current = startChapter;
+		this.id = message.getId();
+		this.mute = message.isMute();
+	}
+
+	@Override
+	public void onClose() {
+		super.onClose();
+
+		if (id != null)
+			Network.INSTANCE.sendToServer(new GuideMessage(id, mute));
 	}
 
 	private void gotoChapter(GuideChapter chapter) {

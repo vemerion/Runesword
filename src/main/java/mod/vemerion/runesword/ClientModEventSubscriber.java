@@ -1,5 +1,7 @@
 package mod.vemerion.runesword;
 
+import mod.vemerion.runesword.api.RuneswordAPI;
+import mod.vemerion.runesword.guide.GuideChapters;
 import mod.vemerion.runesword.init.ModBlockEntities;
 import mod.vemerion.runesword.init.ModBlocks;
 import mod.vemerion.runesword.init.ModEntities;
@@ -37,6 +39,7 @@ public class ClientModEventSubscriber {
 
 		event.enqueueWork(() -> {
 			MenuScreens.register(ModMenus.RUNEFORGE.get(), RuneforgeScreen::new);
+			RuneswordAPI.guide.registerGuide(Main.MODID, GuideChapters.getStartChapter());
 		});
 	}
 

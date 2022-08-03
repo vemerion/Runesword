@@ -1,7 +1,7 @@
 package mod.vemerion.runesword.item;
 
+import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.api.RuneswordAPI;
-import mod.vemerion.runesword.guide.GuideChapters;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -18,8 +18,8 @@ public class GuideItem extends Item {
 	@Override
 	public InteractionResultHolder<ItemStack> use(Level level, Player playerIn, InteractionHand handIn) {
 		ItemStack itemstack = playerIn.getItemInHand(handIn);
-		if (level.isClientSide)
-			RuneswordAPI.guide.openGuide(GuideChapters.getStartChapter());
+		if (!level.isClientSide)
+			RuneswordAPI.guide.openGuide(playerIn, Main.MODID);
 
 		return InteractionResultHolder.sidedSuccess(itemstack, level.isClientSide);
 

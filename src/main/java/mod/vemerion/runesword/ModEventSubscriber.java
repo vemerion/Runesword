@@ -2,10 +2,12 @@ package mod.vemerion.runesword;
 
 import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.capability.EntityRuneData;
+import mod.vemerion.runesword.capability.GuideData;
 import mod.vemerion.runesword.capability.Runes;
 import mod.vemerion.runesword.guide.Guide;
 import mod.vemerion.runesword.init.ModEntities;
 import mod.vemerion.runesword.network.AxeMagicPowersMessage;
+import mod.vemerion.runesword.network.GuideMessage;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncBleedingMessage;
 import net.minecraft.resources.ResourceLocation;
@@ -29,6 +31,8 @@ public class ModEventSubscriber {
 				AxeMagicPowersMessage::decode, AxeMagicPowersMessage::handle);
 		Network.INSTANCE.registerMessage(1, SyncBleedingMessage.class, SyncBleedingMessage::encode,
 				SyncBleedingMessage::decode, SyncBleedingMessage::handle);
+		Network.INSTANCE.registerMessage(2, GuideMessage.class, GuideMessage::encode,
+				GuideMessage::decode, GuideMessage::handle);
 	}
 
 	@SubscribeEvent
@@ -40,6 +44,7 @@ public class ModEventSubscriber {
 	public static void registerCapabilities(RegisterCapabilitiesEvent event) {
 		event.register(Runes.class);
 		event.register(EntityRuneData.class);
+		event.register(GuideData.class);
 	}
 
 	public static <T extends IForgeRegistryEntry<T>> T setup(final T entry, final String name) {
