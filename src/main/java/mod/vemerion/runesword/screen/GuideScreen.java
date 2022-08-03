@@ -20,6 +20,7 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 
 public class GuideScreen extends Screen {
 
@@ -75,6 +76,11 @@ public class GuideScreen extends Screen {
 		page = 0;
 	}
 
+	private void goBack() {
+		if (current != null && current.getParent() != null)
+			gotoChapter(current.getParent());
+	}
+
 	@Override
 	protected void init() {
 		left = (width - X_SIZE) / 2;
@@ -108,8 +114,7 @@ public class GuideScreen extends Screen {
 
 		addRenderableWidget(new GuideButton(left - 2 - BUTTON_SIZE, top + Y_SIZE - BUTTON_SIZE, BUTTON_SIZE,
 				BUTTON_SIZE, 0, 0, 32, BACK_BUTTON, 256, 256, b -> {
-					if (current != null && current.getParent() != null)
-						gotoChapter(current.getParent());
+					goBack();
 				}, (b, m, mouseX, mouseY) -> renderComponentTooltip(m, Arrays.asList(b.getMessage()), mouseX, mouseY,
 						minecraft.font),
 				new TranslatableComponent("gui." + Main.MODID + ".back")) {
@@ -140,8 +145,26 @@ public class GuideScreen extends Screen {
 								.play(SimpleSoundInstance.forUI(ModSounds.GUIDE_CLICK.get(), 1.0F));
 				})) {
 			return true;
+		} else if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
+			goBack();
 		}
 		return false;
+	}
+
+	@Override
+	public boolean mouseScrolled(double pMouseX, double pMouseY, double pDelta) {
+		if (super.mouseScrolled(pMouseX, pMouseY, pDelta)) {
+			return true;
+		}
+
+		pDelta = Mth.clamp(pDelta, -1, 1);
+
+		if (pDelta < 0 && canPageDown)
+			page++;
+		else if (pDelta > 0 && page != 0)
+			page--;
+
+		return true;
 	}
 
 	@Override

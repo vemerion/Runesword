@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
@@ -94,7 +95,7 @@ public class GuideChapter implements IGuideChapter {
 			Consumer<GuideChapter> changeChapter) {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
-			if (isInside(x, y, ICON_SIZE, mouseX, mouseY) && button == 0 && isInsideScreen(y, ICON_SIZE, top, height)) {
+			if (isInside(x, y, ICON_SIZE, mouseX, mouseY) && button == InputConstants.MOUSE_BUTTON_LEFT && isInsideScreen(y, ICON_SIZE, top, height)) {
 				changeChapter.accept(children.get(i));
 				return true;
 			}
