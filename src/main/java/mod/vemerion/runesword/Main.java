@@ -1,5 +1,7 @@
 package mod.vemerion.runesword;
 
+import mod.vemerion.runesword.api.RuneswordAPI;
+import mod.vemerion.runesword.guide.Guide;
 import mod.vemerion.runesword.init.ModBlockEntities;
 import mod.vemerion.runesword.init.ModBlocks;
 import mod.vemerion.runesword.init.ModEffects;
@@ -21,6 +23,8 @@ public class Main {
 	public static final String MODID = "runesword";
 	
 	public Main() {
+		RuneswordAPI.guide = new Guide();
+		
 		var bus = FMLJavaModLoadingContext.get().getModEventBus();
 		ModBlocks.BLOCKS.register(bus);
 		ModBlockEntities.BLOCK_ENTITIES.register(bus);

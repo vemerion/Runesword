@@ -1,0 +1,1068 @@
+{
+  "item_icon": "runesword:guide",
+  "title": {
+    "type": "header",
+    "key": "gui.runesword.guide"
+  },
+  "components": [
+    {
+      "type": "paragraph",
+      "key": "gui.runesword.intro"
+    }
+  ],
+  "children": [
+    {
+      "item_icon": "runesword:runeforge",
+      "title": {
+        "type": "header",
+        "key": "block.runesword.runeforge"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.runeforge1"
+        },
+        {
+          "type": "image",
+          "width": 518,
+          "height": 265,
+          "key": "runesword:textures/guide/runeforge_crafting.png"
+        },
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.runeforge2"
+        },
+        {
+          "type": "image",
+          "width": 176,
+          "height": 166,
+          "key": "runesword:textures/guide/runeforge.png"
+        },
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.runeforge3"
+        },
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.runeforge4"
+        }
+      ],
+      "children": []
+    },
+    {
+      "item_icon": "minecraft:enchanting_table",
+      "title": {
+        "type": "header",
+        "key": "gui.runesword.enchanting"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.enchantingtext"
+        }
+      ],
+      "children": []
+    },
+    {
+      "item_icon": "runesword:blood_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.blood_rune"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.blood.obtain"
+        }
+      ],
+      "children": [
+        {
+          "item_icon": "minecraft:netherite_sword",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.swordpowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.sword.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.sword.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.sword.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.sword.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.sword.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.sword.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.sword.majorenchant2"
+            }
+          ],
+          "children": []
+        },
+        {
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.axe.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.axe.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.axe.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.axe.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.axe.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.axe.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.blood.axe.majorenchant2"
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "item_icon": "runesword:air_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.air_rune"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.air.obtain"
+        }
+      ],
+      "children": [
+        {
+          "item_icon": "minecraft:netherite_sword",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.swordpowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.sword.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.sword.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.sword.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.sword.minorenchant2"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.sword.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.sword.majorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.sword.majorenchant3"
+            }
+          ],
+          "children": []
+        },
+        {
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.axe.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.axe.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.axe.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.axe.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.axe.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.axe.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.air.axe.majorenchant2"
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "item_icon": "runesword:earth_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.earth_rune"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.earth.obtain"
+        }
+      ],
+      "children": [
+        {
+          "item_icon": "minecraft:netherite_sword",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.swordpowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.sword.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.sword.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.sword.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.sword.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.sword.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.sword.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.sword.majorenchant2"
+            }
+          ],
+          "children": []
+        },
+        {
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.axe.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.axe.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.axe.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.axe.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.axe.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.axe.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.earth.axe.majorenchant2"
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "item_icon": "runesword:water_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.water_rune"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.water.obtain"
+        }
+      ],
+      "children": [
+        {
+          "item_icon": "minecraft:netherite_sword",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.swordpowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.sword.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.sword.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.sword.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.sword.minorenchant2"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.sword.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.sword.majorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.sword.majorenchant3"
+            }
+          ],
+          "children": []
+        },
+        {
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.axe.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.axe.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.axe.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.axe.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.axe.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.axe.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.water.axe.majorenchant2"
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "item_icon": "runesword:fire_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.fire_rune"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.fire.obtain"
+        }
+      ],
+      "children": [
+        {
+          "item_icon": "minecraft:netherite_sword",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.swordpowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.sword.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.sword.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.sword.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.sword.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.sword.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.sword.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.sword.majorenchant2"
+            }
+          ],
+          "children": []
+        },
+        {
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.axe.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.axe.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.axe.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.axe.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.axe.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.axe.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.fire.axe.majorenchant2"
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "item_icon": "runesword:frost_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.frost_rune"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.frost.obtain"
+        }
+      ],
+      "children": [
+        {
+          "item_icon": "minecraft:netherite_sword",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.swordpowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.minorenchant3"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.majorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.sword.majorenchant3"
+            }
+          ],
+          "children": []
+        },
+        {
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.minorenchant2"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.majorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.majorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.majorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.majorenchant3"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.frost.axe.majorenchant4"
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "item_icon": "runesword:magic_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.magic_rune"
+      },
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.magic.obtain"
+        },
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.magic.text"
+        }
+      ],
+      "children": [
+        {
+          "item_icon": "minecraft:netherite_sword",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.swordpowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant3"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant4"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant5"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant6"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant7"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant8"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant9"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant10"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant11"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant12"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant13"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant14"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant15"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant16"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant17"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant18"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant19"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant20"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant21"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant22"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant23"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant24"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant25"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant26"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant27"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant28"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant29"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant30"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant31"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant32"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant33"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant34"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant35"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.sword.minorenchant36"
+            }
+          ],
+          "children": []
+        },
+        {
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          },
+          "components": [
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minor"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.major"
+            },
+            {
+              "type": "header",
+              "key": "gui.runesword.minorenchants"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant1"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant2"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant3"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant4"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant5"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant6"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant7"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant8"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant9"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant10"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant11"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant12"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant13"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant14"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant15"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant16"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant17"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant18"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant19"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant20"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant21"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant22"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant23"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant24"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant25"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant26"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant27"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant28"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant29"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant30"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant31"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant32"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant33"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant34"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant35"
+            },
+            {
+              "type": "paragraph",
+              "key": "gui.runesword.magic.axe.minorenchant36"
+            }
+          ],
+          "children": []
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -16,8 +19,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 
@@ -62,7 +67,7 @@ public class GuideChapter implements IGuideChapter {
 
 	@Override
 	public GuideChapter addText(String translationKey) {
-		components.add(new TextComponent(new TranslatableComponent(translationKey)));
+		components.add(new ParagraphComponent(new TranslatableComponent(translationKey)));
 		return this;
 	}
 
@@ -190,17 +195,89 @@ public class GuideChapter implements IGuideChapter {
 		return y >= top && y + size < top + height;
 	}
 
-	private static interface ChapterComponent {
-		int render(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height);
+	public JsonObject write() {
+		JsonObject json = new JsonObject();
+
+		if (itemIcon != null)
+			json.addProperty("item_icon", itemIcon.asItem().getRegistryName().toString());
+		else {
+			json.addProperty("image_icon", rlIcon.toString());
+		}
+
+		json.add("title", title.write());
+
+		JsonArray compontentArray = new JsonArray();
+
+		for (var component : components)
+			compontentArray.add(component.write());
+
+		json.add("components", compontentArray);
+
+		JsonArray childArray = new JsonArray();
+		for (var child : children)
+			childArray.add(child.write());
+
+		json.add("children", childArray);
+
+		return json;
 	}
 
-	private static class TextComponent implements ChapterComponent {
+	public static GuideChapter read(JsonObject json) {
+		GuideChapter result = null;
+		Component titleComp = null;
+		if (ChapterComponent.read(GsonHelper.getAsJsonObject(json, "title")) instanceof HeaderComponent header)
+			titleComp = header.text;
+		else
+			throw new JsonParseException("Guide chapter has invalid title type");
+
+		if (json.has("item_icon"))
+			result = new GuideChapter(GsonHelper.getAsItem(json, "item_icon"), titleComp);
+		else if (json.has("image_icon"))
+			result = new GuideChapter(new ResourceLocation(GsonHelper.getAsString(json, "image_icon")), titleComp);
+		else
+			throw new JsonParseException("Guide chapter must have an icon");
+
+		for (var jsonComp : GsonHelper.getAsJsonArray(json, "components")) {
+			var comp = ChapterComponent.read(GsonHelper.convertToJsonObject(jsonComp, "component"));
+			if (comp == null)
+				throw new JsonParseException("Guide chapter has an unknown component type");
+			result.components.add(comp);
+		}
+
+		for (var child : GsonHelper.getAsJsonArray(json, "children"))
+			result.addChild(read(GsonHelper.convertToJsonObject(child, "child")));
+
+		return result;
+	}
+
+	private static interface ChapterComponent {
+		int render(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height);
+
+		JsonObject write();
+
+		static ChapterComponent read(JsonObject json) {
+			switch (GsonHelper.getAsString(json, "type")) {
+			case "paragraph":
+				return new ParagraphComponent(new TranslatableComponent(GsonHelper.getAsString(json, "key")));
+			case "header":
+				return new HeaderComponent(
+						json.has("key") ? new TranslatableComponent(GsonHelper.getAsString(json, "key"))
+								: new TextComponent(GsonHelper.getAsString(json, "string")));
+			case "image":
+				return new ImageComponent(new ResourceLocation(GsonHelper.getAsString(json, "key")),
+						GsonHelper.getAsInt(json, "width"), GsonHelper.getAsInt(json, "height"));
+			}
+			return null;
+		}
+	}
+
+	private static class ParagraphComponent implements ChapterComponent {
 
 		private static final int COLOR = Color.BLACK.getRGB();
 
-		private Component text;
+		private TranslatableComponent text;
 
-		private TextComponent(Component text) {
+		private ParagraphComponent(TranslatableComponent text) {
 			this.text = text;
 		}
 
@@ -214,6 +291,15 @@ public class GuideChapter implements IGuideChapter {
 				y += font.lineHeight;
 			}
 			return y;
+		}
+
+		@Override
+		public JsonObject write() {
+			JsonObject json = new JsonObject();
+			json.addProperty("type", "paragraph");
+			json.addProperty("key", text.getKey());
+
+			return json;
 		}
 
 	}
@@ -244,6 +330,19 @@ public class GuideChapter implements IGuideChapter {
 				poseStack.popPose();
 			}
 			return y + 2;
+		}
+
+		@Override
+		public JsonObject write() {
+			JsonObject json = new JsonObject();
+			json.addProperty("type", "header");
+
+			if (text instanceof TranslatableComponent TranslatableComp)
+				json.addProperty("key", TranslatableComp.getKey());
+			else
+				json.addProperty("string", text.getContents());
+
+			return json;
 		}
 
 	}
@@ -298,6 +397,17 @@ public class GuideChapter implements IGuideChapter {
 			Screen.blit(poseStack, x + width / 2 - drawWidth / 2, drawY, drawWidth, drawHeight, 0, v, imgWidth, vHeight,
 					imgWidth, imgHeight);
 			return y + offset;
+		}
+
+		@Override
+		public JsonObject write() {
+			JsonObject json = new JsonObject();
+			json.addProperty("type", "image");
+			json.addProperty("width", imgWidth);
+			json.addProperty("height", imgHeight);
+			json.addProperty("key", image.toString());
+
+			return json;
 		}
 
 	}

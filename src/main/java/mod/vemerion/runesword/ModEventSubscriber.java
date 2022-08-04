@@ -1,10 +1,8 @@
 package mod.vemerion.runesword;
 
-import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.capability.EntityRuneData;
 import mod.vemerion.runesword.capability.GuideData;
 import mod.vemerion.runesword.capability.Runes;
-import mod.vemerion.runesword.guide.Guide;
 import mod.vemerion.runesword.init.ModEntities;
 import mod.vemerion.runesword.network.AxeMagicPowersMessage;
 import mod.vemerion.runesword.network.GuideMessage;
@@ -25,8 +23,6 @@ public class ModEventSubscriber {
 
 	@SubscribeEvent
 	public static void setup(FMLCommonSetupEvent event) {
-		RuneswordAPI.guide = new Guide();
-
 		Network.INSTANCE.registerMessage(0, AxeMagicPowersMessage.class, AxeMagicPowersMessage::encode,
 				AxeMagicPowersMessage::decode, AxeMagicPowersMessage::handle);
 		Network.INSTANCE.registerMessage(1, SyncBleedingMessage.class, SyncBleedingMessage::encode,

@@ -140,7 +140,7 @@ public class EarthRuneItem extends RuneItem {
 			ItemStack drop = new ItemStack(DROPS.get(player.getRandom().nextInt(DROPS.size())));
 
 			// Rare ores
-			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.MOB_LOOTING, runes) * 0.01) {
+			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.MOB_LOOTING, runes) * 0.005) {
 				drop = new ItemStack(LOOTING_DROPS.get(player.getRandom().nextInt(LOOTING_DROPS.size())));
 			}
 

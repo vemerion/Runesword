@@ -1,6 +1,8 @@
 package mod.vemerion.runesword.datagen;
 
 import mod.vemerion.runesword.Main;
+import mod.vemerion.runesword.api.RuneswordAPI;
+import mod.vemerion.runesword.guide.GuideChapters;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -29,6 +31,8 @@ public class EventSubscriber {
 			generator.addProvider(new ModBlockStateProvider(generator, existingFileHelper));
 			generator.addProvider(new ModItemModelProvider(generator, existingFileHelper));
 			generator.addProvider(new ModSoundProvider(generator, existingFileHelper));
+			generator.addProvider(
+					RuneswordAPI.guide.guideProvider(generator, Main.MODID, "guide", GuideChapters.getStartChapter()));
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package mod.vemerion.runesword;
 
-import mod.vemerion.runesword.api.RuneswordAPI;
-import mod.vemerion.runesword.guide.GuideChapters;
+import mod.vemerion.runesword.guide.GuideReloadListener;
 import mod.vemerion.runesword.init.ModBlockEntities;
 import mod.vemerion.runesword.init.ModBlocks;
 import mod.vemerion.runesword.init.ModEntities;
@@ -26,6 +25,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ColorHandlerEvent;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -39,8 +39,12 @@ public class ClientModEventSubscriber {
 
 		event.enqueueWork(() -> {
 			MenuScreens.register(ModMenus.RUNEFORGE.get(), RuneforgeScreen::new);
-			RuneswordAPI.guide.registerGuide(Main.MODID, GuideChapters.getStartChapter());
 		});
+	}
+
+	@SubscribeEvent
+	public static void onClientSetupEvent(RegisterClientReloadListenersEvent event) {
+		event.registerReloadListener(new GuideReloadListener());
 	}
 
 	@SubscribeEvent
