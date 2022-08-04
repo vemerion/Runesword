@@ -2,6 +2,7 @@ package mod.vemerion.runesword.guide;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -9,6 +10,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 
+import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.api.IGuideChapter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -21,13 +23,16 @@ import net.minecraft.world.level.ItemLike;
 
 public class GuideChapter implements IGuideChapter {
 
-	private static final int ICON_SIZE = 16;
+	public static final int ICON_SIZE = 16;
 	private static final int COMPONENT_PADDING = 6;
+
+	private static final Component SEPARATOR = new TranslatableComponent("gui." + Main.MODID + ".separator");
 
 	private ItemLike itemIcon;
 	private ResourceLocation rlIcon;
 	private HeaderComponent title;
 	private GuideChapter parent;
+	private int id;
 	private List<GuideChapter> children = new ArrayList<>();
 	private List<ChapterComponent> components = new ArrayList<>();
 
@@ -78,13 +83,43 @@ public class GuideChapter implements IGuideChapter {
 			throw new IllegalArgumentException("GuidebookChapter is only allowed to have one parent!");
 		this.parent = parent;
 	}
-	
+
 	public GuideChapter getParent() {
 		return parent;
 	}
 
+	public List<GuideChapter> getChildren() {
+		return children;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	public Component getTitle() {
 		return title.text;
+	}
+
+	public Component getPath() {
+		if (parent == null)
+			return getTitle();
+
+		var chapters = new LinkedList<GuideChapter>();
+		chapters.push(this);
+		while (chapters.peek().parent != null)
+			chapters.push(chapters.peek().parent);
+
+		var path = chapters.pop().getTitle().copy();
+		while (!chapters.isEmpty()) {
+			path.append(SEPARATOR);
+			path.append(chapters.pop().getTitle());
+		}
+
+		return path;
 	}
 
 	public void renderTitle(PoseStack poseStack, Minecraft mc, int x, int y, int width, int height) {
@@ -95,7 +130,8 @@ public class GuideChapter implements IGuideChapter {
 			Consumer<GuideChapter> changeChapter) {
 		int left = x;
 		for (int i = 0; i < children.size(); i++) {
-			if (isInside(x, y, ICON_SIZE, mouseX, mouseY) && button == InputConstants.MOUSE_BUTTON_LEFT && isInsideScreen(y, ICON_SIZE, top, height)) {
+			if (isInside(x, y, ICON_SIZE, mouseX, mouseY) && button == InputConstants.MOUSE_BUTTON_LEFT
+					&& isInsideScreen(y, ICON_SIZE, top, height)) {
 				changeChapter.accept(children.get(i));
 				return true;
 			}
@@ -114,7 +150,7 @@ public class GuideChapter implements IGuideChapter {
 		for (int i = 0; i < children.size(); i++) {
 			GuideChapter c = children.get(i);
 			if (isInsideScreen(y, ICON_SIZE, top, height))
-				c.renderIcon(poseStack, mc, x, y, width, height, mouseX, mouseY);
+				c.renderIcon(poseStack, mc, x, y, width, height, mouseX, mouseY, true);
 			x += ICON_SIZE;
 			if (x + ICON_SIZE > left + width && i + 1 != children.size()) {
 				x = left;
@@ -130,9 +166,9 @@ public class GuideChapter implements IGuideChapter {
 		return y;
 	}
 
-	private void renderIcon(PoseStack poseStack, Minecraft mc, int x, int y, int width, int height, int mouseX,
-			int mouseY) {
-		if (isInside(x, y, ICON_SIZE, mouseX, mouseY)) {
+	public void renderIcon(PoseStack poseStack, Minecraft mc, int x, int y, int width, int height, int mouseX,
+			int mouseY, boolean hoverText) {
+		if (hoverText && isInside(x, y, ICON_SIZE, mouseX, mouseY)) {
 			mc.screen.renderTooltip(poseStack, title.text, mouseX, mouseY);
 		}
 

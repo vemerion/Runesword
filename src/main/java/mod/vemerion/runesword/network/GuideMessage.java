@@ -16,23 +16,26 @@ import net.minecraftforge.network.NetworkEvent;
 
 public class GuideMessage {
 
-	public static final GuideMessage DUMMY = new GuideMessage(null, false);
+	public static final GuideMessage DUMMY = new GuideMessage(null, false, new int[GuideData.BOOKMARKS_COUNT]);
 
 	private String id;
 	private boolean mute;
+	private int[] bookmarks;
 
-	public GuideMessage(String id, boolean mute) {
+	public GuideMessage(String id, boolean mute, int[] bookmarks) {
 		this.id = id;
 		this.mute = mute;
+		this.bookmarks = bookmarks;
 	}
 
 	public void encode(final FriendlyByteBuf buffer) {
 		buffer.writeUtf(id);
 		buffer.writeBoolean(mute);
+		buffer.writeVarIntArray(bookmarks);
 	}
 
 	public static GuideMessage decode(final FriendlyByteBuf buffer) {
-		return new GuideMessage(buffer.readUtf(), buffer.readBoolean());
+		return new GuideMessage(buffer.readUtf(), buffer.readBoolean(), buffer.readVarIntArray());
 	}
 
 	public void handle(final Supplier<NetworkEvent.Context> supplier) {
@@ -54,6 +57,10 @@ public class GuideMessage {
 
 	public boolean isMute() {
 		return mute;
+	}
+
+	public int[] getBookmarks() {
+		return bookmarks;
 	}
 
 	private static class Handle {

@@ -36,6 +36,8 @@ public class ModLanguageProvider extends LanguageProvider {
 		addGui("mute", "Mute Guide Sounds");
 		addGui("unmute", "Unmute Guide Sounds");
 		addGui("back", "Back");
+		addGui("separator", "/");
+		addGui("empty_bookmark", "Click to bookmark chapter");
 		addText("death.attack", "magicplayer", "%1$s was magicked to death by %2$s");
 		addText("death.attack", "magicindirect", "%1$s was magicked to death by %2$s");
 		addText("death.attack", "magic", "%1$s was magicked to death");
