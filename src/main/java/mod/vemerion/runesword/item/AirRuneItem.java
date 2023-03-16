@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.item;
 
 import java.awt.Color;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
@@ -43,7 +44,7 @@ public class AirRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 				Set<ItemStack> runes) {
 			boolean isLeave = state.is(BlockTags.LEAVES);
 			boolean hasSilkTouch = getEnchantmentLevel(Enchantments.SILK_TOUCH, runes) > 0;

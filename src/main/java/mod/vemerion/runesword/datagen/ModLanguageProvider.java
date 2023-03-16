@@ -5,13 +5,13 @@ import mod.vemerion.runesword.init.ModBlocks;
 import mod.vemerion.runesword.init.ModEffects;
 import mod.vemerion.runesword.init.ModEntities;
 import mod.vemerion.runesword.init.ModItems;
-import net.minecraft.data.DataGenerator;
+import net.minecraft.data.PackOutput;
 import net.minecraftforge.common.data.LanguageProvider;
 
 public class ModLanguageProvider extends LanguageProvider {
 
-	public ModLanguageProvider(DataGenerator gen) {
-		super(gen, Main.MODID, "en_us");
+	public ModLanguageProvider(PackOutput output) {
+		super(output, Main.MODID, "en_us");
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package mod.vemerion.runesword.effect;
 
 import java.util.List;
-import java.util.Random;
 
 import com.google.common.collect.ImmutableList;
 
@@ -32,7 +31,7 @@ public class BleedEffect extends MobEffect {
 	}
 
 	public static void addBleedingParticles(LivingEntity entity) {
-		Random rand = entity.getRandom();
+		var rand = entity.getRandom();
 		for (int i = 0; i < 5; i++) {
 			Vec3 position = Helper.randomInBox(rand, entity.getBoundingBox());
 			entity.level.addParticle(ModParticles.BLEED.get(), position.x, position.y, position.z, 0, 0, 0);

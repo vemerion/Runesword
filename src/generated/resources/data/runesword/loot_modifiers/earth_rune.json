@@ -1,8 +1,9 @@
 {
+  "type": "runesword:rune",
   "conditions": [
     {
-      "condition": "minecraft:random_chance",
-      "chance": 0.07
+      "chance": 0.07,
+      "condition": "minecraft:random_chance"
     },
     {
       "condition": "minecraft:alternative",
@@ -22,5 +23,5 @@
       ]
     }
   ],
-  "type": "runesword:earth_rune"
+  "item": "runesword:earth_rune"
 }

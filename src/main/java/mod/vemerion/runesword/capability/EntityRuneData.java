@@ -1,12 +1,10 @@
 package mod.vemerion.runesword.capability;
 
-import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.init.ModEffects;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncBleedingMessage;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,10 +15,6 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.network.PacketDistributor;
 
 public class EntityRuneData implements INBTSerializable<CompoundTag> {
@@ -68,15 +62,7 @@ public class EntityRuneData implements INBTSerializable<CompoundTag> {
 				new SyncBleedingMessage(e.hasEffect(ModEffects.BLEED.get()), e.getId()));
 	}
 
-	@EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
 	public static class Provider implements ICapabilitySerializable<CompoundTag> {
-		private static final ResourceLocation SAVE_LOCATION = new ResourceLocation(Main.MODID, "entityrunedata");
-
-		@SubscribeEvent
-		public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-			if (event.getObject() instanceof LivingEntity)
-				event.addCapability(SAVE_LOCATION, new Provider());
-		}
 
 		private LazyOptional<EntityRuneData> instance = LazyOptional.of(() -> new EntityRuneData());
 

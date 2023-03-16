@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
@@ -22,6 +21,7 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -37,7 +37,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -66,7 +65,7 @@ public class MagicRuneItem extends RuneItem {
 
 		@Override
 		public boolean isBeneficialEnchantment(Enchantment enchantment) {
-			return enchantment.getRegistryName().getNamespace().equals("minecraft");
+			return ForgeRegistries.ENCHANTMENTS.getKey(enchantment).getNamespace().equals("minecraft");
 		}
 
 		@Override
@@ -179,7 +178,7 @@ public class MagicRuneItem extends RuneItem {
 
 			// Explosion
 			if (player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION, enchants) * 0.025)
-				level.explode(player, player.getX(), player.getY(), player.getZ(), 2, Explosion.BlockInteraction.BREAK);
+				level.explode(player, player.getX(), player.getY(), player.getZ(), 2, Level.ExplosionInteraction.MOB);
 
 			int efficiency = getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, enchants);
 			int thorns = getEnchantmentLevel(Enchantments.THORNS, enchants);
@@ -295,7 +294,7 @@ public class MagicRuneItem extends RuneItem {
 
 		@Override
 		public boolean isBeneficialEnchantment(Enchantment enchantment) {
-			return enchantment.getRegistryName().getNamespace().equals("minecraft");
+			return ForgeRegistries.ENCHANTMENTS.getKey(enchantment).getNamespace().equals("minecraft");
 		}
 
 	}
@@ -352,7 +351,7 @@ public class MagicRuneItem extends RuneItem {
 	}
 
 	public static void applyMagicDamage(Entity target, DamageSource source, float damage,
-			Map<Enchantment, Integer> enchants, Random rand, float multiplier) {
+			Map<Enchantment, Integer> enchants, RandomSource rand, float multiplier) {
 		if (target instanceof LivingEntity) {
 			LivingEntity living = (LivingEntity) target;
 			if (living.getMobType() == MobType.ARTHROPOD)
@@ -378,7 +377,7 @@ public class MagicRuneItem extends RuneItem {
 		ListTag list = new ListTag();
 		for (Entry<Enchantment, Integer> entry : enchantments.entrySet()) {
 			CompoundTag compound = new CompoundTag();
-			compound.putString("ench", entry.getKey().getRegistryName().toString());
+			compound.putString("ench", ForgeRegistries.ENCHANTMENTS.getKey(entry.getKey()).toString());
 			compound.putInt("level", entry.getValue());
 			list.add(compound);
 		}
@@ -401,7 +400,7 @@ public class MagicRuneItem extends RuneItem {
 		return enchantments;
 	}
 
-	public static Color getRandEnchColor(Random rand, Enchantment[] enchantments) {
+	public static Color getRandEnchColor(RandomSource rand, Enchantment[] enchantments) {
 		Color color = DEFAULT_COLOR;
 		if (enchantments.length > 0)
 			color = MagicRuneItem.ENCHANTMENT_COLORS.getOrDefault(enchantments[rand.nextInt(enchantments.length)],

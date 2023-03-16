@@ -2,6 +2,7 @@ package mod.vemerion.runesword.item;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import mod.vemerion.runesword.Main;
@@ -57,14 +58,14 @@ public abstract class RunePowers implements IRunePowers {
 	}
 
 	@Override
-	public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+	public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 			Set<ItemStack> runes) {
 		return speed;
 	}
 
 	@Override
-	public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
-			ItemStack rune) {
+	public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos,
+			float speed, ItemStack rune) {
 		return speed;
 	}
 
@@ -98,12 +99,12 @@ public abstract class RunePowers implements IRunePowers {
 	protected final int getEnchantmentLevel(Enchantment enchantment, Set<ItemStack> stacks) {
 		int level = 0;
 		for (ItemStack stack : stacks)
-			level += EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
+			level += stack.getEnchantmentLevel(enchantment);
 		return level;
 	}
 
 	protected final int getEnchantmentLevel(Enchantment enchantment, ItemStack stack) {
-		return EnchantmentHelper.getItemEnchantmentLevel(enchantment, stack);
+		return stack.getEnchantmentLevel(enchantment);
 	}
 
 	protected final int getEnchantmentLevel(Enchantment enchantment, Map<Enchantment, Integer> enchants) {

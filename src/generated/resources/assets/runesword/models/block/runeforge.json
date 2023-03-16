@@ -1,13 +1,32 @@
 {
   "parent": "minecraft:block/block",
-  "textures": {
-    "particle": "runesword:block/runeforge_top",
-    "bottom": "runesword:block/runeforge_top",
-    "top": "runesword:block/runeforge_top",
-    "side": "runesword:block/runeforge_side"
-  },
   "elements": [
     {
+      "faces": {
+        "down": {
+          "cullface": "down",
+          "texture": "#bottom"
+        },
+        "east": {
+          "cullface": "east",
+          "texture": "#side"
+        },
+        "north": {
+          "cullface": "north",
+          "texture": "#side"
+        },
+        "south": {
+          "cullface": "south",
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#top"
+        },
+        "west": {
+          "cullface": "west",
+          "texture": "#side"
+        }
+      },
       "from": [
         0,
         0,
@@ -17,32 +36,14 @@
         16,
         15,
         16
-      ],
-      "faces": {
-        "down": {
-          "texture": "#bottom",
-          "cullface": "down"
-        },
-        "up": {
-          "texture": "#top"
-        },
-        "north": {
-          "texture": "#side",
-          "cullface": "north"
-        },
-        "south": {
-          "texture": "#side",
-          "cullface": "south"
-        },
-        "west": {
-          "texture": "#side",
-          "cullface": "west"
-        },
-        "east": {
-          "texture": "#side",
-          "cullface": "east"
-        }
-      }
+      ]
     }
-  ]
+  ],
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "bottom": "runesword:block/runeforge_top",
+    "particle": "runesword:block/runeforge_top",
+    "side": "runesword:block/runeforge_side",
+    "top": "runesword:block/runeforge_top"
+  }
 }

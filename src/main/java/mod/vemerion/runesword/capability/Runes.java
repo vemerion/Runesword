@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import mod.vemerion.runesword.Main;
@@ -17,8 +18,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,10 +29,6 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.items.ItemStackHandler;
 
 public class Runes extends ItemStackHandler {
@@ -149,7 +144,7 @@ public class Runes extends ItemStackHandler {
 	}
 
 	// On both sides
-	public float onBreakSpeed(Player player, BlockState state, BlockPos pos, float speed) {
+	public float onBreakSpeed(Player player, BlockState state, Optional<BlockPos> pos, float speed) {
 		for (Entry<RuneItem, Set<ItemStack>> entry : getRunesMap().entrySet())
 			speed = entry.getKey().onBreakSpeed(owner, player, state, pos, speed, entry.getValue());
 
@@ -183,11 +178,11 @@ public class Runes extends ItemStackHandler {
 		List<Component> tooltip = new ArrayList<>();
 		for (int i = 0; i < RUNES_COUNT; i++) {
 			ItemStack rune = getStackInSlot(i);
-			TranslatableComponent prefix = i == MAJOR_SLOT
-					? new TranslatableComponent("tooltip." + Main.MODID + ".major")
-					: new TranslatableComponent("tooltip." + Main.MODID + ".minor");
+			var prefix = i == MAJOR_SLOT
+					? Component.translatable("tooltip." + Main.MODID + ".major")
+					: Component.translatable("tooltip." + Main.MODID + ".minor");
 			if (!rune.isEmpty()) {
-				var text = new TranslatableComponent(rune.getDescriptionId())
+				var text = Component.translatable(rune.getDescriptionId())
 						.withStyle(Style.EMPTY.withColor(((RuneItem) rune.getItem()).getColor()));
 				tooltip.add(prefix.append(text));
 			}
@@ -230,15 +225,7 @@ public class Runes extends ItemStackHandler {
 		return stack.getCapability(CAPABILITY);
 	}
 
-	@EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
 	public static class Provider implements ICapabilitySerializable<CompoundTag> {
-		private static final ResourceLocation SAVE_LOCATION = new ResourceLocation(Main.MODID, "runes");
-
-		@SubscribeEvent
-		public static void attachCapability(AttachCapabilitiesEvent<ItemStack> event) {
-			if (isRuneable(event.getObject()))
-				event.addCapability(SAVE_LOCATION, new Provider(event.getObject()));
-		}
 
 		public Provider(ItemStack owner) {
 			this.owner = owner;

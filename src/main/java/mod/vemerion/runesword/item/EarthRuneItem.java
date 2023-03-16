@@ -49,7 +49,7 @@ public class EarthRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 				Set<ItemStack> runes) {
 			if (state.is(BlockTags.MINEABLE_WITH_PICKAXE)) {
 				speed += runes.size();

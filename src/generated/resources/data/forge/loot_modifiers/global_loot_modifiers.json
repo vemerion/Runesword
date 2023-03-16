@@ -1,10 +1,10 @@
 {
-  "replace": false,
   "entries": [
     "runesword:air_rune",
     "runesword:earth_rune",
     "runesword:blood_rune",
     "runesword:water_rune",
     "runesword:fire_rune"
-  ]
+  ],
+  "replace": false
 }

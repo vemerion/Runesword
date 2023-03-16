@@ -1,18 +1,19 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "r": {
+      "tag": "runesword:runes"
+    },
+    "s": {
+      "tag": "minecraft:stone_crafting_materials"
+    }
+  },
   "pattern": [
     "sss",
     "srs",
     "sss"
   ],
-  "key": {
-    "s": {
-      "tag": "minecraft:stone_crafting_materials"
-    },
-    "r": {
-      "tag": "runesword:runes"
-    }
-  },
   "result": {
     "item": "runesword:runeforge"
   }

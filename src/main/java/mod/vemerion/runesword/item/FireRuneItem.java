@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.item;
 
 import java.awt.Color;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
@@ -40,7 +41,7 @@ public class FireRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 				Set<ItemStack> runes) {
 			if (isCorrectTool(runeable, state)) {
 				speed += runes.size() * 4;
@@ -72,7 +73,7 @@ public class FireRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
+		public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos,
 				float speed, ItemStack rune) {
 			if (player.level.dimension() == Level.NETHER && isCorrectTool(runeable, state)) {
 				speed += 20;

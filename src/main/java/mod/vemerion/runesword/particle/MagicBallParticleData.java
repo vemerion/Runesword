@@ -11,6 +11,7 @@ import mod.vemerion.runesword.init.ModParticles;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class MagicBallParticleData implements ParticleOptions {
 
@@ -46,8 +47,8 @@ public class MagicBallParticleData implements ParticleOptions {
 
 	@Override
 	public String writeToString() {
-		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f", getType().getRegistryName().toString(), getRed(),
-				getGreen(), getBlue());
+		return String.format(Locale.ROOT, "%s %.2f %.2f %.2f",
+				ForgeRegistries.PARTICLE_TYPES.getKey(getType()).toString(), getRed(), getGreen(), getBlue());
 	}
 
 	public float getRed() {

@@ -1,11 +1,12 @@
 {
+  "type": "runesword:rune",
   "conditions": [
     {
       "condition": "minecraft:killed_by_player"
     },
     {
-      "condition": "minecraft:random_chance_with_looting",
       "chance": 0.1,
+      "condition": "minecraft:random_chance_with_looting",
       "looting_multiplier": 0.02
     },
     {
@@ -13,5 +14,5 @@
       "loot_table_id": "minecraft:entities/phantom"
     }
   ],
-  "type": "runesword:air_rune"
+  "item": "runesword:air_rune"
 }

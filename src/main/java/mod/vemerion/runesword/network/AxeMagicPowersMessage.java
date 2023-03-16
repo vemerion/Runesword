@@ -2,7 +2,6 @@ package mod.vemerion.runesword.network;
 
 import java.awt.Color;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Supplier;
 
 import mod.vemerion.runesword.item.MagicRuneItem;
@@ -81,7 +80,7 @@ public class AxeMagicPowersMessage {
 
 				private void createParticles(Map<Enchantment, Integer> enchantments, Vec3 pos, double radius,
 						Level level) {
-					Random rand = level.random;
+					var rand = level.random;
 					Enchantment[] enchantmentArr = enchantments.keySet().toArray(new Enchantment[0]);
 
 					for (int i = 0; i < 200; i++) {

@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.item;
 
 import java.awt.Color;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
@@ -48,14 +49,14 @@ public class FrostRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+		public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 				Set<ItemStack> runes) {
-			if (isCorrectTool(runeable, state)) {
-				if (player.level.getBiome(pos).value().coldEnoughToSnow(pos)) {
+			if (isCorrectTool(runeable, state) && pos.isPresent()) {
+				if (player.level.getBiome(pos.get()).value().coldEnoughToSnow(pos.get())) {
 					speed += runes.size() * 5 + getEnchantmentLevel(Enchantments.BLOCK_EFFICIENCY, runes) * 0.8;
 
 					if (player.level.isRaining()
-							&& player.level.getBiome(pos).value().getPrecipitation() == Biome.Precipitation.SNOW) {
+							&& player.level.getBiome(pos.get()).value().getPrecipitation() == Biome.Precipitation.SNOW) {
 						speed += getEnchantmentLevel(Enchantments.FALL_PROTECTION, runes) * 2;
 					}
 				}

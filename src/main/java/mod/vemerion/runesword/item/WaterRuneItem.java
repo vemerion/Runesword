@@ -1,6 +1,7 @@
 package mod.vemerion.runesword.item;
 
 import java.awt.Color;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
@@ -57,7 +58,7 @@ public class WaterRuneItem extends RuneItem {
 		}
 
 		@Override
-		public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos,
+		public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos,
 				float speed, ItemStack rune) {
 			if (isCorrectTool(runeable, state)) {
 				if (player.isInWaterRainOrBubble()) {
@@ -124,7 +125,8 @@ public class WaterRuneItem extends RuneItem {
 				Set<ItemStack> runes) {
 			if (source == DamageSource.DROWN
 					&& player.getRandom().nextDouble() < getEnchantmentLevel(Enchantments.FISHING_LUCK, runes) * 0.03) {
-				player.setAirSupply(Math.min(player.getMaxAirSupply(), player.getAirSupply() + (int) (player.getMaxAirSupply() * 0.1)));
+				player.setAirSupply(Math.min(player.getMaxAirSupply(),
+						player.getAirSupply() + (int) (player.getMaxAirSupply() * 0.1)));
 			}
 			return super.onHurt(sword, player, source, amount, runes);
 		}

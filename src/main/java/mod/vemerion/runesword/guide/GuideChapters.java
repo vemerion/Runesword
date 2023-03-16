@@ -6,7 +6,7 @@ import mod.vemerion.runesword.api.IGuideChapter;
 import mod.vemerion.runesword.api.RuneswordAPI;
 import mod.vemerion.runesword.init.ModBlocks;
 import mod.vemerion.runesword.init.ModItems;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Blocks;
@@ -42,13 +42,13 @@ public class GuideChapters {
 
 	public static IGuideChapter getStartChapter() {
 		if (start == null) {
-			var swordPowers = new TranslatableComponent(transKey("swordpowers"));
-			var axePowers = new TranslatableComponent(transKey("axepowers"));
+			var swordPowers = Component.translatable(transKey("swordpowers"));
+			var axePowers = Component.translatable(transKey("axepowers"));
 
 			IGuide guide = RuneswordAPI.guide;
 			runeforge = guide.createGuideChapter(ModBlocks.RUNEFORGE.get(), ModBlocks.RUNEFORGE.get().getName());
 			enchant = guide.createGuideChapter(Blocks.ENCHANTING_TABLE,
-					new TranslatableComponent(transKey("enchanting")));
+					Component.translatable(transKey("enchanting")));
 			blood = guide.createGuideChapter(ModItems.BLOOD_RUNE.get(), ModItems.BLOOD_RUNE.get().getDescription());
 			air = guide.createGuideChapter(ModItems.AIR_RUNE.get(), ModItems.AIR_RUNE.get().getDescription());
 			earth = guide.createGuideChapter(ModItems.EARTH_RUNE.get(), ModItems.EARTH_RUNE.get().getDescription());
@@ -56,7 +56,7 @@ public class GuideChapters {
 			fire = guide.createGuideChapter(ModItems.FIRE_RUNE.get(), ModItems.FIRE_RUNE.get().getDescription());
 			frost = guide.createGuideChapter(ModItems.FROST_RUNE.get(), ModItems.FROST_RUNE.get().getDescription());
 			magic = guide.createGuideChapter(ModItems.MAGIC_RUNE.get(), ModItems.MAGIC_RUNE.get().getDescription());
-			start = guide.createGuideChapter(ModItems.GUIDE.get(), new TranslatableComponent(transKey("guide")));
+			start = guide.createGuideChapter(ModItems.GUIDE.get(), Component.translatable(transKey("guide")));
 
 			bloodSword = guide.createGuideChapter(Items.NETHERITE_SWORD, swordPowers);
 			airSword = guide.createGuideChapter(Items.NETHERITE_SWORD, swordPowers);

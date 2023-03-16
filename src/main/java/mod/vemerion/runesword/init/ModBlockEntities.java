@@ -9,7 +9,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 public class ModBlockEntities {
 	public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITIES = DeferredRegister
-			.create(ForgeRegistries.BLOCK_ENTITIES, Main.MODID);
+			.create(ForgeRegistries.BLOCK_ENTITY_TYPES, Main.MODID);
 
 	public static final RegistryObject<BlockEntityType<RuneforgeBlockEntity>> RUNEFORGE = BLOCK_ENTITIES
 			.register("runeforge", () -> BlockEntityType.Builder

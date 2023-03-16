@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.network.NetworkHooks;
 
 public class RuneforgeBlock extends Block implements EntityBlock {
@@ -49,7 +49,7 @@ public class RuneforgeBlock extends Block implements EntityBlock {
 		if (!pLevel.isClientSide) {
 			var blockEntity = pLevel.getBlockEntity(pPos);
 			if (blockEntity instanceof MenuProvider menuProvider) {
-				NetworkHooks.openGui((ServerPlayer) pPlayer, menuProvider);
+				NetworkHooks.openScreen((ServerPlayer) pPlayer, menuProvider);
 			}
 		}
 		return InteractionResult.sidedSuccess(pLevel.isClientSide);
@@ -61,7 +61,7 @@ public class RuneforgeBlock extends Block implements EntityBlock {
 		if (!state.is(newState.getBlock())) {
 			var blockEntity = level.getBlockEntity(pos);
 			if (blockEntity != null) {
-				blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).ifPresent(handler -> {
+				blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).ifPresent(handler -> {
 					if (handler.getSlots() > 0) {
 						ItemEntity item = new ItemEntity(level, pos.getX(), pos.getY(), pos.getZ(),
 								handler.extractItem(RuneforgeBlockEntity.RUNEABLE_SLOT, 1, false));

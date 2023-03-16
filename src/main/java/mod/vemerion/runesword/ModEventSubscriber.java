@@ -8,7 +8,6 @@ import mod.vemerion.runesword.network.AxeMagicPowersMessage;
 import mod.vemerion.runesword.network.GuideMessage;
 import mod.vemerion.runesword.network.Network;
 import mod.vemerion.runesword.network.SyncBleedingMessage;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.SnowGolem;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -16,7 +15,6 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.registries.IForgeRegistryEntry;
 
 @EventBusSubscriber(modid = Main.MODID, bus = Bus.MOD)
 public class ModEventSubscriber {
@@ -27,8 +25,8 @@ public class ModEventSubscriber {
 				AxeMagicPowersMessage::decode, AxeMagicPowersMessage::handle);
 		Network.INSTANCE.registerMessage(1, SyncBleedingMessage.class, SyncBleedingMessage::encode,
 				SyncBleedingMessage::decode, SyncBleedingMessage::handle);
-		Network.INSTANCE.registerMessage(2, GuideMessage.class, GuideMessage::encode,
-				GuideMessage::decode, GuideMessage::handle);
+		Network.INSTANCE.registerMessage(2, GuideMessage.class, GuideMessage::encode, GuideMessage::decode,
+				GuideMessage::handle);
 	}
 
 	@SubscribeEvent
@@ -41,14 +39,5 @@ public class ModEventSubscriber {
 		event.register(Runes.class);
 		event.register(EntityRuneData.class);
 		event.register(GuideData.class);
-	}
-
-	public static <T extends IForgeRegistryEntry<T>> T setup(final T entry, final String name) {
-		return setup(entry, new ResourceLocation(Main.MODID, name));
-	}
-
-	public static <T extends IForgeRegistryEntry<T>> T setup(final T entry, final ResourceLocation registryName) {
-		entry.setRegistryName(registryName);
-		return entry;
 	}
 }

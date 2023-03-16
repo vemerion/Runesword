@@ -1,5 +1,6 @@
 package mod.vemerion.runesword.item;
 
+import java.util.Optional;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
@@ -19,8 +20,7 @@ public interface IRunePowers {
 	void onKill(ItemStack runeable, Player player, LivingEntity entityLiving, DamageSource source,
 			Set<ItemStack> runes);
 
-	void onKillMajor(ItemStack runeable, Player player, LivingEntity entityLiving, DamageSource source,
-			ItemStack rune);
+	void onKillMajor(ItemStack runeable, Player player, LivingEntity entityLiving, DamageSource source, ItemStack rune);
 
 	float onHurt(ItemStack runeable, Player player, DamageSource source, float amount, Set<ItemStack> runes);
 
@@ -30,10 +30,10 @@ public interface IRunePowers {
 
 	void onRightClickMajor(ItemStack runeable, Player player, ItemStack rune);
 
-	float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+	float onBreakSpeed(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 			Set<ItemStack> runes);
 
-	float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+	float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 			ItemStack rune);
 
 	boolean onHarvestCheckMajor(ItemStack runeable, Player player, BlockState state, boolean canHarvest,

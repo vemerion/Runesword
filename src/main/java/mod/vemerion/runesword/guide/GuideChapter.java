@@ -19,19 +19,19 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class GuideChapter implements IGuideChapter {
 
 	public static final int ICON_SIZE = 16;
 	private static final int COMPONENT_PADDING = 6;
 
-	private static final Component SEPARATOR = new TranslatableComponent("gui." + Main.MODID + ".separator");
+	private static final Component SEPARATOR = Component.translatable("gui." + Main.MODID + ".separator");
 
 	private ItemLike itemIcon;
 	private ResourceLocation rlIcon;
@@ -67,13 +67,13 @@ public class GuideChapter implements IGuideChapter {
 
 	@Override
 	public GuideChapter addText(String translationKey) {
-		components.add(new ParagraphComponent(new TranslatableComponent(translationKey)));
+		components.add(new ParagraphComponent(translationKey));
 		return this;
 	}
 
 	@Override
 	public GuideChapter addHeader(String translationKey) {
-		components.add(new HeaderComponent(new TranslatableComponent(translationKey)));
+		components.add(new HeaderComponent(Component.translatable(translationKey)));
 		return this;
 	}
 
@@ -199,7 +199,7 @@ public class GuideChapter implements IGuideChapter {
 		JsonObject json = new JsonObject();
 
 		if (itemIcon != null)
-			json.addProperty("item_icon", itemIcon.asItem().getRegistryName().toString());
+			json.addProperty("item_icon", ForgeRegistries.ITEMS.getKey(itemIcon.asItem()).toString());
 		else {
 			json.addProperty("image_icon", rlIcon.toString());
 		}
@@ -258,11 +258,11 @@ public class GuideChapter implements IGuideChapter {
 		static ChapterComponent read(JsonObject json) {
 			switch (GsonHelper.getAsString(json, "type")) {
 			case "paragraph":
-				return new ParagraphComponent(new TranslatableComponent(GsonHelper.getAsString(json, "key")));
+				return new ParagraphComponent(GsonHelper.getAsString(json, "key"));
 			case "header":
 				return new HeaderComponent(
-						json.has("key") ? new TranslatableComponent(GsonHelper.getAsString(json, "key"))
-								: new TextComponent(GsonHelper.getAsString(json, "string")));
+						json.has("key") ? Component.translatable(GsonHelper.getAsString(json, "key"))
+								: Component.literal(GsonHelper.getAsString(json, "string")));
 			case "image":
 				return new ImageComponent(new ResourceLocation(GsonHelper.getAsString(json, "key")),
 						GsonHelper.getAsInt(json, "width"), GsonHelper.getAsInt(json, "height"));
@@ -275,16 +275,16 @@ public class GuideChapter implements IGuideChapter {
 
 		private static final int COLOR = Color.BLACK.getRGB();
 
-		private TranslatableComponent text;
+		private String key;
 
-		private ParagraphComponent(TranslatableComponent text) {
-			this.text = text;
+		private ParagraphComponent(String key) {
+			this.key = key;
 		}
 
 		@Override
 		public int render(PoseStack poseStack, Minecraft mc, int x, int y, int top, int width, int height) {
 			var font = mc.font;
-			var lines = font.split(text, width);
+			var lines = font.split(Component.translatable(key), width);
 			for (var line : lines) {
 				if (isInsideScreen(y, font.lineHeight, top, height))
 					font.draw(poseStack, line, x, y, COLOR);
@@ -297,7 +297,7 @@ public class GuideChapter implements IGuideChapter {
 		public JsonObject write() {
 			JsonObject json = new JsonObject();
 			json.addProperty("type", "paragraph");
-			json.addProperty("key", text.getKey());
+			json.addProperty("key", key);
 
 			return json;
 		}
@@ -337,10 +337,10 @@ public class GuideChapter implements IGuideChapter {
 			JsonObject json = new JsonObject();
 			json.addProperty("type", "header");
 
-			if (text instanceof TranslatableComponent TranslatableComp)
-				json.addProperty("key", TranslatableComp.getKey());
+			if (text.getContents() instanceof TranslatableContents TranslatableContents)
+				json.addProperty("key", TranslatableContents.getKey());
 			else
-				json.addProperty("string", text.getContents());
+				json.addProperty("string", text.getString());
 
 			return json;
 		}

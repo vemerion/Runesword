@@ -2,6 +2,7 @@ package mod.vemerion.runesword.item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import com.google.common.collect.Iterables;
@@ -93,7 +94,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+	public float onBreakSpeed(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 			Set<ItemStack> runes) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))
@@ -102,7 +103,7 @@ public abstract class RuneItem extends Item implements IRunePowers {
 	}
 
 	@Override
-	public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, BlockPos pos, float speed,
+	public float onBreakSpeedMajor(ItemStack runeable, Player player, BlockState state, Optional<BlockPos> pos, float speed,
 			ItemStack rune) {
 		for (RunePowers p : powers)
 			if (p.canActivatePowers(runeable))

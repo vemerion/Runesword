@@ -16,6 +16,7 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
@@ -32,7 +33,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -187,7 +187,7 @@ public class MagicBallEntity extends AbstractArrow implements IEntityAdditionalS
 		Entity shooter = getOwner();
 		if (!level.isClientSide) {
 			if (random.nextDouble() < getEnchantmentLevel(Enchantments.BLAST_PROTECTION) * 0.05)
-				level.explode(null, pos.x, pos.y, pos.z, 2, Explosion.BlockInteraction.BREAK);
+				level.explode(null, pos.x, pos.y, pos.z, 2, Level.ExplosionInteraction.MOB);
 
 			// AoE
 			int sweeping = getEnchantmentLevel(Enchantments.SWEEPING_EDGE);
@@ -327,7 +327,7 @@ public class MagicBallEntity extends AbstractArrow implements IEntityAdditionalS
 	}
 
 	@Override
-	public Packet<?> getAddEntityPacket() {
+	public Packet<ClientGamePacketListener> getAddEntityPacket() {
 		return NetworkHooks.getEntitySpawningPacket(this);
 	}
 

@@ -9,7 +9,6 @@ import mod.vemerion.runesword.container.RuneforgeMenu;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.common.util.LazyOptional;
@@ -51,12 +50,12 @@ public class RuneforgeScreen extends AbstractContainerScreen<RuneforgeMenu> {
 
 				LazyOptional<Runes> maybeRunes = Runes.getRunes(menu.getRuneable());
 				if (!maybeRunes.isPresent()) {
-					renderTooltip(poseStack, new TranslatableComponent("gui." + Main.MODID + ".no_sword"), mouseX,
+					renderTooltip(poseStack, Component.translatable("gui." + Main.MODID + ".no_sword"), mouseX,
 							mouseY);
 				} else {
 					maybeRunes.ifPresent(runes -> {
 						if (!runes.isSlotUnlocked(index)) {
-							renderTooltip(poseStack, new TranslatableComponent("gui." + Main.MODID + ".slot_locked"),
+							renderTooltip(poseStack, Component.translatable("gui." + Main.MODID + ".slot_locked"),
 									mouseX, mouseY);
 						}
 					});

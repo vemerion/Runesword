@@ -1,22 +1,7 @@
 {
-  "item_icon": "runesword:guide",
-  "title": {
-    "type": "header",
-    "key": "gui.runesword.guide"
-  },
-  "components": [
-    {
-      "type": "paragraph",
-      "key": "gui.runesword.intro"
-    }
-  ],
   "children": [
     {
-      "item_icon": "runesword:runeforge",
-      "title": {
-        "type": "header",
-        "key": "block.runesword.runeforge"
-      },
+      "children": [],
       "components": [
         {
           "type": "paragraph",
@@ -24,9 +9,9 @@
         },
         {
           "type": "image",
-          "width": 518,
           "height": 265,
-          "key": "runesword:textures/guide/runeforge_crafting.png"
+          "key": "runesword:textures/guide/runeforge_crafting.png",
+          "width": 518
         },
         {
           "type": "paragraph",
@@ -34,9 +19,9 @@
         },
         {
           "type": "image",
-          "width": 176,
           "height": 166,
-          "key": "runesword:textures/guide/runeforge.png"
+          "key": "runesword:textures/guide/runeforge.png",
+          "width": 176
         },
         {
           "type": "paragraph",
@@ -47,41 +32,30 @@
           "key": "gui.runesword.runeforge4"
         }
       ],
-      "children": []
-    },
-    {
-      "item_icon": "minecraft:enchanting_table",
+      "item_icon": "runesword:runeforge",
       "title": {
         "type": "header",
-        "key": "gui.runesword.enchanting"
-      },
+        "key": "block.runesword.runeforge"
+      }
+    },
+    {
+      "children": [],
       "components": [
         {
           "type": "paragraph",
           "key": "gui.runesword.enchantingtext"
         }
       ],
-      "children": []
-    },
-    {
-      "item_icon": "runesword:blood_rune",
+      "item_icon": "minecraft:enchanting_table",
       "title": {
         "type": "header",
-        "key": "item.runesword.blood_rune"
-      },
-      "components": [
-        {
-          "type": "paragraph",
-          "key": "gui.runesword.blood.obtain"
-        }
-      ],
+        "key": "gui.runesword.enchanting"
+      }
+    },
+    {
       "children": [
         {
-          "item_icon": "minecraft:netherite_sword",
-          "title": {
-            "type": "header",
-            "key": "gui.runesword.swordpowers"
-          },
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -120,14 +94,14 @@
               "key": "gui.runesword.blood.sword.majorenchant2"
             }
           ],
-          "children": []
-        },
-        {
-          "item_icon": "minecraft:netherite_axe",
+          "item_icon": "minecraft:netherite_sword",
           "title": {
             "type": "header",
-            "key": "gui.runesword.axepowers"
-          },
+            "key": "gui.runesword.swordpowers"
+          }
+        },
+        {
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -166,29 +140,29 @@
               "key": "gui.runesword.blood.axe.majorenchant2"
             }
           ],
-          "children": []
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          }
         }
-      ]
-    },
-    {
-      "item_icon": "runesword:air_rune",
-      "title": {
-        "type": "header",
-        "key": "item.runesword.air_rune"
-      },
+      ],
       "components": [
         {
           "type": "paragraph",
-          "key": "gui.runesword.air.obtain"
+          "key": "gui.runesword.blood.obtain"
         }
       ],
+      "item_icon": "runesword:blood_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.blood_rune"
+      }
+    },
+    {
       "children": [
         {
-          "item_icon": "minecraft:netherite_sword",
-          "title": {
-            "type": "header",
-            "key": "gui.runesword.swordpowers"
-          },
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -227,14 +201,14 @@
               "key": "gui.runesword.air.sword.majorenchant3"
             }
           ],
-          "children": []
-        },
-        {
-          "item_icon": "minecraft:netherite_axe",
+          "item_icon": "minecraft:netherite_sword",
           "title": {
             "type": "header",
-            "key": "gui.runesword.axepowers"
-          },
+            "key": "gui.runesword.swordpowers"
+          }
+        },
+        {
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -273,29 +247,29 @@
               "key": "gui.runesword.air.axe.majorenchant2"
             }
           ],
-          "children": []
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          }
         }
-      ]
-    },
-    {
-      "item_icon": "runesword:earth_rune",
-      "title": {
-        "type": "header",
-        "key": "item.runesword.earth_rune"
-      },
+      ],
       "components": [
         {
           "type": "paragraph",
-          "key": "gui.runesword.earth.obtain"
+          "key": "gui.runesword.air.obtain"
         }
       ],
+      "item_icon": "runesword:air_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.air_rune"
+      }
+    },
+    {
       "children": [
         {
-          "item_icon": "minecraft:netherite_sword",
-          "title": {
-            "type": "header",
-            "key": "gui.runesword.swordpowers"
-          },
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -334,14 +308,14 @@
               "key": "gui.runesword.earth.sword.majorenchant2"
             }
           ],
-          "children": []
-        },
-        {
-          "item_icon": "minecraft:netherite_axe",
+          "item_icon": "minecraft:netherite_sword",
           "title": {
             "type": "header",
-            "key": "gui.runesword.axepowers"
-          },
+            "key": "gui.runesword.swordpowers"
+          }
+        },
+        {
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -380,29 +354,29 @@
               "key": "gui.runesword.earth.axe.majorenchant2"
             }
           ],
-          "children": []
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          }
         }
-      ]
-    },
-    {
-      "item_icon": "runesword:water_rune",
-      "title": {
-        "type": "header",
-        "key": "item.runesword.water_rune"
-      },
+      ],
       "components": [
         {
           "type": "paragraph",
-          "key": "gui.runesword.water.obtain"
+          "key": "gui.runesword.earth.obtain"
         }
       ],
+      "item_icon": "runesword:earth_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.earth_rune"
+      }
+    },
+    {
       "children": [
         {
-          "item_icon": "minecraft:netherite_sword",
-          "title": {
-            "type": "header",
-            "key": "gui.runesword.swordpowers"
-          },
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -441,14 +415,14 @@
               "key": "gui.runesword.water.sword.majorenchant3"
             }
           ],
-          "children": []
-        },
-        {
-          "item_icon": "minecraft:netherite_axe",
+          "item_icon": "minecraft:netherite_sword",
           "title": {
             "type": "header",
-            "key": "gui.runesword.axepowers"
-          },
+            "key": "gui.runesword.swordpowers"
+          }
+        },
+        {
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -487,29 +461,29 @@
               "key": "gui.runesword.water.axe.majorenchant2"
             }
           ],
-          "children": []
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          }
         }
-      ]
-    },
-    {
-      "item_icon": "runesword:fire_rune",
-      "title": {
-        "type": "header",
-        "key": "item.runesword.fire_rune"
-      },
+      ],
       "components": [
         {
           "type": "paragraph",
-          "key": "gui.runesword.fire.obtain"
+          "key": "gui.runesword.water.obtain"
         }
       ],
+      "item_icon": "runesword:water_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.water_rune"
+      }
+    },
+    {
       "children": [
         {
-          "item_icon": "minecraft:netherite_sword",
-          "title": {
-            "type": "header",
-            "key": "gui.runesword.swordpowers"
-          },
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -548,14 +522,14 @@
               "key": "gui.runesword.fire.sword.majorenchant2"
             }
           ],
-          "children": []
-        },
-        {
-          "item_icon": "minecraft:netherite_axe",
+          "item_icon": "minecraft:netherite_sword",
           "title": {
             "type": "header",
-            "key": "gui.runesword.axepowers"
-          },
+            "key": "gui.runesword.swordpowers"
+          }
+        },
+        {
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -594,29 +568,29 @@
               "key": "gui.runesword.fire.axe.majorenchant2"
             }
           ],
-          "children": []
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          }
         }
-      ]
-    },
-    {
-      "item_icon": "runesword:frost_rune",
-      "title": {
-        "type": "header",
-        "key": "item.runesword.frost_rune"
-      },
+      ],
       "components": [
         {
           "type": "paragraph",
-          "key": "gui.runesword.frost.obtain"
+          "key": "gui.runesword.fire.obtain"
         }
       ],
+      "item_icon": "runesword:fire_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.fire_rune"
+      }
+    },
+    {
       "children": [
         {
-          "item_icon": "minecraft:netherite_sword",
-          "title": {
-            "type": "header",
-            "key": "gui.runesword.swordpowers"
-          },
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -659,14 +633,14 @@
               "key": "gui.runesword.frost.sword.majorenchant3"
             }
           ],
-          "children": []
-        },
-        {
-          "item_icon": "minecraft:netherite_axe",
+          "item_icon": "minecraft:netherite_sword",
           "title": {
             "type": "header",
-            "key": "gui.runesword.axepowers"
-          },
+            "key": "gui.runesword.swordpowers"
+          }
+        },
+        {
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -709,33 +683,29 @@
               "key": "gui.runesword.frost.axe.majorenchant4"
             }
           ],
-          "children": []
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          }
         }
-      ]
-    },
-    {
-      "item_icon": "runesword:magic_rune",
-      "title": {
-        "type": "header",
-        "key": "item.runesword.magic_rune"
-      },
+      ],
       "components": [
         {
           "type": "paragraph",
-          "key": "gui.runesword.magic.obtain"
-        },
-        {
-          "type": "paragraph",
-          "key": "gui.runesword.magic.text"
+          "key": "gui.runesword.frost.obtain"
         }
       ],
+      "item_icon": "runesword:frost_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.frost_rune"
+      }
+    },
+    {
       "children": [
         {
-          "item_icon": "minecraft:netherite_sword",
-          "title": {
-            "type": "header",
-            "key": "gui.runesword.swordpowers"
-          },
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -894,14 +864,14 @@
               "key": "gui.runesword.magic.sword.minorenchant36"
             }
           ],
-          "children": []
-        },
-        {
-          "item_icon": "minecraft:netherite_axe",
+          "item_icon": "minecraft:netherite_sword",
           "title": {
             "type": "header",
-            "key": "gui.runesword.axepowers"
-          },
+            "key": "gui.runesword.swordpowers"
+          }
+        },
+        {
+          "children": [],
           "components": [
             {
               "type": "paragraph",
@@ -1060,9 +1030,39 @@
               "key": "gui.runesword.magic.axe.minorenchant36"
             }
           ],
-          "children": []
+          "item_icon": "minecraft:netherite_axe",
+          "title": {
+            "type": "header",
+            "key": "gui.runesword.axepowers"
+          }
         }
-      ]
+      ],
+      "components": [
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.magic.obtain"
+        },
+        {
+          "type": "paragraph",
+          "key": "gui.runesword.magic.text"
+        }
+      ],
+      "item_icon": "runesword:magic_rune",
+      "title": {
+        "type": "header",
+        "key": "item.runesword.magic_rune"
+      }
     }
-  ]
+  ],
+  "components": [
+    {
+      "type": "paragraph",
+      "key": "gui.runesword.intro"
+    }
+  ],
+  "item_icon": "runesword:guide",
+  "title": {
+    "type": "header",
+    "key": "gui.runesword.guide"
+  }
 }

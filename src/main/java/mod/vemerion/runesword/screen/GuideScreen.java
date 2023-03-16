@@ -1,6 +1,5 @@
 package mod.vemerion.runesword.screen;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -17,12 +16,12 @@ import mod.vemerion.runesword.network.GuideMessage;
 import mod.vemerion.runesword.network.Network;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
@@ -134,26 +133,24 @@ public class GuideScreen extends Screen {
 						page++;
 				}));
 		addRenderableWidget(new GuideButton(x + 2, y - Y_SIZE / 2, BUTTON_SIZE, BUTTON_SIZE, 0, 0, 32, HOME_BUTTON, 256,
-				256, b -> gotoChapter(startChapter), (b, m, mouseX, mouseY) -> renderComponentTooltip(m,
-						Arrays.asList(b.getMessage()), mouseX, mouseY, minecraft.font),
-				new TranslatableComponent("gui." + Main.MODID + ".home")));
+				256, b -> gotoChapter(startChapter),
+				Component.translatable("gui." + Main.MODID + ".home")));
 
-		var muteTooltip = new TranslatableComponent("gui." + Main.MODID + ".mute");
-		var unmuteTooltip = new TranslatableComponent("gui." + Main.MODID + ".unmute");
+		var muteTooltip = Component.translatable("gui." + Main.MODID + ".mute");
+		var unmuteTooltip = Component.translatable("gui." + Main.MODID + ".unmute");
 		addRenderableWidget(new GuideButton(x + 2, top + Y_SIZE - BUTTON_SIZE, BUTTON_SIZE, BUTTON_SIZE, 0, 0, 32,
 				MUTE_BUTTON, 256, 256, b -> {
 					mute = !mute;
 					b.setMessage(mute ? unmuteTooltip : muteTooltip);
-				}, (b, m, mouseX, mouseY) -> renderComponentTooltip(m, Arrays.asList(b.getMessage()), mouseX, mouseY,
-						minecraft.font),
-				muteTooltip));
+					b.setTooltip(Tooltip.create(b.getMessage(), null));
+				},
+				mute ? unmuteTooltip : muteTooltip));
 
 		addRenderableWidget(new GuideButton(left - 2 - BUTTON_SIZE, top + Y_SIZE - BUTTON_SIZE, BUTTON_SIZE,
 				BUTTON_SIZE, 0, 0, 32, BACK_BUTTON, 256, 256, b -> {
 					goBack();
-				}, (b, m, mouseX, mouseY) -> renderComponentTooltip(m, Arrays.asList(b.getMessage()), mouseX, mouseY,
-						minecraft.font),
-				new TranslatableComponent("gui." + Main.MODID + ".back")));
+				},
+				Component.translatable("gui." + Main.MODID + ".back")));
 
 		// Bookmark buttons
 		for (int i = 1; i < bookmarks.length; i++) {
@@ -167,7 +164,7 @@ public class GuideScreen extends Screen {
 	private Component bookmarkText(int index) {
 		var chapter = getBookmark(index);
 		if (chapter == startChapter) {
-			return new TranslatableComponent("gui." + Main.MODID + ".empty_bookmark");
+			return Component.translatable("gui." + Main.MODID + ".empty_bookmark");
 		} else {
 			return chapter.getPath();
 		}
@@ -242,10 +239,9 @@ public class GuideScreen extends Screen {
 	private class GuideButton extends ImageButton {
 
 		public GuideButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yHoverOffset,
-				ResourceLocation image, int imgWidth, int imgHeight, OnPress action, OnTooltip tooltip,
-				Component message) {
-			super(x, y, width, height, xTexStart, yTexStart, yHoverOffset, image, imgWidth, imgHeight, action, tooltip,
-					message);
+				ResourceLocation image, int imgWidth, int imgHeight, OnPress action, Component message) {
+			super(x, y, width, height, xTexStart, yTexStart, yHoverOffset, image, imgWidth, imgHeight, action, message);
+			this.setTooltip(Tooltip.create(message, null));
 		}
 
 		public GuideButton(int x, int y, int width, int height, int xTexStart, int yTexStart, int yHoverOffset,
@@ -267,9 +263,7 @@ public class GuideScreen extends Screen {
 		public BookmarkButton(int bookmarkIndex, int x, int y, int width, int height, int xTexStart, int yTexStart,
 				int yHoverOffset, ResourceLocation image, int imgWidth, int imgHeight) {
 			super(x, y, width, height, xTexStart, yTexStart, yHoverOffset, image, imgWidth, imgHeight,
-					b -> ((BookmarkButton) b).clickAction(),
-					(b, p, mouseX, mouseY) -> ((BookmarkButton) b).hoverAction(p, mouseX, mouseY),
-					bookmarkText(bookmarkIndex));
+					b -> ((BookmarkButton) b).clickAction(), bookmarkText(bookmarkIndex));
 			this.bookmarkIndex = bookmarkIndex;
 		}
 
@@ -280,11 +274,8 @@ public class GuideScreen extends Screen {
 			} else if (current != startChapter) {
 				bookmarks[bookmarkIndex] = current.getId();
 				setMessage(bookmarkText(bookmarkIndex));
+				setTooltip(Tooltip.create(getMessage(), null));
 			}
-		}
-
-		private void hoverAction(PoseStack poseStack, int mouseX, int mouseY) {
-			renderComponentTooltip(poseStack, Arrays.asList(getMessage()), mouseX, mouseY, minecraft.font);
 		}
 
 		@Override
@@ -304,8 +295,8 @@ public class GuideScreen extends Screen {
 			var chapter = getBookmark(bookmarkIndex);
 
 			if (chapter != startChapter) {
-				chapter.renderIcon(pPoseStack, minecraft, x + (BUTTON_SIZE - GuideChapter.ICON_SIZE) / 2,
-						y + (BUTTON_SIZE - GuideChapter.ICON_SIZE) / 2, 0, 0, pMouseX, pMouseY, false);
+				chapter.renderIcon(pPoseStack, minecraft, getX() + (BUTTON_SIZE - GuideChapter.ICON_SIZE) / 2,
+						getY() + (BUTTON_SIZE - GuideChapter.ICON_SIZE) / 2, 0, 0, pMouseX, pMouseY, false);
 			}
 		}
 

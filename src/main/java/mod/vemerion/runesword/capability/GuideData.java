@@ -3,16 +3,13 @@ package mod.vemerion.runesword.capability;
 import java.util.HashMap;
 import java.util.Map;
 
-import mod.vemerion.runesword.Main;
 import mod.vemerion.runesword.network.GuideMessage;
 import mod.vemerion.runesword.network.Network;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
@@ -20,10 +17,6 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.network.PacketDistributor;
 
 public class GuideData implements INBTSerializable<CompoundTag> {
@@ -86,15 +79,7 @@ public class GuideData implements INBTSerializable<CompoundTag> {
 		});
 	}
 
-	@EventBusSubscriber(modid = Main.MODID, bus = Bus.FORGE)
 	public static class Provider implements ICapabilitySerializable<CompoundTag> {
-		private static final ResourceLocation SAVE_LOCATION = new ResourceLocation(Main.MODID, "guidedata");
-
-		@SubscribeEvent
-		public static void attachCapability(AttachCapabilitiesEvent<Entity> event) {
-			if (event.getObject() instanceof Player)
-				event.addCapability(SAVE_LOCATION, new Provider());
-		}
 
 		private LazyOptional<GuideData> instance = LazyOptional.of(() -> new GuideData());
 
